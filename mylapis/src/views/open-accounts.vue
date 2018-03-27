@@ -235,11 +235,17 @@
                       </Col>
                       <Col span="7">
                       <span class="expand-key">{{ $t("m.open.additionfeetype") }} </span>
-                      <span class="expand-value">{{item.additionalFeeType}} </span>
+                      <span class="expand-value">{{item.additionalFeeType==0?$t('m.open.additiontypelabel1'):$t('m.open.additiontypelabel2')}} </span>
                       </Col>
                       <Col span="7">
                       <span class="expand-key">{{ $t("m.open.additionfeemethod") }} </span>
-                      <span class="expand-value">{{item.additionalFeeDeductionMode}} </span>
+                      <span class="expand-value" v-if="item.additionalFeeDeductionMode==0">{{$t('m.open.additionmethodlabel1')}}</span>
+                      <span class="expand-value" v-if="item.additionalFeeDeductionMode==1">{{$t('m.open.additionmethodlabel2')}}</span>
+                      <span class="expand-value" v-if="item.additionalFeeDeductionMode==2">{{$t('m.open.additionmethodlabel3')}}</span>
+                      <span class="expand-value" v-if="item.additionalFeeDeductionMode==3">{{$t('m.open.additionmethodlabel4')}}</span>
+                      <span class="expand-value" v-if="item.additionalFeeDeductionMode==4">{{$t('m.open.additionmethodlabel5')}}</span>
+                      <span class="expand-value" v-if="item.additionalFeeDeductionMode==5">{{$t('m.open.additionmethodlabel6')}}</span>
+                      <span class="expand-value" v-if="item.additionalFeeDeductionMode==6">{{$t('m.open.additionmethodlabel7')}}</span>
                       </Col>
                       <Col span="7">
                       <span class="expand-key">{{ $t("m.open.feetime") }} </span>
@@ -326,7 +332,7 @@
         </div>
       </Form>
       <div v-if="opensuccess">
-        <Modal v-model="opensuccess" width="360">
+        <Modal v-model="opensuccess" width="360" :closable="false">
           <p slot="header" style="color:#19BE6B;text-align:center">
             <Icon type="checkmark-circled"></Icon>
             <span>{{ $t("m.open.open") }}</span>
@@ -417,11 +423,11 @@
               </Col>
               <Col span="8">
                   <span class="expand-key">{{ $t("m.open.percent") }} </span>
-                  <span class="expand-value">{{item.additionalFeeDeductionRate}}</span>
+                  <span class="expand-value">{{item.additionalFeeDeductionRate}} %</span>
               </Col>
               <Col span="8">
                   <span class="expand-key">{{ $t("m.open.money") }} </span>
-                  <span class="expand-value">{{item.additionalFeeDeductionAmount}}</span>
+                  <span class="expand-value">$ {{item.additionalFeeDeductionAmount}}</span>
               </Col>
               <Col span="8">
                   <span class="expand-key">{{ $t("m.open.vat") }} </span>
@@ -508,6 +514,28 @@
             type: 'expand',
             width: 50,
             render: (h, params) => {
+              params.row.additionalFeeDetails.forEach((val,index)=> {
+                if(val.additionalFeeType==0){
+                   val.additionalFeeType=this.$t('m.open.additiontypelabel1')
+                }else if(val.additionalFeeType==1){
+                  val.additionalFeeType=this.$t('m.open.additiontypelabel2')
+                };
+                if(val.additionalFeeDeductionMode==0){
+                  val.additionalFeeDeductionMode=this.$t('m.open.additionmethodlabel1');
+                }else if(val.additionalFeeDeductionMode==1){
+                  val.additionalFeeDeductionMode=this.$t('m.open.additionmethodlabel2');
+                }else if(val.additionalFeeDeductionMode==2){
+                  val.additionalFeeDeductionMode=this.$t('m.open.additionmethodlabel3');
+                }else if(val.additionalFeeDeductionMode==3){
+                  val.additionalFeeDeductionMode=this.$t('m.open.additionmethodlabel4');
+                }else if(val.additionalFeeDeductionMode==4){
+                  val.additionalFeeDeductionMode=this.$t('m.open.additionmethodlabel5');
+                }else if(val.additionalFeeDeductionMode==5){
+                  val.additionalFeeDeductionMode=this.$t('m.open.additionmethodlabel6');
+                }else if(val.additionalFeeDeductionMode==6){
+                  val.additionalFeeDeductionMode=this.$t('m.open.additionmethodlabel7');
+                }
+              });
               return h(myexpand, {
                 props: {
                   row: params.row.additionalFeeDetails
@@ -527,10 +555,6 @@
             title: this.$t('m.open.addifeetabletitle3'),
             key: 'createDate'
           },
-          {
-            title: this.$t('m.open.addifeetabletitle4'),
-            key: 'state'
-          },
         ],
         //附加费数据
         addifeedata: [],
@@ -544,11 +568,11 @@
         additiontypedata: [
           {
             label: this.$t('m.open.additiontypelabel1'),
-            value: 1
+            value: 0
           },
           {
             label: this.$t('m.open.additiontypelabel2'),
-            value: 0
+            value: 1
           },
         ],
         //2.扣费方式
@@ -650,9 +674,11 @@
           if(valid){
             this.prevable = false;
             if(this.enableAdditionalFee==0&&this.enableDebt==0){
+              if(this.current ==1){
+                this.xiayibu=this.$t("m.open.finish");
+              }
               if (this.current ==2) {
                 this.current = 2;
-                this.xiayibu=this.$t("m.open.finish");
                 this.$http({
                   url:common.apiLink+'/biz/customer/openAccount.do',
                   body: {
@@ -673,8 +699,6 @@
                   },
                 }).then((response) => {
                   this.invoicedata=response.body.tradeRecord;
-                  console.log(this.invoicedata)
-                  console.log(response.body);
                   if(response.body.msg){
                     this.opensuccess=true;
     //              location.href="/#/index/invoice"
@@ -683,13 +707,14 @@
                   }
                 })
               } else {
-                this.xiayibu=this.$t("m.open.next");
                 this.current += 1;
               }
             }else if(this.enableAdditionalFee==1&&this.enableDebt==0){
+              if(this.current ==2){
+                this.xiayibu=this.$t("m.open.finish");
+              }
               if (this.current ==3) {
                 this.current = 3;
-                this.xiayibu=this.$t("m.open.finish");
                 this.$http({
                   url:common.apiLink+'/biz/customer/openAccount.do',
                   body: {
@@ -712,7 +737,6 @@
                   },
                 }).then((response) => {
                   this.invoicedata=response.body.tradeRecord;
-                  console.log(response.body);
                   if(response.body.msg){
                     this.opensuccess=true;
     //              location.href="/#/index/invoice"
@@ -721,13 +745,14 @@
                   }
                 })
               } else {
-                this.xiayibu=this.$t("m.open.next");
                 this.current += 1;
               }
             }else if(this.enableAdditionalFee==0&&this.enableDebt==1){
+              if(this.current ==2){
+                this.xiayibu=this.$t("m.open.finish");
+              }
               if (this.current ==3) {
                 this.current = 3;
-                this.xiayibu=this.$t("m.open.finish");
                 this.$http({
                   url:common.apiLink+'/biz/customer/openAccount.do',
                   body: {
@@ -751,7 +776,6 @@
                   },
                 }).then((response) => {
                   this.invoicedata=response.body.tradeRecord;
-                  console.log(response.body);
                   if(response.body.msg){
                     this.opensuccess=true;
     //              location.href="/#/index/invoice"
@@ -760,13 +784,16 @@
                   }
                 })
               } else {
-                this.xiayibu=this.$t("m.open.next");
                 this.current += 1;
               }
             }else{
+              if(this.current ==3){
+                console.log('执行')
+                this.xiayibu=this.$t("m.open.finish");
+                console.log(this.xiayibu)
+              }
               if (this.current ==4) {
                 this.current = 4;
-                this.xiayibu=this.$t("m.open.finish");
                 this.$http({
                   url:common.apiLink+'/biz/customer/openAccount.do',
                   body: {
@@ -792,7 +819,6 @@
                   },
                 }).then((response) => {
                   this.invoicedata=response.body.tradeRecord;
-                  console.log(response.body);
                   if(response.body.msg){
                     this.opensuccess=true;
     //              location.href="/#/index/invoice"
@@ -801,7 +827,7 @@
                   }
                 })
               } else {
-                this.xiayibu=this.$t("m.open.next");
+                // this.xiayibu=this.$t("m.open.next");
                 this.current += 1;
               }
             }
@@ -841,7 +867,6 @@
         this.formValidateopen.meterno="";
       },
       editzi(index){
-        console.log(this.additionalFees,111);
         this.index=index;
         this.cusaddifee1=this.additionalFees[index].itemName;
         this.cusaddifee4=this.additionalFees[index].additionalFeeStartDate;
@@ -852,7 +877,6 @@
         this.cusaddifee7=this.additionalFees[index].additionalFeeDeductionAmount;
         this.cusaddifee8=this.additionalFees[index].additionalFeeVat;
         this.editfujiafei=true;
-        console.log(this.additionalFees);
       },
       deletezi(index){
         this.additionalFees.splice(index,1)
@@ -866,7 +890,6 @@
         this.additionalFees[this.index].additionalFeeDeductionRate=this.cusaddifee6;
         this.additionalFees[this.index].additionalFeeDeductionAmount=this.cusaddifee7;
         this.additionalFees[this.index].additionalFeeVat=this.cusaddifee8;
-        console.log(this.additionalFees);
       },
       editfeecancel(){},
       addifeetype(value){
@@ -942,6 +965,26 @@
         this.myprint()
       },
       addifeeok () {
+        // if(this.additiontype==1){
+        //   this.additiontype=this.$t('m.open.additiontypelabel1')
+        // }else if(this.additiontype==0){
+        //   this.additiontype=this.$t('m.open.additiontypelabel2')
+        // }
+        // if(this.additionmethod==0){
+        //   this.additionmethod=this.$t('m.open.additionmethodlabel1');
+        // }else if(this.additionmethod==1){
+        //   this.additionmethod=this.$t('m.open.additionmethodlabel2');
+        // }else if(this.additionmethod==2){
+        //   this.additionmethod=this.$t('m.open.additionmethodlabel3');
+        // }else if(this.additionmethod==3){
+        //   this.additionmethod=this.$t('m.open.additionmethodlabel4');
+        // }else if(this.additionmethod==4){
+        //   this.additionmethod=this.$t('m.open.additionmethodlabel5');
+        // }else if(this.additionmethod==5){
+        //   this.additionmethod=this.$t('m.open.additionmethodlabel6');
+        // }else if(this.additionmethod==6){
+        //   this.additionmethod=this.$t('m.open.additionmethodlabel7');
+        // }
         this.additionalFees.push(
           {
             additionalFeeDeductionAmount:this.additionalFeeDeductionAmount,
@@ -1031,7 +1074,6 @@
         data.forEach((val,index)=> {
           www.push(val.additionalFeeSchemeCode)
         });
-        console.log(www);
         this.xitongaddifee=www;
       },
       myprint() {
@@ -1108,8 +1150,6 @@
           LODOP.ADD_PRINT_HTM(20, 20, 720,'100%',strFormHtml);
           var patt = /Samsung M262x 282x Series/i;//先由用户设置
           for(var j = 0,len=LODOP.Printers.list.length; j < len; j++) {
-            console.log(patt.test(LODOP.Printers.list[j].name));
-            console.log(LODOP.Printers.list[j].name);
             if(patt.test(LODOP.Printers.list[j].name)){
               LODOP.SET_PRINTER_INDEXA(LODOP.Printers.list[j].name);
               console.log('预览');
@@ -1239,7 +1279,9 @@
       //获取附加费
       this.$http({
         url:common.apiLink+'/sys/additionalFeeScheme/findAll.do',
-        body:{conditions: {}},
+        body:{conditions: {
+          nostate:0,
+          }},
         credentials:true,
         method: 'POST',
         headers: {

@@ -21,6 +21,8 @@ import InvoicePurchase from '@/views/invoice-purchase'
 import CheckList from '@/views/check'
 import Chart from '@/views/chart'
 import Realtime from '@/views/realtime'
+import Walkby from '@/views/walkby'
+import Addtask from '@/views/addtask'
 
 
 Vue.use(Router);
@@ -47,6 +49,8 @@ const router = new Router({
         { path: 'password', component:Password, name: 'password' },
         { path: 'check', component:CheckList, name: 'check' },
         { path: 'realtime', component:Realtime, name: 'realtime' },
+        { path: 'walkby', component:Walkby, name: 'walkby' ,},
+        { path: 'walkby/addtask', component:Addtask, name: 'addtask' ,},
       ]
     },
     {

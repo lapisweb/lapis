@@ -54,7 +54,7 @@
       return {
         logining:this.$t('m.login.login'),
         active:false,
-        imgsrc:common.apiLink+'/validateCodeServlet',
+        imgsrc:common.apiLink+'/validateCodeServlet?aa='+ Math.random(),
         account: '',
         password: '',
         pin:'',
@@ -83,7 +83,7 @@
             if(response.body.code==0){
               window.localStorage.setItem('userdata',JSON.stringify(response.body.user.dept));
               window.localStorage.setItem('user',JSON.stringify(response.body.user.loginName));
-              location.href="./#/";
+              this.$router.push('/');
             }
           }
         })
@@ -92,7 +92,8 @@
         })
       },
       qiehuan() {
-        this.imgsrc=this.imgsrc+'?aa='+Math.random()
+        this.imgsrc=common.apiLink+'/validateCodeServlet?aa='+ Math.random();
+        console.log(this.imgsrc)
       }
     },
   }

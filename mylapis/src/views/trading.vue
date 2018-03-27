@@ -20,9 +20,7 @@
         </li>
         <li>
           <p>{{$t('m.deal.daterange')}}</p>
-          <DatePicker type="date" placement="bottom-start" placeholder="Start date" style="width: 90px" @on-change="startdate"></DatePicker>
-          <span>to</span>
-          <DatePicker type="date" placement="bottom-start" placeholder="End date" style="width: 90px" @on-change="enddate"></DatePicker>
+          <DatePicker type="daterange" split-panels placeholder="Select date" style="width: 200px" @on-change="startenddate"></DatePicker>
         </li>
         <li>
           <p>{{$t('m.deal.billstate')}}</p>
@@ -72,8 +70,7 @@
         tel:'',
         rangedate:[],
         loading:false,
-        starttime:'',
-        endtime:'',
+        datearray:[],
         billstatus:[
           {
             value:1,
@@ -177,6 +174,8 @@
     },
     methods: {
       searchtrade(){
+        let starttime=this.datearray[0];
+        let endtime=this.datearray[1];
         this.loading=true;
         this.$http({
           url:common.apiLink+'/biz/tradeView/findByPage.do',
@@ -187,8 +186,8 @@
               operatorId:this.operator,
               tradeType:this.tradetype,
               billState:this.billstate,
-              startTime:this.starttime,
-              endTime:this.endtime,
+              startTime:starttime,
+              endTime:endtime,
               orderByClause :'trade_date desc'
             },
             "limit":10,
@@ -216,6 +215,7 @@
           url:common.apiLink+'/biz/tradeView/findByPage.do',
           body:{
             "conditions": {
+              orderByClause :'trade_date desc'
             },
             "limit":10,
             "page": page
@@ -230,11 +230,8 @@
           this.loading=false;
         })
       },
-      startdate(date){
-        this.starttime=date;
-      },
-      enddate(date){
-        this.endtime=date;
+      startenddate(date){
+        this.datearray=date;
       },
       exportData () {
         this.$refs.table.exportCsv({

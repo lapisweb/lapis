@@ -147,11 +147,17 @@
                         </Col>
                         <Col span="7">
                           <span class="expand-key">{{$t('m.open.additionfeetype')}}: </span>
-                          <span class="expand-value">{{item.additionalFeeType}}</span>
+                          <span class="expand-value">{{item.additionalFeeType==0?$t('m.open.additiontypelabel1'):$t('m.open.additiontypelabel2')}}</span>
                         </Col>
                         <Col span="7">
                           <span class="expand-key">{{$t('m.open.additionfeemethod')}}: </span>
-                          <span class="expand-value">{{item.additionalFeeDeductionMode}}</span>
+                          <span class="expand-value" v-if="item.additionalFeeDeductionMode==0">{{$t('m.open.additionmethodlabel1')}}</span>
+                          <span class="expand-value" v-if="item.additionalFeeDeductionMode==1">{{$t('m.open.additionmethodlabel2')}}</span>
+                          <span class="expand-value" v-if="item.additionalFeeDeductionMode==2">{{$t('m.open.additionmethodlabel3')}}</span>
+                          <span class="expand-value" v-if="item.additionalFeeDeductionMode==3">{{$t('m.open.additionmethodlabel4')}}</span>
+                          <span class="expand-value" v-if="item.additionalFeeDeductionMode==4">{{$t('m.open.additionmethodlabel5')}}</span>
+                          <span class="expand-value" v-if="item.additionalFeeDeductionMode==5">{{$t('m.open.additionmethodlabel6')}}</span>
+                          <span class="expand-value" v-if="item.additionalFeeDeductionMode==6">{{$t('m.open.additionmethodlabel7')}}</span>
                         </Col>
                         <Col span="7">
                           <span class="expand-key">{{$t('m.open.feetime')}}: </span>
@@ -342,6 +348,7 @@
           {
             title: this.$t('m.customerinfo.label9'),
             key: 'status',
+            width:'160px',
             render: (h, params) => {
               const row = params.row;
               let color = row.status;
@@ -527,7 +534,7 @@
                   idcard:val.identityCode,
                   tel:val.telephone,
                   opendate:val.openDate,
-                  customertype:val.customerTypeCode,
+                  customertype:val.customerType.customerTypeName,
                   debt:val.debt.currentDebt,
                   meterno:val.meter.meterNumber,
                   address:val.physicalAddress,
@@ -548,7 +555,7 @@
                   idcard:val.identityCode,
                   tel:val.telephone,
                   opendate:val.openDate,
-                  customertype:val.customerTypeCode,
+                  customertype:val.customerType.customerTypeName,
                   meterno:val.meter.meterNumber,
                   address:val.physicalAddress,
                   status:val.state,
@@ -568,7 +575,7 @@
                   idcard:val.identityCode,
                   tel:val.telephone,
                   opendate:val.openDate,
-                  customertype:val.customerTypeCode,
+                  customertype:val.customerType.customerTypeName,
                   meterno:val.meter.meterNumber,
                   address:val.physicalAddress,
                   status:val.state,
@@ -588,7 +595,7 @@
                   idcard:val.identityCode,
                   tel:val.telephone,
                   opendate:val.openDate,
-                  customertype:val.customerTypeCode,
+                  customertype:val.customerType.customerTypeName,
                   meterno:val.meter.meterNumber,
                   address:val.physicalAddress,
                   status:val.state,
@@ -636,7 +643,7 @@
                   idcard:val.identityCode,
                   tel:val.telephone,
                   opendate:val.openDate,
-                  customertype:val.customerTypeCode,
+                  customertype:val.customerType.customerTypeName,
                   debt:val.debt.currentDebt,
                   meterno:val.meter.meterNumber,
                   address:val.physicalAddress,
@@ -657,7 +664,7 @@
                   idcard:val.identityCode,
                   tel:val.telephone,
                   opendate:val.openDate,
-                  customertype:val.customerTypeCode,
+                  customertype:val.customerType.customerTypeName,
                   meterno:val.meter.meterNumber,
                   address:val.physicalAddress,
                   status:val.state,
@@ -677,7 +684,7 @@
                   idcard:val.identityCode,
                   tel:val.telephone,
                   opendate:val.openDate,
-                  customertype:val.customerTypeCode,
+                  customertype:val.customerType.customerTypeName,
                   meterno:val.meter.meterNumber,
                   address:val.physicalAddress,
                   status:val.state,
@@ -697,7 +704,7 @@
                   idcard:val.identityCode,
                   tel:val.telephone,
                   opendate:val.openDate,
-                  customertype:val.customerTypeCode,
+                  customertype:val.customerType.customerTypeName,
                   meterno:val.meter.meterNumber,
                   address:val.physicalAddress,
                   status:val.state,

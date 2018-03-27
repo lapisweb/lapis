@@ -19,9 +19,7 @@
             </Col>
             <Col :sm={span:24} :md="{span:12}" :lg="{span:9}" style="margin-bottom: 15px">
               <span>{{$t('m.deal.daterange')}}</span>
-              <DatePicker  type="date" placement="bottom-start"  style="width: 140px" @on-change="startdate"></DatePicker>
-              <span>to</span>
-              <DatePicker type="date" placement="bottom-start"  style="width: 140px" @on-change="enddate"></DatePicker>
+              <DatePicker type="daterange" placement="bottom-start" split-panels placeholder="Select date" style="width: 200px" @on-change="startenddate"></DatePicker>
             </Col>
               <Button type="primary" icon="ios-search" style="margin-bottom: 15px" @click="searchmeter">{{$t('m.common.query')}}</Button>
           </Row>
@@ -92,8 +90,7 @@
         qiehuan1:false,
         stskey:'',
         metertotal:0,
-        starttime:'',
-        endtime:'',
+        datearray:[],
         loading:false,
         meterid:'',
         index:'',
@@ -204,37 +201,18 @@
           this.yes=true;
         }
       },
-      //分页
-      changePage:function (page) {
-        this.loading=true;
-        this.$http({
-          url:common.apiLink+'/biz/meterStock/findByPage.do',
-          body: {conditions: {meterNum:this.querymeterno,startTime:this.starttime,endTime:this.endtime},"limit": 10,
-            "page": page},
-          credentials:true,
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-        }).then((response) => {
-          this.meterdata=response.body.pageInfo.list;
-          this.loading=false;
-        })
-      },
       //日期选项
-      startdate(date){
-        this.starttime=date;
-      },
-      enddate(date){
-        this.endtime=date;
+      startenddate(date){
+        this.datearray=date;
       },
       //查询页面搜索按钮
       searchmeter(){
+        let starttime=this.datearray[0];
+        let endtime=this.datearray[1];
         this.loading=true;
         this.$http({
           url:common.apiLink+'/biz/meterStock/findByPage.do',
-          body: {conditions: {meterNum:this.querymeterno,startTime:this.starttime,endTime:this.endtime},"limit": 10,
-            "page": 1},
+          body: {conditions: {meterNum:this.querymeterno,startTime:starttime,endTime:endtime},"limit": 10, "page": 1},
           credentials:true,
           method: 'POST',
           headers: {
@@ -242,6 +220,25 @@
           },
         }).then((response) => {
           this.metertotal=parseInt(response.body.pageInfo.total);
+          this.meterdata=response.body.pageInfo.list;
+          this.loading=false;
+        })
+      },
+      //分页
+      changePage:function (page) {
+        let starttime=this.datearray[0];
+        let endtime=this.datearray[1];
+        this.loading=true;
+        this.$http({
+          url:common.apiLink+'/biz/meterStock/findByPage.do',
+          body: {conditions: {meterNum:this.querymeterno,startTime:starttime,endTime:endtime},"limit": 10,
+            "page": page},
+          credentials:true,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        }).then((response) => {
           this.meterdata=response.body.pageInfo.list;
           this.loading=false;
         })

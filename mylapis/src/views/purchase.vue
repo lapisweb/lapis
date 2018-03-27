@@ -28,7 +28,7 @@
             <p v-if="traderecord!='{}'">
               <span>{{$t('m.customerinfo.lastdate')}}:{{traderecord.tradeDate}}</span>
               <span>{{$t('m.customerinfo.lastmoney')}}:{{traderecord.paymentAmount}}</span>
-              <span>{{$t('m.customerinfo.lastaddifee')}}:{{traderecord.totalFee}}</span>
+              <span>{{$t('m.customerinfo.lastaddifee')}}:{{traderecord.paymentAmount-traderecord.purchaseAmount}}</span>
               <br>
               <span>{{$t('m.customerinfo.lastrealmoney')}}:{{traderecord.purchaseAmount}}</span>
               <span>{{$t('m.customerinfo.lastrealvolum')}}:{{traderecord.purchaseVolume}}</span>
@@ -49,11 +49,11 @@
           </div>
         </div>
         <div style="margin:10px 0">
-          <p style="line-height:30px;color:#888;">{{$t('m.purchase.money')}}($)/购买量(m³)</p>
+          <p style="line-height:30px;color:#888;">{{$t('m.purchase.purchase')}}($)/(m³)</p>
           <InputNumber v-model="pregoumai" style="width:220px"></InputNumber>
           <RadioGroup v-model="paytype" style="margin-left: 15px;">
-            <Radio label="按金额购买" ></Radio>
-            <Radio label="按量购买"></Radio>
+            <Radio :label="$t('m.purchase.amount')" ></Radio>
+            <Radio :label="$t('m.purchase.volume')"></Radio>
           </RadioGroup>
         </div>
         <Button :disabled="noclick" type="success" @click="goumai">&nbsp; {{$t('m.purchase.purchase')}} &nbsp;</Button>
@@ -69,14 +69,14 @@
           :styles="{top:'200px'}"
           @on-ok="confirm">
           <p>{{$t('m.customerinfo.lastmoney')}} <span>{{prvepurchase.paymentAmount}}</span></p>
-          <p>{{$t('m.customerinfo.lastaddifee')}} <span>$ {{prvepurchase.pureFeeAmount}}</span></p>
+          <p>{{$t('m.customerinfo.lastaddifee')}} <span>$ {{prvepurchase.paymentAmount-prvepurchase.purchaseAmount}}</span></p>
           <p>{{$t('m.customerinfo.lastrealmoney')}} <span>$ {{prvepurchase.purchaseAmount}}</span></p>
           <p>{{$t('m.customerinfo.lastrealvolum')}} <span>{{prvepurchase.purchaseVolume}}m³</span></p>
         </Modal>
       </div>
     </div>
     <my-footer1></my-footer1>
-    <section class="purinvoice" id="purprint">
+    <section class="purinvoice" id="purprint" v-show="print">
       <div class="incontents">
         <h3>购买发票</h3>
         <p>发票编号: <span>2017111501</span></p>
@@ -86,54 +86,54 @@
             <p>客户信息</p>
           </li>
           <li>
-            <span>Name:</span> <span>{{invoicepurdata.customerName}}</span>
+            <span>Name:</span> <span>姓名</span>
           </li>
           <li>
-            <span>电话:</span><span>{{invoicepurdata.telephone}}</span>
+            <span>电话:</span><span>电话</span>
           </li>
           <li>
-            <span>身份证:</span><span>{{invoicepurdata.identityCode}}</span>
+            <span>身份证:</span><span>身份证</span>
           </li>
           <li>
             <span>Description</span> <span> </span>
           </li>
           <li>
-            <span>Charge volume:</span><span>{{invoicepurdata.telephone}}</span>
+            <span>Charge volume:</span><span>ssss</span>
           </li>
           <li>
-            <span>Original debt:</span><span>{{invoicepurdata.telephone}}</span>
+            <span>Original debt:</span><span>sss</span>
           </li>
           <li>
-            <span>Debt payment:</span><span>{{invoicepurdata.telephone}}</span>
+            <span>Debt payment:</span><span>sss</span>
           </li>
           <li>
-            <span>Remaining debt:</span><span>{{invoicepurdata.telephone}}</span>
+            <span>Remaining debt:</span><span>sss</span>
           </li>
           <li>
-            <span>Additional fee:</span> <span>{{invoicepurdata.telephone}}</span>
+            <span>Additional fee:</span> <span>sss</span>
           </li>
           <li>
-            <span>Current purchase date:</span><span>{{invoicepurdata.telephone}}</span>
+            <span>Current purchase date:</span><span>sss</span>
           </li>
           <li>
-            <span>Last purchase date:</span><span>{{invoicepurdata.telephone}}</span>
+            <span>Last purchase date:</span><span>sss</span>
           </li>
           <li>
-            <span>Days from last purchase date:</span> <span>{{invoicepurdata.telephone}}</span>
+            <span>Days from last purchase date:</span> <span>sss</span>
           </li>
           <li>
-            <span>All buy:</span><span>{{invoicepurdata.telephone}}</span>
+            <span>All buy:</span><span>sss</span>
           </li>
           <li>
-            <span>All consumption:</span> <span>{{invoicepurdata.telephone}}</span>
+            <span>All consumption:</span> <span>sss</span>
           </li>
         </ul>
         <div class="total">
-          <p>操作员: <span>{{invoicepurdata.loginName}}</span></p>
+          <p>操作员: <span>11</span></p>
         </div>
       </div>
     </section>
-    <section class="purinvoice" id="fipagprint">
+    <section class="purinvoice" id="fipagprint" v-show="fiprint">
       <div class="incontents">
         <h3>购买发票</h3>
         <p>发票编号: <span>2017111501</span></p>
@@ -149,7 +149,7 @@
             <span>Telephone</span><span>18536984235</span>
           </li>
           <li>
-            <span>Address</span><span>zhejianghangzhou</span>
+            <span>Address</span><span>sdsafdsaf</span>
           </li>
         </ul>
         <p>购买明细</p>
@@ -196,7 +196,10 @@
         traderecord:{},
         loading:false,
         noclick:true,
-        paytype:"按金额购买",
+        paytype:this.$t('m.purchase.amount'),
+        print:false,
+        fiprint:false,
+        invoicepurdata:{},
 
         //用户信息列表
         //表头定义
@@ -269,7 +272,6 @@
         ],
         //表中信息
         customerdata: [],
-        invoicepurdata:{},
         columns1: [
           {
             title: '名称',
@@ -345,6 +347,7 @@
           },
 
         }).then((response) => {
+          console.log(response.body.pageInfo.list);
           this.customertotal=parseInt(response.body.pageInfo.total);
           response.body.pageInfo.list.forEach((val,index)=>{
             if(val.debt&&val.additionalFees){
@@ -356,7 +359,7 @@
                   idcard:val.identityCode,
                   tel:val.telephone,
                   opendate:val.openDate,
-                  customertype:val.customerTypeCode,
+                  customertype:val.customerType.customerTypeName,
                   debt:val.debt.currentDebt,
                   meterno:val.meter.meterNumber,
                   address:val.physicalAddress,
@@ -377,7 +380,7 @@
                   idcard:val.identityCode,
                   tel:val.telephone,
                   opendate:val.openDate,
-                  customertype:val.customerTypeCode,
+                  customertype:val.customerType.customerTypeName,
                   meterno:val.meter.meterNumber,
                   address:val.physicalAddress,
                   status:val.state,
@@ -396,7 +399,7 @@
                   idcard:val.identityCode,
                   tel:val.telephone,
                   opendate:val.openDate,
-                  customertype:val.customerTypeCode,
+                  customertype:val.customerType.customerTypeName,
                   meterno:val.meter.meterNumber,
                   address:val.physicalAddress,
                   status:val.state,
@@ -416,7 +419,7 @@
                   idcard:val.identityCode,
                   tel:val.telephone,
                   opendate:val.openDate,
-                  customertype:val.customerTypeCode,
+                  customertype:val.customerType.customerTypeName,
                   meterno:val.meter.meterNumber,
                   address:val.physicalAddress,
                   status:val.state,
@@ -462,7 +465,7 @@
                   idcard:val.identityCode,
                   tel:val.telephone,
                   opendate:val.openDate,
-                  customertype:val.customerTypeCode,
+                  customertype:val.customerType.customerTypeName,
                   debt:val.debt.currentDebt,
                   meterno:val.meter.meterNumber,
                   address:val.physicalAddress,
@@ -483,7 +486,7 @@
                   idcard:val.identityCode,
                   tel:val.telephone,
                   opendate:val.openDate,
-                  customertype:val.customerTypeCode,
+                  customertype:val.customerType.customerTypeName,
                   meterno:val.meter.meterNumber,
                   address:val.physicalAddress,
                   status:val.state,
@@ -503,7 +506,7 @@
                   idcard:val.identityCode,
                   tel:val.telephone,
                   opendate:val.openDate,
-                  customertype:val.customerTypeCode,
+                  customertype:val.customerType.customerTypeName,
                   meterno:val.meter.meterNumber,
                   address:val.physicalAddress,
                   status:val.state,
@@ -523,7 +526,7 @@
                   idcard:val.identityCode,
                   tel:val.telephone,
                   opendate:val.openDate,
-                  customertype:val.customerTypeCode,
+                  customertype:val.customerType.customerTypeName,
                   meterno:val.meter.meterNumber,
                   address:val.physicalAddress,
                   status:val.state,
@@ -539,9 +542,9 @@
       },
       confirm(){
         let purchaseType;
-        if(this.paytype=="按金额购买"){
+        if(this.paytype==this.$t('m.purchase.amount')){
           purchaseType='1';
-        }else if(this.paytype=="按量购买"){
+        }else if(this.paytype==this.$t('m.purchase.volume')){
           purchaseType='0';
         }
         let prepurchase=this.pregoumai.toString();
@@ -558,14 +561,14 @@
             'Content-Type': 'application/json'
           },
         }).then((response) => {
-          console.log(response.body,'确认购买');
           this.invoicepurdata=response.body.tradeRecord;
+          console.log(this.invoicepurdata,1232124);
           this.tokendata=response.body.tradeRecord.token.replace(/(\d{4})/g,'$1 ').replace(/\s*$/,'');
           if(response.body.code==0){
             this.token=true;
             this.$Modal.success({
               title: 'Purchase',
-              content:'<p>Warm Prompt</p><p>购买成功</p>',
+              content:'<p>Warm Prompt</p><p>'+this.$t('m.purchase.tip5')+'</p>',
               onOk: () => {
                 this.printpur();
               },
@@ -595,9 +598,9 @@
       },
       goumai(){
         let purchaseType;
-        if(this.paytype=="按金额购买"){
+        if(this.paytype==this.$t('m.purchase.amount')){
           purchaseType='1';
-        }else if(this.paytype=="按量购买"){
+        }else if(this.paytype==this.$t('m.purchase.volume')){
           purchaseType='0';
         }
         let prepurchase=this.pregoumai.toString();
@@ -614,15 +617,14 @@
             'Content-Type': 'application/json'
           },
         }).then((response) => {
-            console.log(response.body,'购买前');
             if(response.body.code==502){
-              const content = '<p>充值金额太小</p><p>最低充值金额为 $'+response.body.minAmount+'</p><p>最低充值量为 '+response.body.minVolume+' m³</p>';
+              const content = '<p>'+this.$t('m.purchase.tip1')+'</p><p>'+this.$t('m.purchase.tip2')+' $'+response.body.minAmount+'</p><p>'+this.$t('m.purchase.tip4')+' '+response.body.minVolume+' m³</p>';
               this.$Modal.error({
                 title: 'Notice',
                 content: content
               });
             }else if(response.body.code==503){
-              const content = '<p>充值量太小</p><p>最低充值量为'+response.body.minVolume+' m³</p>';
+              const content = '<p>'+this.$t('m.purchase.tip3')+'</p><p>'+this.$t('m.purchase.tip4')+' '+response.body.minVolume+' m³</p>';
               this.$Modal.error({
                 title: 'Notice',
                 content: content
@@ -654,7 +656,6 @@
                 this.fipagprintinvoice()
               }
             }
-
           }else{
             this.mypurprint()
           }
@@ -665,7 +666,6 @@
         console.log(22222222)
       },
       fipagprint(){
-        console.log(1111144444444)
         var strBodyStyle=`
         <style>
             *{
@@ -790,7 +790,7 @@
         var height=document.querySelector("#purprint").offsetHeight;
         var width=document.querySelector("#purprint").offsetWidth;
         LODOP.PRINT_INIT("aaaaaaaaa");
-        LODOP.SET_PRINT_PAGESIZE(1,width,2200,"");
+        LODOP.SET_PRINT_PAGESIZE(1,'250mm','230mm');
 
         LODOP.ADD_PRINT_HTM(20, 20, width,"100%",strFormHtml);
         var patt = /AiBao A-80USH/i;//先由用户设置
@@ -811,9 +811,6 @@
   }
 </script>
 <style>
-  .purinvoice{
-    display: none;
-  }
   .vertical-center-modal {
     display: flex;
     align-items: center;

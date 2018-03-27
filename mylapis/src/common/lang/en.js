@@ -15,6 +15,7 @@ export default{
       tips:'Notice',
       confirm:'confirm',
       print:'Print',
+      sure:'Are you sure to delete it?'
     },
     header:{
       uploadphoto:'Upload Photo',
@@ -65,6 +66,13 @@ export default{
     purchase:{
       money:'Purchased Amount',
       purchase:'Purchase',
+      volume:'Purchase by volume',
+      amount:'Purchase by amount',
+      tip1:'充值金额太小',
+      tip2:'最低充值金额为',
+      tip3:'充值量太小',
+      tip4:'最低充值量为',
+      tip5:'购买成功'
     },
     cancel:{
       ablecancel:'Refundable Purchase Record',
@@ -205,6 +213,25 @@ export default{
       oldpass:'old password',
       newpass:'new password',
       confirmpass:'confirm password',
-    }
+    },
+    debt:{
+      addamount:'Amount',
+      reducemethod:'Debt Discount Way',
+      reduceamount:'Debt Discount Amount',
+      reducepur:'Debt Discount Percentage',
+      description:'Note',
+      repayamount:'Debt Payment Amount',
+      repay:'Debt Payment',
+      add:'Add Debt',
+      reduce:'Debt Discount',
+      label1:'By Amount',
+      label2:'By Percentage',
+      message1:'Add Debt Successfully',
+      message2:'Add Debt Failed',
+      message3:'Debt Discount Successfully',
+      message4:'Debt Discount Failed',
+      message5:'Debt Payment Successfully',
+      message6:'Debt Payment Failed',
+      }
   }
 }

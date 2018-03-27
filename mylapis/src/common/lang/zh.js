@@ -15,6 +15,7 @@ export default {
       import: '导出',
       print:'打印',
       tips:'温馨提示',
+      sure:'确定删除吗?',
     },
     header: {
       uploadphoto: '上传头像',
@@ -65,6 +66,13 @@ export default {
     purchase: {
       money: '购买金额',
       purchase: '购买',
+      volume:'按量购买',
+      amount:'按金额购买',
+      tip1:'充值金额太小',
+      tip2:'最低充值金额为',
+      tip3:'充值量太小',
+      tip4:'最低充值量为',
+      tip5:'购买成功'
     },
     cancel: {
       ablecancel: '可退购订单',

@@ -5,23 +5,25 @@ import App from './App'
 import router from './router'
 import VueI18n from 'vue-i18n'
 import echarts from 'echarts'
+import vueGooglemap from 'vue2-googlemap';
 
-import iView from 'iview'
-import VueResource from 'vue-resource'
-import 'iview/dist/styles/iview.css'
+import iView from 'iview';
+import VueResource from 'vue-resource';
+import 'iview/dist/styles/iview.css';
 import zh from 'iview/dist/locale/zh-CN';
 import en from 'iview/dist/locale/en-US';
 import ggheader from './components/index.vue';
 import footer from './components/footer.vue';
 import footer1 from './components/footer1.vue';
-import ien from './common/lang/en'
-import izh from './common/lang/zh'
+import ien from './common/lang/en';
+import izh from './common/lang/zh';
 
 Vue.prototype.$echarts = echarts;
 
 Vue.use(VueI18n);
 Vue.use(VueResource);
 Vue.use(iView);
+// Vue.use(vueGooglemap);
 
 if(window.localStorage.language){
   Vue.config.lang = window.localStorage.language;
@@ -40,6 +42,13 @@ Vue.component('my-header',ggheader);
 Vue.component('my-footer',footer);
 Vue.component('my-footer1',footer1);
 Vue.config.productionTip = false;
+
+// vueGooglemap.initGooglemap({
+//   key: 'YOUR_KEY',
+//   language: 'zh-CN',
+//   v: '3',
+// });
+
 
 function deleteEmptyProp(json){
   for (var item in json) {
@@ -79,4 +88,5 @@ new Vue({
   router,
   template: '<App/>',
   components: { App }
-}).$mount('#app')
+}).$mount('#app');
+
