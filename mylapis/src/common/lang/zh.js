@@ -16,8 +16,13 @@ export default {
       print:'打印',
       tips:'温馨提示',
       sure:'确定删除吗?',
+      install1:'检测到你未安装C-Lodop打印程序，请',
+      install2:'点击此处',
+      install3:'安装',
+      select:'请先选择客户'
     },
     header: {
+      print:'打印机设置',
       uploadphoto: '上传头像',
       changepassword: '修改密码',
       logout: '退出',
@@ -72,7 +77,8 @@ export default {
       tip2:'最低充值金额为',
       tip3:'充值量太小',
       tip4:'最低充值量为',
-      tip5:'购买成功'
+      tip5:'购买成功',
+      other:'其他扣费(附加费+债务+税)',
     },
     cancel: {
       ablecancel: '可退购订单',
@@ -189,6 +195,10 @@ export default {
       deptmonthsale: '部门某月销售',
       depteverymonthsale: '部门历史月销售',
       deptoperatorsale: '部门内各操作员月销售',
+      monthsale:'历史月销售',
+      total:'月售总金额',
+      recharge:'月充值金额',
+      amount:'月充值量',
     },
     meter: {
       single:'单个入库',
@@ -207,6 +217,12 @@ export default {
       tel:'电话号码应为数字',
       district:'行政区域不能为空',
       meter:'表号不能为空',
+      newpsw:'新密码不能为空',
+      oldpsw:'旧密码不能为空',
+      psw:'密码不能为空',
+      pin:'验证码不能为空',
+      two:'两次密码不一致',
+      confirmpsw:'请再次输入密码'
     },
     password:{
       oldpass:'旧密码',

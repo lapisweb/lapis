@@ -43,7 +43,6 @@
   </div>
 </template>
 <script>
-  import common from '../kits/common.js';
   export default {
     data () {
       return {

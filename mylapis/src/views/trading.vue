@@ -7,30 +7,30 @@
         </li>
         <li>
           <p>{{$t('m.deal.tradingtype')}}</p>
-          <Select v-model="tradetype" style="width:200px">
+          <Select clearable v-model="tradetype" style="width:200px">
             <Option v-for="item in tradetypedata" :value="item.value" :key="item.value">{{ item.label }}</Option>
           </Select>
         </li>
         <li>
           <p>{{$t('m.customerinfo.info')}}</p>
-          <Input v-model="name"  style="width: 96px" :placeholder="$t('m.customerinfo.label1')"></Input>
-          <Input v-model="tel"  style="width: 98px" :placeholder="$t('m.customerinfo.label3')"></Input>
+          <Input clearable v-model="name"  style="width: 96px" :placeholder="$t('m.customerinfo.label1')"></Input>
+          <Input clearable v-model="tel"  style="width: 98px" :placeholder="$t('m.customerinfo.label3')"></Input>
           <div style="height:6px;" ></div>
           <Input v-model="idcard"  style="width: 200px" :placeholder="$t('m.customerinfo.label2')"></Input>
         </li>
         <li>
           <p>{{$t('m.deal.daterange')}}</p>
-          <DatePicker type="daterange" split-panels placeholder="Select date" style="width: 200px" @on-change="startenddate"></DatePicker>
+          <DatePicker clearable type="daterange" split-panels placeholder="Select date" style="width: 200px" @on-change="startenddate"></DatePicker>
         </li>
         <li>
           <p>{{$t('m.deal.billstate')}}</p>
-          <Select v-model="billstate" style="width:200px">
+          <Select clearable v-model="billstate" style="width:200px">
             <Option v-for="item in billstatus" :value="item.value" :key="item.value">{{ item.label }}</Option>
           </Select>
         </li>
         <li>
           <p>{{$t('m.deal.operator')}}</p>
-          <Select v-model="operator" style="width:200px">
+          <Select clearable v-model="operator" style="width:200px">
             <Option v-for="item in alloperator" :value="item.id" :key="item.id">{{ item.loginName }}</Option>
           </Select>
         </li>
@@ -40,6 +40,7 @@
       </ul>
     </div>
     <div class="fiterRight">
+      <DatePicker type="daterange" :options="options2" placement="bottom-start" placeholder="Select date" split-panels size="large" style="width: 200px" @on-change="datechange"></DatePicker>
       <Button type="primary" size="large" @click="exportData()"><Icon type="ios-download-outline"></Icon> {{$t('m.common.import')}}</Button>
       <!--<Button type="primary" size="large" @click="exportData(2)"><Icon type="ios-download-outline"></Icon> 导出所有债务信息</Button>-->
       <!--<Button type="primary" size="large" @click="exportData(3)"><Icon type="ios-download-outline"></Icon> 导出所有购买记录</Button>-->
@@ -55,7 +56,8 @@
   </div>
 </template>
 <script>
-  import common from '../kits/common.js';
+  let apiLinks='http://www.laison.com:8080/';
+  // let apiLinks='/api/';
   export default {
     data() {
       return {
@@ -71,6 +73,7 @@
         rangedate:[],
         loading:false,
         datearray:[],
+        importdate:[],
         billstatus:[
           {
             value:1,
@@ -130,6 +133,37 @@
         alloperator: [
 
         ],
+        options2: {
+          shortcuts: [
+            {
+              text: '1 week',
+              value () {
+                const end = new Date();
+                const start = new Date();
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                return [start, end];
+              }
+            },
+            {
+              text: '1 month',
+              value () {
+                const end = new Date();
+                const start = new Date();
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                return [start, end];
+              }
+            },
+            {
+              text: '3 months',
+              value () {
+                const end = new Date();
+                const start = new Date();
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                return [start, end];
+              }
+            }
+          ]
+        },
         models2: '',
         tradingdata:[],
         tradingcol: [
@@ -178,7 +212,7 @@
         let endtime=this.datearray[1];
         this.loading=true;
         this.$http({
-          url:common.apiLink+'/biz/tradeView/findByPage.do',
+          url:'biz/tradeView/findByPage.do',
           body:{
             "conditions": {
               customerIdCode:this.idcard,
@@ -212,7 +246,7 @@
       changePage(page) {
         this.loading=true;
         this.$http({
-          url:common.apiLink+'/biz/tradeView/findByPage.do',
+          url:'biz/tradeView/findByPage.do',
           body:{
             "conditions": {
               orderByClause :'trade_date desc'
@@ -233,16 +267,37 @@
       startenddate(date){
         this.datearray=date;
       },
+      datechange(date){
+        this.importdate=date;
+      },
       exportData () {
-        this.$refs.table.exportCsv({
-          filename: 'The trade data'
-        });
+        if(this.importdate[0]==undefined){
+          this.importdate[0]='';
+        }
+        if(this.importdate[1]==undefined){
+          this.importdate[1]='';
+        }
+        window.open(apiLinks+'biz/tradeView/exportExcel.do?startTime='+this.importdate[0]+'&endTime='+this.importdate[1]+'&orderByClause=trade_date desc');
+        // this.$http({
+        //   url:'biz/tradeView/exportExcel.do',
+        //   body:'startTime=2017-09-01&orderByClause=trade_date desc',
+        //   credentials:true,
+        //   method: 'POST',
+        //   headers: {
+        //     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        //   },
+        // }).then((response) => {
+        //   console.log(response.body)
+        // })
+        // this.$refs.table.exportCsv({
+        //   filename: 'The trade data'
+        // });
       }
     },
     created(){
       //获取操作员
       this.$http({
-        url:common.apiLink+'/sys/user/listAllOperator.do',
+        url:'sys/user/listAllOperator.do',
         body:{
 
         },

@@ -16,7 +16,7 @@
               <img src="../assets/img/h-kaihu.png" alt="" class="left-icon">
               <div class="right-word">
                 <p class="aa">{{$t('m.main.user')}}</p>
-                <h3>2,562,32</h3>
+                <h3>{{customertotal}}</h3>
               </div>
             </div>
           </a>
@@ -40,7 +40,7 @@
               <img src="../assets/img/hbiaoji.png" alt="" class="left-icon">
               <div class="right-word">
                 <p class="aa">{{$t('m.main.meter')}}</p>
-                <h3>5,000</h3>
+                <h3>{{metertotal}}</h3>
               </div>
             </div>
           </a>
@@ -95,7 +95,6 @@
   </div>
 </template>
 <script>
-  import common from '../kits/common.js';
   export default {
     name: 'index',
     data () {
@@ -120,6 +119,7 @@
         ],
         data8: [],
         customertotal:0,
+        metertotal:0,
       }
     },
     mounted(){
@@ -269,7 +269,7 @@
       },
       changePage(page) {
         this.$http({
-          url: common.apiLink + '/biz/customer/findByPage.do',
+          url:'biz/customer/findByPage.do',
           body: {
             "conditions": {
               orderByClause: "open_date desc",
@@ -290,7 +290,7 @@
     },
     created(){
       this.$http({
-        url:common.apiLink+'/biz/customer/findByPage.do',
+        url:'biz/customer/findByPage.do',
         body:{
           "conditions": {
             orderByClause :"open_date desc",
@@ -307,7 +307,18 @@
       }).then((response) => {
         this.customertotal=parseInt(response.body.pageInfo.total);
           this.data8=response.body.pageInfo.list;
-      })
+      });
+        this.$http({
+          url:'biz/meterStock/findByPage.do',
+          body: {conditions: {},"limit": 10, "page": 1},
+          credentials:true,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        }).then((response) => {
+          this.metertotal=parseInt(response.body.pageInfo.total);
+        })
     }
   }
 </script>

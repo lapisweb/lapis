@@ -1,5 +1,8 @@
 <template>
   <div>
+    <Alert v-if="install" closable show-icon style="position:absolute;z-index:10000;width:50%;top:100px;left:50%;margin-left:-25%;text-align: center">
+      {{ $t("m.common.install1")}} <a href="http://192.168.0.174/file/CLodop_Setup_for_Win32NT_3.029.exe">{{ $t("m.common.install2")}}</a> {{ $t("m.common.install3")}}
+    </Alert>
     <div class="h-content">
       <div class="steps">
         <Steps :current="current">
@@ -217,8 +220,10 @@
                     <InputNumber :disabled="right2" :max="100" v-model="additionalFeeDeductionRate" style="width: 185px"></InputNumber> %
                     <p class="hyyword">{{ $t("m.open.money") }}</p>
                     <InputNumber :disabled="right3"  v-model="additionalFeeDeductionAmount" style="width: 185px"></InputNumber> $
-                    <p class="hyyword">{{ $t("m.open.vat") }}</p>
-                    <InputNumber :disabled="right4" :max="100" v-model="additionalFeeVat" style="width: 185px"></InputNumber> %
+                    <div v-show="nofipag">
+                      <p class="hyyword">{{ $t("m.open.vat") }}</p>
+                      <InputNumber :disabled="right4" :max="100" v-model="additionalFeeVat" style="width: 185px"></InputNumber> %
+                    </div>
                   </div>
                 </div>
               </Modal>
@@ -268,47 +273,12 @@
                       <span class="expand-value">{{item.additionalFeeStartDate}}</span>
                       </Col>
                       <div class="positionedit">
-                        <Button type="success" @click="editzi(key)"><i class="iconfont icon-75bianji"></i></Button>
                         <Button type="error" @click="deletezi(key)"><i class="iconfont icon-105"></i></Button>
                       </div>
                     </Row>
                   </div>
                 </div>
               </div>
-              <Modal
-                title="Title"
-                v-model="editfujiafei"
-                :closable="false"
-                @on-ok="editfeeok"
-                @on-cancel="editfeecancel"
-                :mask-closable="false">
-                <div style="height: 240px;width:100%">
-                  <div style="float: left;margin-right: 20px;">
-                    <p class="hyyword">{{ $t("m.open.additionfeename") }}</p>
-                    <Input v-model="cusaddifee1" placeholder="" style="width: 200px"></Input>
-                    <p class="hyyword">{{ $t("m.open.additionfeetype") }}</p>
-                    <Select clearable v-model="cusaddifee2" style="width:200px" @on-change="addifeetype">
-                      <Option v-for="item in additiontypedata" :value="item.value" :key="item.value">{{ item.label }}</Option>
-                    </Select>
-                    <p class="hyyword">{{ $t("m.open.additionfeemethod") }}</p>
-                    <Select clearable v-model="cusaddifee3" style="width:200px" @on-change="addifeemethod">
-                      <Option v-for="item in additionmethoddata" :value="item.value" :key="item.value">{{ item.label }}</Option>
-                    </Select>
-                    <p class="hyyword">{{ $t("m.open.starttime") }}</p>
-                    <DatePicker v-model="cusaddifee4" type="datetime" placeholder="Select date and time" style="width:200px;" @on-change="opendateedit"></DatePicker>
-                  </div>
-                  <div style="float: left">
-                    <p class="hyyword">{{ $t("m.open.feetime") }}</p>
-                    <InputNumber :disabled="right1"  v-model="cusaddifee5" style="width: 200px"></InputNumber>
-                    <p class="hyyword">{{ $t("m.open.percent") }}</p>
-                    <InputNumber :disabled="right2" :max="100" v-model="cusaddifee6" style="width: 185px"></InputNumber> %
-                    <p class="hyyword">{{ $t("m.open.money") }}</p>
-                    <InputNumber :disabled="right3"  v-model="cusaddifee7" style="width: 185px"></InputNumber> $
-                    <p class="hyyword">{{ $t("m.open.vat") }}</p>
-                    <InputNumber :disabled="right4" :max="100" v-model="cusaddifee8" style="width: 185px"></InputNumber> %
-                  </div>
-                </div>
-              </Modal>
             </div>
           </div>
           <div class="center3" v-if="current==4">
@@ -348,32 +318,69 @@
       </div>
     </div>
     <my-footer1></my-footer1>
-    <div class="incontent" id="print">
-      <h3>开户发票</h3>
+    <div class="openmain" id="smallopenfipag" v-show="false" v-if="kaihufapiao">
+      <div class="header">
+        <p class="dotted"></p>
+        <img src="../assets/img/fipag.jpg" alt="">
+        <p class="dotted2"></p>
+      </div>
+      <div class="f-title">
+        <p style="font-size: 18px;text-align: center;line-height: 28px;">Open Account</p>
+        <p style="text-align: center;margin-bottom: 10px;">{{invoicedata.name}}</p>
+        <p style="text-align: center;line-height: 18px;">Invoice No. <span>{{invoicedata.invoiceNumber}}</span></p>
+        <p style="text-align: center;line-height: 18px;margin-bottom: 8px;">{{invoicedata.tradeDate}}</p>
+      </div>
+      <div class="customer fbox">
+        <h3>CUSTOMER INFORMATION</h3>
+        <ul>
+          <li><span>name :</span> <span>{{invoicedata.customerName}}</span></li>
+          <li><span>Meter No. :</span> <span>{{incusdata.meter.meterNumber}}</span></li>
+          <li><span>Customer type:</span> <span>{{incusdata.customerType.customerTypeName}}</span></li>
+          <li><span>Id No. :</span> <span>{{invoicedata.identityCode}}</span></li>
+          <li><span>Telephone :</span> <span>{{invoicedata.telephone}}</span></li>
+          <li><span>Address :</span> <span>{{incusdata.physicalAddress}}</span></li>
+        </ul>
+      </div>
+      <div class="fbox">
+        <p style="text-align: center;line-height: 24px">Payment : <span>{{invoicedata.paymentAmount}}</span></p>
+      </div>
+      <div class="fbox">
+        <p style="text-align: center;line-height: 24px">Vendor : <span>{{invoicedata.loginName}}</span></p>
+      </div>
+      <p class="dotted"></p>
+    </div>
+    <div class="incontent" id="print" v-if="kaihufapiao">
+      <div style="height:65px;position: absolute;left:0;top:30px;">
+        <img style="height: 100%;" src="../assets/img/fipag.jpg" alt="">
+      </div>
       <div class="topinvoicehead">
         <div class="invoicehead">
-          <p>发票编号: <span>2017111501</span></p>
-          <p>创建日期: <span>2017/11/15</span> </p>
+          <h3>Open Account</h3>
+          <p>RECEIPT NO.: <span>{{invoicedata.invoiceNumber}}</span></p>
+          <p>Date: <span>{{invoicedata.tradeDate}}</span> </p>
         </div>
       </div>
       <div class="list">
         <ul class="left-invoice">
           <li>
-            <span>姓名:</span> <span>{{invoicedata.customerName}}</span>
+            <span>name :</span> <span>{{invoicedata.customerName}}</span>
           </li>
           <li>
-            <span>电话号:</span><span>{{invoicedata.telephone}}</span>
+            <span>CustomerType:</span><span>{{incusdata.customerType.customerTypeName}}</span>
           </li>
           <li>
-            <span>身份证号:</span><span>{{invoicedata.identityCode}}</span>
+            <span>Id No. :</span><span>{{invoicedata.identityCode}}</span>
           </li>
         </ul>
         <ul class="left-invoice">
           <li>
-            <span>表号:</span> <span>{{formValidateopen.meterno}}</span>
+            <span>Meter No.:</span> <span>{{invoicedata.tradeDate}}</span>
           </li>
           <li>
-            <span>客户类型</span><span>{{formValidateopen.customertypecode}}</span>
+            <span>Vending station:</span> <span>{{invoicedata.name}}</span>
+          </li>
+          <li>
+            <span>Address</span><span>{{invoicedata.physicalAddress}}</span>
           </li>
         </ul>
       </div>
@@ -381,22 +388,18 @@
         <tr>
           <th v-for="item in invoicelist">{{item.title}}</th>
         </tr>
-        <tr v-for="item in openinvoicedata">
-          <td>{{item.description}}</td>
-          <td>{{item.payment}}</td>
-          <td>{{item.taxrate}}</td>
-          <td>{{item.taxamount}}</td>
+        <tr>
+          <td>开户</td>
+          <td>${{invoicedata.paymentAmount}}</td>
         </tr>
       </table>
       <div class="total">
-        <p>total <span>$100</span></p>
         <p>操作员: <span>{{invoicedata.loginName}}</span></p>
       </div>
     </div>
   </div>
 </template>
 <script>
-  import common from '../kits/common.js';
   let myexpand={
     props: {
       row: Array
@@ -446,6 +449,7 @@
     data () {
       return {
         //数据定义
+        install:false,
         xiayibu:this.$t("m.open.next"),
         formValidateopen:{
           customertypecode:'',
@@ -470,7 +474,6 @@
         querycondition:'',
 
         addfujiafei:false,
-        editfujiafei:false,
         additiontype: '',
         additionmethod: '',
         stationcode:[],
@@ -499,6 +502,9 @@
         cusaddifee7:0,
         cusaddifee8:0,
         index:0,
+        kaihufapiao:false,
+        nofipag:true,
+        incusdata:{},
         //客户类型
         customerType: [],
         //站点信息
@@ -621,7 +627,7 @@
           },
           {
             title: this.$t('m.open.metercolumnstitle3'),
-            key: 'customerTypeCode'
+            key: 'customerTypeName'
           },
         ],
         //查询表的数据
@@ -636,7 +642,7 @@
           }],
           districtvalue:[{ required: true, message: this.$t('m.validation.district')}],
           meterno:[{ required: true, message: this.$t('m.validation.meter'), trigger: 'blur' }],
-          addition:[{ required: true, message: '不能为空', trigger: 'blur' }]
+          // addition:[{ required: true, message: '不能为空', trigger: 'blur' }]
         },
         invoicelist: [
           {
@@ -646,22 +652,6 @@
           {
             title: 'Payment',
             key: 'payment'
-          },
-          {
-            title: 'Tax Rate',
-            key: 'taxrate'
-          },
-          {
-            title: 'Tax Amount',
-            key: 'taxamount'
-          }
-        ],
-        openinvoicedata: [
-          {
-            description: 'Open Account',
-            payment: '$100',
-            taxrate: 0,
-            taxamount:0
           },
         ],
         invoicedata:{}
@@ -680,7 +670,7 @@
               if (this.current ==2) {
                 this.current = 2;
                 this.$http({
-                  url:common.apiLink+'/biz/customer/openAccount.do',
+                  url:'biz/customer/openAccount.do',
                   body: {
                     'customerTypeCode':this.formValidateopen.customertypecode,
                     'customerName':this.formValidateopen.name,
@@ -701,7 +691,7 @@
                   this.invoicedata=response.body.tradeRecord;
                   if(response.body.msg){
                     this.opensuccess=true;
-    //              location.href="/#/index/invoice"
+                    this.kaihufapiao=true;
                   }else{
                     this.$Message.error(response.body.errors);
                   }
@@ -716,7 +706,7 @@
               if (this.current ==3) {
                 this.current = 3;
                 this.$http({
-                  url:common.apiLink+'/biz/customer/openAccount.do',
+                  url:'biz/customer/openAccount.do',
                   body: {
                     'customerTypeCode':this.formValidateopen.customertypecode,
                     'customerName':this.formValidateopen.name,
@@ -739,7 +729,7 @@
                   this.invoicedata=response.body.tradeRecord;
                   if(response.body.msg){
                     this.opensuccess=true;
-    //              location.href="/#/index/invoice"
+                    this.kaihufapiao=true;
                   }else{
                     this.$Message.error(response.body.errors);
                   }
@@ -754,7 +744,7 @@
               if (this.current ==3) {
                 this.current = 3;
                 this.$http({
-                  url:common.apiLink+'/biz/customer/openAccount.do',
+                  url:'biz/customer/openAccount.do',
                   body: {
                     'customerTypeCode':this.formValidateopen.customertypecode,
                     'customerName':this.formValidateopen.name,
@@ -778,7 +768,7 @@
                   this.invoicedata=response.body.tradeRecord;
                   if(response.body.msg){
                     this.opensuccess=true;
-    //              location.href="/#/index/invoice"
+                    this.kaihufapiao=true;
                   }else{
                     this.$Message.error(response.body.errors);
                   }
@@ -788,14 +778,12 @@
               }
             }else{
               if(this.current ==3){
-                console.log('执行')
                 this.xiayibu=this.$t("m.open.finish");
-                console.log(this.xiayibu)
               }
               if (this.current ==4) {
                 this.current = 4;
                 this.$http({
-                  url:common.apiLink+'/biz/customer/openAccount.do',
+                  url:'biz/customer/openAccount.do',
                   body: {
                     'customerTypeCode':this.formValidateopen.customertypecode,
                     'customerName':this.formValidateopen.name,
@@ -818,16 +806,17 @@
                     'Content-Type': 'application/json'
                   },
                 }).then((response) => {
+                  console.log(response.body);
                   this.invoicedata=response.body.tradeRecord;
+                  this.incusdata=response.body.customerInfo;
                   if(response.body.msg){
                     this.opensuccess=true;
-    //              location.href="/#/index/invoice"
+                    this.kaihufapiao=true;
                   }else{
                     this.$Message.error(response.body.errors);
                   }
                 })
               } else {
-                // this.xiayibu=this.$t("m.open.next");
                 this.current += 1;
               }
             }
@@ -866,32 +855,9 @@
       cancel () {
         this.formValidateopen.meterno="";
       },
-      editzi(index){
-        this.index=index;
-        this.cusaddifee1=this.additionalFees[index].itemName;
-        this.cusaddifee4=this.additionalFees[index].additionalFeeStartDate;
-        this.cusaddifee2=parseInt(this.additionalFees[index].additionalFeeType);
-        this.cusaddifee3=parseInt(this.additionalFees[index].additionalFeeDeductionMode);
-        this.cusaddifee5=this.additionalFees[index].additionalFeeDeductionTimes;
-        this.cusaddifee6=this.additionalFees[index].additionalFeeDeductionRate;
-        this.cusaddifee7=this.additionalFees[index].additionalFeeDeductionAmount;
-        this.cusaddifee8=this.additionalFees[index].additionalFeeVat;
-        this.editfujiafei=true;
-      },
       deletezi(index){
         this.additionalFees.splice(index,1)
       },
-      editfeeok(){
-        this.additionalFees[this.index].itemName=this.cusaddifee1;
-        this.additionalFees[this.index].additionalFeeStartDate=this.additionalFeeStartDate;
-        this.additionalFees[this.index].additionalFeeType=this.cusaddifee2;
-        this.additionalFees[this.index].additionalFeeDeductionMode=this.cusaddifee3;
-        this.additionalFees[this.index].additionalFeeDeductionTimes=this.cusaddifee5;
-        this.additionalFees[this.index].additionalFeeDeductionRate=this.cusaddifee6;
-        this.additionalFees[this.index].additionalFeeDeductionAmount=this.cusaddifee7;
-        this.additionalFees[this.index].additionalFeeVat=this.cusaddifee8;
-      },
-      editfeecancel(){},
       addifeetype(value){
         if(value==0){
           this.right1=false;
@@ -965,26 +931,6 @@
         this.myprint()
       },
       addifeeok () {
-        // if(this.additiontype==1){
-        //   this.additiontype=this.$t('m.open.additiontypelabel1')
-        // }else if(this.additiontype==0){
-        //   this.additiontype=this.$t('m.open.additiontypelabel2')
-        // }
-        // if(this.additionmethod==0){
-        //   this.additionmethod=this.$t('m.open.additionmethodlabel1');
-        // }else if(this.additionmethod==1){
-        //   this.additionmethod=this.$t('m.open.additionmethodlabel2');
-        // }else if(this.additionmethod==2){
-        //   this.additionmethod=this.$t('m.open.additionmethodlabel3');
-        // }else if(this.additionmethod==3){
-        //   this.additionmethod=this.$t('m.open.additionmethodlabel4');
-        // }else if(this.additionmethod==4){
-        //   this.additionmethod=this.$t('m.open.additionmethodlabel5');
-        // }else if(this.additionmethod==5){
-        //   this.additionmethod=this.$t('m.open.additionmethodlabel6');
-        // }else if(this.additionmethod==6){
-        //   this.additionmethod=this.$t('m.open.additionmethodlabel7');
-        // }
         this.additionalFees.push(
           {
             additionalFeeDeductionAmount:this.additionalFeeDeductionAmount,
@@ -1016,7 +962,7 @@
         this.selmeter=true;
         this.query1 = true;
         this.$http({
-          url:common.apiLink+'/biz/meterStock/findByPage.do',
+          url:'biz/meterStock/findByPage.do',
           body: {conditions:{
             customerTypeCode:this.formValidateopen.customertypecode,
           },"limit": 8,
@@ -1040,8 +986,13 @@
         this.loading=true;
         this.selmeter=true;
         this.$http({
-          url:common.apiLink+'/biz/meterStock/findByPage.do',
-          body: {conditions:{meterNum:this.querycondition},"limit": 8,
+          url:'biz/meterStock/findByPage.do',
+          body: {
+            conditions:{
+              meterNum:this.querycondition,
+              customerTypeCode:this.formValidateopen.customertypecode,
+            },
+            "limit": 8,
             "page": page},
           credentials:true,
           method: 'POST',
@@ -1056,8 +1007,13 @@
       },
       requerymeter(){
         this.$http({
-          url:common.apiLink+'/biz/meterStock/findByPage.do',
-          body: {conditions: {meterNum:this.querycondition},"limit": 8,
+          url:'biz/meterStock/findByPage.do',
+          body: {
+            conditions: {
+              meterNum:this.querycondition,
+              customerTypeCode:this.formValidateopen.customertypecode,
+            },
+            "limit": 8,
             "page": 1},
           credentials:true,
           method: 'POST',
@@ -1065,7 +1021,7 @@
             'Content-Type': 'application/json'
           },
         }).then((response) => {
-          this.metertotal=parseInt(response.body.pageInfo.total)
+          this.metertotal=parseInt(response.body.pageInfo.total);
           this.meterdata=response.body.pageInfo.list;
         })
       },
@@ -1076,11 +1032,136 @@
         });
         this.xitongaddifee=www;
       },
-      myprint() {
+      myprint(){
+        this.$http({
+          url: 'sysConfig/findAll.do',
+          body: {conditions: {}},
+          credentials: true,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        }).then((response) => {
+          if (response.body.list[16].state == 4) {
+            if (response.body.list[21]) {
+              if (response.body.list[21].state == 1) {
+                try
+                {
+                  this.opensmallprint()
+                }
+                catch(err)
+                {
+                  this.install=true;
+                }
+              } else if (response.body.list[21].state == 0) {
+                try
+                {
+                  this.openprint()
+                }
+                catch(err)
+                {
+                  this.install=true;
+                }
+              }
+            }
+          } else {
+            console.log('普通打印')
+          }
+        });
+      },
+      opensmallprint(){
         var strBodyStyle=`
         <style>
         *{
-        font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+           font-family:Arial, sans-serif;
+           list-style: none;
+           font-size:12px;
+           color:#333;
+           margin:0;
+           padding:0
+          }
+          .openmain{
+            width:100%;
+            margin-top: 10px;
+          }
+          .header{
+            width:96%;
+          }
+          .dotted{
+            border-top:1px solid #333;
+            margin-left:8px;
+            height:10px;
+          }
+          .dotted2{
+            margin-left:8px;
+            height:14px;
+            border-bottom:1px solid #333;
+          }
+          .header img{
+            width:100%;
+            margin-left:5px;
+          }
+          h3{
+            text-align: center;
+            line-height: 20px;
+          }
+          .fbox{
+            width:96%;
+            margin:0 auto;
+            border-top:1px solid #333;
+            padding:6px 0;
+          }
+          .fbox ul li{
+            line-height: 20px;
+          }
+          .fbox ul li span:nth-child(1){
+            display: inline-block;
+            color:#666;
+            word-break:break-word;
+          }
+          .customer ul li span:nth-child(1){
+            width: 70px;
+          }
+          .payment ul li span:nth-child(1){
+            width: 120px;
+          }
+          table tr{
+            line-height: 20px;
+          }
+          table tr td{
+            width:30%
+          }
+          table tr td:nth-child(1){
+            width:40%
+          }
+        </style>
+        `;
+        var strFormHtml=strBodyStyle+document.getElementById("smallopenfipag").innerHTML;
+        // let height=(document.getElementById("smallopenfipag").scrollHeight)+200+'px';
+        if (LODOP.webskt && LODOP.webskt.readyState == 1) {
+          console.log("开始打印！！");
+          LODOP.SET_LICENSES("杭州莱宸科技有限公司","EFED48C79DE17EC067709F911F9D586B","杭州萊宸科技有限公司","7DD751CF10DF2807E53FB9377847906F");
+          LODOP.SET_LICENSES("THIRD LICENSE","","Hangzhou Laison Technology Co. Ltd. ,","B7CA5D05E72C78847BE2534C5D93A1CE");
+          LODOP.PRINT_INIT('aaa');
+          let index=localStorage.getItem('receipt');
+          let size=localStorage.getItem('size');
+          if(size=='80mm'){
+            size=1000;
+          }else if(size=='58mm'){
+            size=480
+          }
+          LODOP.SET_PRINT_PAGESIZE(1, size, 1400,"");
+          LODOP.ADD_PRINT_HTM(20, 0, '100%', '100%', strFormHtml);
+          LODOP.SET_PRINTER_INDEXA(index);
+          LODOP.PREVIEW();//预览
+          // LODOP.PRINT();//打印
+        }
+      },
+      openprint() {
+        var strBodyStyle=`
+        <style>
+        *{
+            font-family: Arial, sans-serif;
         }
          .incontent{
             width:96%;
@@ -1121,43 +1202,31 @@
           }
           .invoicetable{
             margin:15px 0;
-            text-align:center;
+            padding:0 30px;
             width:100%;
-            line-height: 24px;
+            line-height: 30px;
             border-top:1px solid #ccc;
             border-bottom:1px solid #ccc;
           }
-          .invoicetable tr:nth-child(even){
-            border-bottom:1px solid #ccc;
-            background: #efefef;
-          }
           .invoicetable th{
-            width:25%;
-            line-height: 35px;
-          }
-          .invoicetable td{
-            width:25%;
-            line-height: 35px;
+             text-align: left;
           }
           .total{
             float: right;
           }
         </style>
         `;
-        var strFormHtml=strBodyStyle+"<body>"+document.getElementById("print").innerHTML+"</body>";
+        var strFormHtml=strBodyStyle+"<body>"+document.getElementById("print.vue").innerHTML+"</body>";
           console.log("开始打印！！");
+          LODOP.SET_LICENSES("杭州莱宸科技有限公司","EFED48C79DE17EC067709F911F9D586B","杭州萊宸科技有限公司","7DD751CF10DF2807E53FB9377847906F");
+          LODOP.SET_LICENSES("THIRD LICENSE","","Hangzhou Laison Technology Co. Ltd. ,","B7CA5D05E72C78847BE2534C5D93A1CE");
           LODOP.PRINT_INIT("");
+          LODOP.SET_PRINT_PAGESIZE(1,0,0,"A4");
           LODOP.ADD_PRINT_HTM(20, 20, 720,'100%',strFormHtml);
-          var patt = /Samsung M262x 282x Series/i;//先由用户设置
-          for(var j = 0,len=LODOP.Printers.list.length; j < len; j++) {
-            if(patt.test(LODOP.Printers.list[j].name)){
-              LODOP.SET_PRINTER_INDEXA(LODOP.Printers.list[j].name);
-              console.log('预览');
-              LODOP.PREVIEW();//预览
-            }
-          }
-//          LODOP.PREVIEW();//预览
-//        LODOP.PRINT();// 直接打印
+          let index=localStorage.getItem('invoice');
+          LODOP.SET_PRINTER_INDEXA(index);
+          LODOP.PREVIEW();//预览
+              // LODOP.PRINT();// 直接打印
       },
     },
     mounted(){
@@ -1168,7 +1237,7 @@
     created(){
       //获取系统配置
       this.$http({
-        url:common.apiLink+'/sysConfig/findAll.do',
+        url:'sysConfig/findAll.do',
         body: {conditions: {}},
         credentials:true,
         method: 'POST',
@@ -1177,6 +1246,11 @@
         },
       }).then((response) => {
         response.body.list.forEach((val,index)=> {
+          if(val.name=='calculateFeeMode'){
+            if(val.state===4){
+              this.nofipag=false;
+            }
+          }
           if(val.name=='enableDebt'){
             if(val.state===0){
               this.enableDebt=0;
@@ -1190,7 +1264,7 @@
       });
       //查客户类型
       this.$http({
-        url:common.apiLink+'/sys/customerType/findAll.do',
+        url:'sys/customerType/findAll.do',
         body: {conditions: {}},
         credentials:true,
         method: 'POST',
@@ -1202,7 +1276,7 @@
       });
       //查站点
       this.$http({
-        url:common.apiLink+'/sys/company/findCompany.do',
+        url:'sys/company/findCompany.do',
         body: {},
         credentials:true,
         method: 'POST',
@@ -1231,7 +1305,7 @@
       })
       //获取行政区域
       this.$http({
-        url:common.apiLink+'/sys/region/findRegion.do',
+        url:'sys/region/findRegion.do',
         body:{
           id:0,
         },
@@ -1278,7 +1352,7 @@
       })
       //获取附加费
       this.$http({
-        url:common.apiLink+'/sys/additionalFeeScheme/findAll.do',
+        url:'sys/additionalFeeScheme/findAll.do',
         body:{conditions: {
           nostate:0,
           }},

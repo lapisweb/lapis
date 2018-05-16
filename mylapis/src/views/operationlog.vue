@@ -98,7 +98,6 @@
   }
 </style>
 <script>
-  import common from '../kits/common.js';
   export default {
     name:'operation',
     data() {

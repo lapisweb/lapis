@@ -27,116 +27,105 @@
             <div class="bigscreen">
               <a href="javascript:;">
                 <Badge dot>
-                  <Icon type="ios-bell-outline" size="20"></Icon>
+                  <Icon type="android-notifications" size="16"></Icon>
                 </Badge>
               </a>
-              <a href="javascript:;" style="position: relative;" @mouseenter="enterpre()" @mouseleave="leavepre()">
-                <Badge>
-                  <Icon type="android-person" size="20"></Icon>
-                </Badge>
-                <Icon type="ios-arrow-down"></Icon>
-                <ul class="xinxi" v-show="ispreShow">
-                  <li>
-                    <a href="/#/index/upload">
-                      <Icon type="person-add"></Icon>
-                      <span>{{$t('m.header.uploadphoto')}}</span>
+              <Dropdown  placement="bottom-end">
+                <a href="javascript:void(0)">
+                  <Icon type="android-person" color="white" size="16"></Icon>
+                  <Icon type="chevron-down" color="white" size="10"></Icon>
+                </a>
+                <DropdownMenu slot="list">
+                  <DropdownItem>
+                    <!--<a href="/#/index/print">-->
+                    <a href="javascript:;" @click="modal1=true">
+                    <Icon type="person-add" size="14"></Icon>&nbsp;&nbsp;
+                    <span>{{$t('m.header.print')}}</span>
                     </a>
-                  </li>
-                  <li>
+                  </DropdownItem>
+                  <DropdownItem>
                     <a href="/#/index/password">
-                      <Icon type="android-unlock"></Icon>
-                      <span>{{$t('m.header.changepassword')}}</span>
+                    <Icon type="android-unlock" size="14"></Icon>&nbsp;&nbsp;
+                    <span>{{$t('m.header.changepassword')}}</span>
                     </a>
-                  </li>
-                  <li>
-                    <a href="http://api.laison.com:8080/logout.do" @click="logout">
-                      <Icon type="log-out" color="red"></Icon>
-                      <span>{{$t('m.header.logout')}}</span>
+                  </DropdownItem>
+                  <DropdownItem>
+                    <a href="javascript:;" @click="logout">
+                    <Icon type="log-out" size="14"></Icon>&nbsp;&nbsp;
+                    <span>{{$t('m.header.logout')}}</span>
                     </a>
-                  </li>
-                </ul>
-              </a>
-              <a href="javascript:;" style="position: relative;" @mouseenter="enterlang()" @mouseleave="leavelang()">
-                <Badge>
-                  <Icon type="android-globe" size="20"></Icon>
-                </Badge>
-                <ul class="xinxi1" v-show="islanShow">
-                  <li @click="language('zh_CN')">
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+              <Dropdown  placement="bottom-end">
+                <a href="javascript:void(0)">
+                  <Icon type="android-globe" color="white" size="16"></Icon>
+                </a>
+                <DropdownMenu slot="list">
+                  <DropdownItem>
+                    <p @click="language('zh_CN')">
                       <span class="iconfont icon-fuhao-zhongwen"></span>
                       <span>中文</span>
-                  </li>
-                  <li @click="language('en_US')">
-                    <span class="iconfont icon-fuhao-yingwen"></span>
+                    </p>
+                  </DropdownItem>
+                  <DropdownItem>
+                    <p @click="language('en_US')">
+                      <span class="iconfont icon-fuhao-yingwen"></span>
                       <span>English</span>
-                  </li>
-                </ul>
-              </a>
-            </div>
-            <div class="smallscreen">
-              <a href="javascript:;" style="position: relative;" @mouseenter="enterpre()" @mouseleave="leavepre()">
-                <Badge>
-                  <Icon type="android-person" size="20"></Icon>
-                </Badge>
-                <Icon type="ios-arrow-down"></Icon>
-                <ul class="xinxi" v-show="ispreShow">
-                  <li>
-                    <a href="/#/index/upload">
-                      <Icon type="person-add"></Icon>
-                      <span>{{$t('m.header.uploadphoto')}}</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="/#/index/password">
-                      <Icon type="android-unlock"></Icon>
-                      <span>{{$t('m.header.changepassword')}}</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a  href="javascript:;" @click="logout">
-                      <Icon type="log-out" color="red"></Icon>
-                      <span>{{$t('m.header.logout')}}</span>
-                    </a>
-                  </li>
-                </ul>
-              </a>
+                    </p>
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
             </div>
           </div>
         </div>
+        <Modal
+          v-model="modal1"
+          title="打印机设置"
+          @on-ok="selectedprinter"
+          >
+          <p style="line-height: 26px;">选择发票打印机</p>
+          <Select v-model="invoice" style="width:300px">
+            <Option v-for="item in invoicelist" :value="item.value" :key="item.value">{{ item.name }}</Option>
+          </Select>
+          <p style="line-height: 26px;margin-top: 10px;">选择小票打印机</p>
+          <Select v-model="receipt" style="width:300px">
+            <Option v-for="item in invoicelist" :value="item.value" :key="item.value">{{ item.name }}</Option>
+          </Select>
+          <RadioGroup v-model="size" type="button">
+            <Radio label="58mm"></Radio>
+            <Radio label="80mm"></Radio>
+          </RadioGroup>
+        </Modal>
       </div>
   </div>
 </template>
 
 <script>
-  import common from '../kits/common.js';
   import Vue from 'vue'
   export default {
     name: 'app',
     data () {
       return {
+        modal1:false,
         index:"/index",
         nav:[],
         isShow:false,
         islanShow:false,
         ispreShow:false,
         theme1:'primary',
+        enableDebt:1,
+        invoice:'',
+        receipt:'',
+        invoicelist:[],
+        size:'',
       }
-    },
-    created: function () {
-      this.$http({
-        url:common.apiLink+'/getMyBusinessMenu.do',
-        credentials:true,
-        method: 'POST',
-      }).then((response) => {
-        if(response.body.menu.childMenus){
-          this.nav=response.body.menu.childMenus;
-        }
-      });
     },
     methods:{
       logout(e){
         e.preventDefault();
         this.$http({
-          url:common.apiLink+'/logout.do',
+          url:'logout.do',
           credentials:true,
           headers: {
             'Content-Type': 'application/json'
@@ -144,32 +133,19 @@
           method: 'POST',
         }).then((response) => {
           if(response.body.logout=='ok'){
-            sessionStorage.removeItem('userdata');
+            localStorage.removeItem('userdata');
             location.href='/#/login'
           }
         })
       },
-      enter:function () {
-        this.isShow = !this.isShow;
-      },
-      leave:function () {
-        this.isShow = !this.isShow;
-      },
-      enterpre:function () {
-        this.ispreShow = !this.ispreShow;
-      },
-      leavepre:function () {
-        this.ispreShow = !this.ispreShow;
-      },
-      enterlang:function () {
-        this.islanShow = !this.islanShow;
-      },
-      leavelang:function () {
-        this.islanShow = !this.islanShow;
+      selectedprinter(){
+        window.localStorage.setItem('size',this.size);
+        window.localStorage.setItem('receipt',this.receipt);
+        window.localStorage.setItem('invoice',this.invoice);
       },
       language(lang){
         this.$http({
-          url:common.apiLink+'/changeLanguage.do',
+          url:'changeLanguage.do',
           credentials:true,
           body:{language:lang},
           headers: {
@@ -183,9 +159,54 @@
         })
       }
     },
+    created(){
+      //读取电脑上的打印机设备
+      LODOP.Printers.list.forEach(function (val,index) {
+        val.value=index;
+      });
+      this.invoicelist=LODOP.Printers.list;
+      //获取系统配置
+      this.$http({
+        url:'sysConfig/findAll.do',
+        body: {conditions: {}},
+        credentials:true,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      }).then((response) => {
+        response.body.list.forEach((val,index)=> {
+          if(val.name=='enableDebt'){
+            if(val.state===0){
+              this.enableDebt=0;
+            }
+          };
+        })
+      });
+      this.$http({
+        url:'getMyBusinessMenu.do',
+        credentials:true,
+        method: 'POST',
+      }).then((response) => {
+        response.body.menu.childMenus.forEach((val,index)=> {
+          if(val.childMenus){
+            val.childMenus.forEach((val1,index1) => {
+              if(val1.url=='/index/debt'){
+                if(this.enableDebt==0){
+                  val.childMenus.splice(index1,1);
+                }
+              }
+            })
+          }
+        });
+        if(response.body.menu.childMenus){
+          this.nav=response.body.menu.childMenus;
+        }
+      });
+    }
   }
 </script>
-<style scoped>
+<style>
   .disview{
     width:200px;
     background: #fff;
@@ -193,12 +214,12 @@
     position: fixed;
     right:0;
     top:46px;
-    z-index: 200;
+    z-index: 300;
     padding: 12px;
-    box-shadow: 0 0 1px 1px #ccc;
+    /*box-shadow: 0 0 1px 1px #ccc;*/
   }
   .layout-logo{
-    width: 200px;
+    width: 160px;
     height: 70px;
     float: left;
   }
@@ -208,7 +229,7 @@
     margin-top: 10px;
   }
   .layout-logo img:first-child{
-    margin-left: 40px;
+    margin-left: 20px;
     margin-top: 7px;
     width: 36px;
     height: 36px;
@@ -229,7 +250,7 @@
     background: #2d8cf0;
   }
   .layout-ceiling-main{
-    margin-left: 220px;
+    margin-left: 180px;
   }
   .layout-right{
     line-height:70px;
@@ -240,95 +261,30 @@
     color: #fff;
     display: inline-block;
     width:auto;
-    padding:0 15px;
+    padding:0 10px;
     height:100%;
   }
   .layout-right .bigscreen > a span{
     font-size: 12px;
   }
-  .ivu-menu-primary {
+  .layout-ceiling-main .ivu-menu-primary {
     height:70px;
     line-height: 70px;
-  }
-  .layout-right .smallscreen > a{
-    color: #fff;
-    display: inline-block;
-    width:auto;
-    padding:0 15px;
-    height:100%;
   }
   .layout-right .bigscreen > a span{
     font-size: 12px;
   }
-  .ivu-menu-primary {
-    height:70px;
-    line-height: 70px;
+  .ivu-dropdown-rel {
+    padding: 0 10px;
+    line-height: 73px;
   }
-  ul.xinxi {
-    height: 122px;
-    min-width: 140px;
-    background: #fff;
-    position: absolute;
-    top: 100%;
-    right:-8px;
-    border:1px solid #2d8cf0;
-  }
-  ul.xinxi > li {
-    position: relative;
-    font-size: 13px;
-    width: 85%;
-    height: 40px;
-    margin:0 auto;
-    border-bottom: 1px solid #777778;
-  }
-  ul.xinxi1 {
-    height: 80px;
-    min-width: 100px;
-    background: #fff;
-    position: absolute;
-    top: 100%;
-    right:-8px;
-    border:1px solid #2d8cf0;
-  }
-  ul.xinxi1 > li {
-    position: relative;
-    font-size: 13px;
-    width: 85%;
-    height: 40px;
-    margin:0 auto;
-    border-bottom: 1px solid #777778;
-    color: #666;
-    line-height: 40px;
-    text-align: left;
-    text-decoration: none;
-  }
-  ul.xinxi > li:hover a{
-    color: red;
-  }
-  ul.xinxi > li a {
-    color: #666;
-    line-height: 40px;
-    text-align: left;
-    text-decoration: none;
-    display: block;
-    height: 100%;
-  }
-
-  ul.xinxi > li:last-child {
-    border: none;
-  }
-  .ivu-menu-horizontal .ivu-menu-submenu{
+  .layout-ceiling-main .ivu-menu-horizontal .ivu-menu-submenu{
     padding:0 10px;
   }
-  @media (max-width:1160px) {
+  @media (max-width:1100px) {
     .ivu-menu-submenu-title span{
       display: none;
     }
-    .ivu-menu-submenu-title i{
-    }
-  }
-  .smallscreen{
-    display:none;
   }
 </style>
 

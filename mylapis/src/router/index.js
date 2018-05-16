@@ -15,14 +15,17 @@ import Debt from '@/views/debt'
 import Statistic from '@/views/statistics'
 import Password from '@/views/password'
 import Upload from '@/views/upload'
+import Print from '@/views/print'
 import Layout from '@/views/layout'
-import InvoiceOpen from '@/views/invoice-open'
-import InvoicePurchase from '@/views/invoice-purchase'
 import CheckList from '@/views/check'
-import Chart from '@/views/chart'
 import Realtime from '@/views/realtime'
-import Walkby from '@/views/walkby'
-import Addtask from '@/views/addtask'
+import Walkby from '@/views/walkby/walkby'
+import Addtask from '@/views/walkby/addtask'
+import Repair from '@/views/complain/repair'
+import addRepair from '@/views/complain/addrepair'
+import Maintain from '@/views/complain/maintain'
+import OpenInvoice from '@/views/invoice-open'
+import AA from '@/views/aa'
 
 
 Vue.use(Router);
@@ -44,13 +47,21 @@ const router = new Router({
         { path: 'alarm', component:Alarm, name: 'alarm' },
         { path: 'management', component:Manage, name: 'management' },
         { path: 'debt', component:Debt, name: 'debt' },
-        { path: 'statistic', component:Statistic, name: 'statistic'},
+        { path: 'statistic', component:Statistic, name: 'statistic',},
         { path: 'upload', component:Upload, name: 'upload' },
+        { path: 'print', component:Print, name: 'print' },
         { path: 'password', component:Password, name: 'password' },
         { path: 'check', component:CheckList, name: 'check' },
         { path: 'realtime', component:Realtime, name: 'realtime' },
         { path: 'walkby', component:Walkby, name: 'walkby' ,},
         { path: 'walkby/addtask', component:Addtask, name: 'addtask' ,},
+        { path: 'repair', component:Repair, name: 'repair' ,},
+        { path: 'repair/addrepair', component:addRepair, name: 'addrepair' ,},
+        { path: 'maintain', component:Maintain, name: 'maintain' ,},
+        {
+          path: 'invoiceopen',
+          component:OpenInvoice,
+        },
       ]
     },
     {
@@ -59,23 +70,18 @@ const router = new Router({
       component:Login
     },
     {
+      path: '/aa',
+      name: '',
+      component:AA
+    },
+    {
       path: '/',
       component:Layout,
       children: [
         { path: '', component:Index, name: 'index' },
       ]
     },
-    { path: '/chart', component:Chart, name: 'chart',},
-    {
-      path: '/index/invoiceopen',
-      name:'',
-      component:InvoiceOpen,
-    },
-    {
-      path: '/index/invoicepurchase',
-      name:'',
-      component:InvoicePurchase,
-    },
   ]
 });
 export default router;
+

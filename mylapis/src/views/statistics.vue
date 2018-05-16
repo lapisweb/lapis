@@ -21,26 +21,26 @@
     <div class="fiterRight">
       <Row>
         <Col span="24">
-          <div   v-show="currentitem=='1-1'">
-            <div style="margin:5px 0;">
-              <span>{{$t('m.deal.operator')}}</span>
-              <Select v-model="operator" style="width:200px">
-                <Option v-for="item in operatorlist" :value="item.id" :key="item.id">{{ item.loginName }}</Option>
-              </Select>
-              <span>{{$t('m.deal.daterange')}}</span>
-              <DatePicker  v-model="time1"  type="month" placement="bottom-start"  style="width: 140px" @on-change="startmonth1"></DatePicker>
-              <span>to</span>
-              <DatePicker v-model="time2"  type="month" placement="bottom-start"  style="width: 140px" @on-change="endmonth1"></DatePicker>
-              <Button type="primary" @click="queryoperator1">{{$t('m.common.query')}}</Button>
-            </div>
-            <div id="myChartsss"></div>
+        <div   v-show="currentitem=='1-1'">
+          <div style="margin:5px 0;">
+            <span>{{$t('m.deal.operator')}}</span>
+            <Select clearable v-model="operator" style="width:200px">
+              <Option v-for="item in operatorlist" :value="item.id" :key="item.id">{{ item.loginName }}</Option>
+            </Select>
+            <span>{{$t('m.deal.daterange')}}</span>
+            <DatePicker  v-model="time1"  type="month" placement="bottom-start"  style="width: 140px" @on-change="startmonth1"></DatePicker>
+            <span>to</span>
+            <DatePicker v-model="time2"  type="month" placement="bottom-start"  style="width: 140px" @on-change="endmonth1"></DatePicker>
+            <Button type="primary" @click="queryoperator1">{{$t('m.common.query')}}</Button>
           </div>
+          <div id="myChartsss"></div>
+        </div>
         </Col>
         <Col span="24">
         <div  v-show="currentitem=='2-3'">
           <div style="margin:5px 0;">
             <span>{{$t('m.form.department')}}</span>
-            <Select v-model="dept" style="width:200px">
+            <Select clearable v-model="dept" style="width:200px">
               <Option v-for="item in deptdata" :value="item.value" :key="item.value">{{ item.label }}</Option>
             </Select>
             <span>{{$t('m.deal.daterange')}}</span>
@@ -56,7 +56,7 @@
         <div  v-show="currentitem=='2-1'">
           <div style="margin:5px 0;">
             <span>{{$t('m.form.department')}}</span>
-            <Select v-model="dept21" style="width:200px">
+            <Select clearable v-model="dept21" style="width:200px">
               <Option v-for="item in deptdata" :value="item.value" :key="item.value">{{ item.label }}</Option>
             </Select>
             <span>{{$t('m.form.selectdate')}}</span>
@@ -70,7 +70,7 @@
         <div  v-show="currentitem=='2-2'">
           <div style="margin:5px 0;">
             <span>{{$t('m.form.department')}}</span>
-            <Select v-model="dept22" style="width:200px">
+            <Select clearable v-model="dept22" style="width:200px">
               <Option v-for="item in deptdata" :value="item.value" :key="item.value">{{ item.label }}</Option>
             </Select>
             <span>{{$t('m.form.selectmonth')}}</span>
@@ -84,7 +84,7 @@
         <div  v-show="currentitem=='2-4'">
           <div style="margin:5px 0;">
             <span>{{$t('m.form.department')}}</span>
-            <Select v-model="dept24" style="width:200px">
+            <Select clearable v-model="dept24" style="width:200px">
               <Option v-for="item in deptdata" :value="item.value" :key="item.value">{{ item.label }}</Option>
             </Select>
             <span>{{$t('m.form.selectdate')}}</span>
@@ -100,7 +100,6 @@
   </div>
 </template>
 <script>
-  import common from '../kits/common.js';
   export default {
     data() {
       return {
@@ -178,12 +177,13 @@
         ],
         data21:[],
         data22:[],
-        dataList:{
-           list1:{
-             legend:[],
-             xAxis:[],
-             series:[],
-           }
+        myCharts1:{
+          xAxis:[],
+          series:[
+            {data:[]},
+            {data:[]},
+            {data:[]},
+          ],
         },
         myCharts21:{
           xAxis:[],
@@ -245,27 +245,12 @@
                 },
               ]
             },
-//            {
-//              id:3,
-//              icon:'stats-bars',
-//              name:'图形报表',
-//              second:[
-//                {
-//                  id:'3-1',
-//                  name:'各站点月销售金额',
-//                },
-//                {
-//                  id:'3-2',
-//                  name:'各公司年销售占比',
-//                }
-//              ]
-//            },
-          ],
+        ],
       }
     },
     methods: {
       datechange21(date){
-        this.querydate=date;
+        this.querydate21=date;
       },
       startmonth1(date){
         this.starttime1=date;
@@ -286,8 +271,16 @@
         this.querydate24=date;
       },
       queryoperator1(){
+        this.myCharts1={
+          xAxis:[],
+          series:[
+            {data:[]},
+            {data:[]},
+            {data:[]},
+          ],
+        };
         this.$http({
-          url:common.apiLink+'/biz/tradeView/OMStats.do',
+          url:'biz/tradeView/OMStats.do',
           body: {
             operatorId:this.operator,
             endTime:this.endtime1,
@@ -301,20 +294,29 @@
         }).then((response) => {
           if(response.body.errors){
             this.$Message.error(response.body.errors);
-          }else{
-            this.dataList.list1.legend=response.body.option.legend.data;
-            this.dataList.list1.xAxis=response.body.option.xAxis;
-            response.body.option.series.forEach(function (val,index) {
-                val.smooth=true;
-            });
-            this.dataList.list1.series=response.body.option.series;
-            this.drawLine();
+          }else {
+
+            if(response.body.data.length<1){
+              this.myCharts1.series[0]={data:[]};
+              this.myCharts1.series[1]={data:[]};
+              this.myCharts1.series[2]={data:[]};
+              this.myCharts1.xAxis=[];
+              this.drawLine();
+            }else{
+              response.body.data.forEach((val, index) => {
+                this.myCharts1.series[0].data.push(val.paymentAmount);
+                this.myCharts1.series[1].data.push(val.purchaseAmount);
+                this.myCharts1.series[2].data.push(val.volume);
+                this.myCharts1.xAxis.push(val.tradeDate);
+                this.drawLine();
+              })
+            }
           }
         });
       },
       queryoperator21(){
         this.$http({
-          url:common.apiLink+'/biz/tradeView/DDTStats.do',
+          url:'biz/tradeView/DDTStats.do',
           body: {
             deptId:this.dept21,
             time:this.querydate21,
@@ -335,7 +337,7 @@
       },
       queryoperator22(){
         this.$http({
-          url:common.apiLink+'/biz/tradeView/DMTStats.do',
+          url:'biz/tradeView/DMTStats.do',
           body: {
             deptId:this.dept22,
             time:this.querydate22,
@@ -349,22 +351,21 @@
           if(response.body.errors){
             this.$Message.error(response.body.errors);
           }else {
-//            Vue.set(this.data22,response.body.data);
             this.data22 = response.body.data;
           }
         });
       },
       queryoperator23(){
         this.myCharts21={
-            xAxis:[],
-            series:[
+          xAxis:[],
+          series:[
             {data:[]},
             {data:[]},
             {data:[]},
           ],
         };
         this.$http({
-          url:common.apiLink+'/biz/tradeView/DMStats.do',
+          url:'biz/tradeView/DMStats.do',
           body: {
             deptId:this.dept,
             endTime:this.endtime23,
@@ -408,7 +409,7 @@
           ],
         };
         this.$http({
-          url:common.apiLink+'/biz/tradeView/EODStats.do',
+          url:'biz/tradeView/EODStats.do',
           body: {
             deptId:this.dept24,
             time:this.querydate24,
@@ -458,14 +459,13 @@
         myChart.setOption({
           color:colors,
           title : {
-            text: '操作员历史月销售记录',
-            subtext: 'station one year curve graph'
+            text: this.$t('m.form.operatormonthsale'),
           },
           tooltip : {
             trigger: 'axis'
           },
           legend:{
-            data:vm.dataList.list1.legend
+            data:[this.$t('m.form.total'),this.$t('m.form.recharge'),this.$t('m.form.amount')]
           },
           toolbox: {
             show : true,
@@ -478,13 +478,34 @@
             }
           },
           calculable : true,
-          xAxis : vm.dataList.list1.xAxis,
+          xAxis :{
+            data:vm.myCharts1.xAxis,
+          } ,
           yAxis: [
             {
               type: 'value'
             }
           ],
-          series :vm.dataList.list1.series,
+          series :[
+            {
+              data: vm.myCharts1.series[0].data,
+              name: this.$t('m.form.total'),
+              smooth: true,
+              type: "line",
+            },
+            {
+              data: vm.myCharts1.series[1].data,
+              name: this.$t('m.form.recharge'),
+              smooth: true,
+              type: "line",
+            },
+            {
+              data: vm.myCharts1.series[2].data,
+              name: this.$t('m.form.amount'),
+              smooth: true,
+              type: "line",
+            },
+          ],
         });
         window.onresize = myChart.resize;
 //        myChart2.setOption({
@@ -537,9 +558,9 @@
         // 基于准备好的dom，初始化echarts实例
         var miaoshu;
         vm.deptdata.forEach((val)=> {
-            if(vm.dept==val.value){
-              miaoshu=val.label
-            }
+          if(vm.dept==val.value){
+            miaoshu=val.label
+          }
         })
         var myChart1;
         myChart1 = this.$echarts.init(document.querySelector(".fiterRight #myChartsss21"));
@@ -549,14 +570,13 @@
         myChart1.setOption({
           color:colors,
           title : {
-            text: miaoshu +'历史月销售记录',
-            subtext: 'station one year curve graph'
+            text: miaoshu +' '+this.$t('m.form.monthsale'),
           },
           tooltip : {
             trigger: 'axis'
           },
           legend:{
-            data:['月售总金额','月充值金额','月充值量']
+            data:[this.$t('m.form.total'),this.$t('m.form.recharge'),this.$t('m.form.amount')]
           },
           toolbox: {
             show : true,
@@ -580,19 +600,19 @@
           series :[
             {
               data: vm.myCharts21.series[0].data,
-              name: "月售总金额",
+              name: this.$t('m.form.total'),
               smooth: true,
               type: "line",
             },
             {
               data: vm.myCharts21.series[1].data,
-              name: "月充值金额",
+              name: this.$t('m.form.recharge'),
               smooth: true,
               type: "line",
             },
             {
               data: vm.myCharts21.series[2].data,
-              name: "月充值量",
+              name: this.$t('m.form.amount'),
               smooth: true,
               type: "line",
             },
@@ -610,14 +630,13 @@
         myChart4.setOption({
           color:colors,
           title : {
-            text: '各操作员销售记录',
-            subtext: 'station one year curve graph'
+            text: this.$t('m.form.deptoperatorsale'),
           },
           tooltip : {
             trigger: 'axis'
           },
           legend:{
-            data:['月售总金额','月充值金额','月充值量']
+            data:[this.$t('m.form.total'),this.$t('m.form.recharge'),this.$t('m.form.amount')]
           },
           toolbox: {
             show : true,
@@ -642,19 +661,19 @@
           series :[
             {
               data: vm.myCharts24.series[0].data,
-              name: "月售总金额",
+              name: this.$t('m.form.total'),
               smooth: true,
               type: "bar",
             },
             {
               data: vm.myCharts24.series[1].data,
-              name: "月充值金额",
+              name: this.$t('m.form.recharge'),
               smooth: true,
               type: "bar",
             },
             {
               data: vm.myCharts24.series[2].data,
-              name: "月充值量",
+              name: this.$t('m.form.amount'),
               smooth: true,
               type: "bar",
             },
@@ -662,30 +681,31 @@
         });
         window.onresize = myChart4.resize;
       },
-      gaindept(array){
-        this.deptlist.push({
-          value:array.id,
-          label:array.name,
-        });
-        array.childDepts.forEach((val,index)=>{
-          this.deptlist.push({
-            value:val.id,
-            label:val.name,
-          });
-          if(val.childDepts&&val.childDepts.length!=0){
-            this.gaindept(val)
-          }else{
-            return
-          }
-        })
-      }
+      // gaindept(array){
+      //   console.log(array)
+      //   this.deptlist.push({
+      //     value:array.id,
+      //     label:array.name,
+      //   });
+        // array.childDepts.forEach((val,index)=>{
+        //   this.deptlist.push({
+        //     value:val.id,
+        //     label:val.name,
+        //   });
+        //   if(val.childDepts&&val.childDepts.length!=0){
+        //     this.gaindept(val)
+        //   }else{
+        //     return
+        //   }
+        // })
+      // }
     },
     created(){
       this.user=JSON.parse(localStorage.getItem('user'));
       this.timec=new Date().toLocaleString();
       //获取操作员
       this.$http({
-        url:common.apiLink+'/sys/user/listAllOperator.do',
+        url:'sys/user/listAllOperator.do',
         body:{
 
         },
@@ -698,7 +718,7 @@
         this.operatorlist=response.body.operators;
       });
       this.$http({
-        url:common.apiLink+'/sys/dept/findDeptIdHasTrade.do',
+        url:'sys/dept/findDeptHasTrade.do',
         body: {},
         credentials:true,
         method: 'POST',
@@ -707,34 +727,31 @@
         },
       }).then((response) => {
         this.depthasdata=response.body.list;
-        this.gaindept(JSON.parse(localStorage.getItem('userdata')));
-        if(this.deptlist.length ==2){
-          for (var i = 0;i<this.deptlist.length;i++) {
-            for (var j =1;j<this.deptlist.length;j++) {
-              if(this.deptlist[i].value == this.deptlist[j].value){
-                this.deptlist.splice(j,1)
-              }
-            }
-          }
-        }else{
-          for (var i = 0;i<this.deptlist.length;i++) {
-            for (var j = 1; j < this.deptlist.length-1; j++) {
-              if (this.deptlist[i].value === this.deptlist[j].value) {
-                this.deptlist.splice(j, 1);
-              }
-            }
-          }
-        }
+        // this.gaindept(JSON.parse(localStorage.getItem('userdata')));
+        // if(this.deptlist.length ==2){
+        //   for (var i = 0;i<this.deptlist.length;i++) {
+        //     for (var j =1;j<this.deptlist.length;j++) {
+        //       if(this.deptlist[i].value == this.deptlist[j].value){
+        //         this.deptlist.splice(j,1)
+        //       }
+        //     }
+        //   }
+        // }else{
+        //   for (var i = 0;i<this.deptlist.length;i++) {
+        //     for (var j = 1; j < this.deptlist.length-1; j++) {
+        //       if (this.deptlist[i].value === this.deptlist[j].value) {
+        //         this.deptlist.splice(j, 1);
+        //       }
+        //     }
+        //   }
+        // }
         this.depthasdata.forEach((val)=> {
-          this.deptlist.forEach((vals)=> {
-          if(val==vals.value){
             this.deptdata.push({
-              value:vals.value,
-              label:vals.label
+              value:val.id,
+              label:val.name
             })
-          }
         })
-      })
+
       });
     },
 

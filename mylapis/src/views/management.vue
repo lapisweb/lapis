@@ -20,24 +20,27 @@
             </div>
           </div>
           <Tabs style="margin-top: 10px;">
+            <div v-show="disable" style="border-radius:10px;background: rgba(255,255,255,0.8);position:absolute;left:0;right:0;top:-52px;bottom:0;z-index:2">
+              <Alert style="width:300px; text-align: center;margin: 50px auto;" type="warning" show-icon>{{$t('m.common.select')}}</Alert>
+            </div>
             <TabPane :label="$t('m.open.title2')" icon="android-contact">
               <div>
                 <h3 class="h-viewtitle">{{$t('m.open.title2')}}</h3>
                 <Form label-position="left" :label-width="80" :rules="ruleValidate" ref="presoninfo" :model="presoninfo">
                   <FormItem :label="$t('m.customerinfo.label1')" prop="name">
-                    <Input :disabled="disable" v-model="presoninfo.name" size="large" ></Input>
+                    <Input v-model="presoninfo.name" size="large" ></Input>
                   </FormItem>
                   <FormItem :label="$t('m.customerinfo.label2')" prop="idcard">
-                    <Input :disabled="disable" v-model="presoninfo.idcard" size="large"></Input>
+                    <Input v-model="presoninfo.idcard" size="large"></Input>
                   </FormItem>
                   <FormItem :label="$t('m.customerinfo.label3')" prop="tel">
-                    <Input :disabled="disable" v-model="presoninfo.tel" size="large"></Input>
+                    <Input v-model="presoninfo.tel" size="large"></Input>
                   </FormItem>
                   <FormItem  :label="$t('m.open.label4')" prop="districtvalue">
-                    <Cascader :disabled="disable" :data="presoninfo.district" size="large" v-model="presoninfo.districtvalue"></Cascader>
+                    <Cascader  :data="presoninfo.district" size="large" v-model="presoninfo.districtvalue"></Cascader>
                   </FormItem>
                   <FormItem :label="$t('m.customerinfo.label5')" prop="address">
-                    <Input :disabled="disable" v-model="presoninfo.address" type="textarea" :autosize="{minRows: 2,maxRows: 5}" ></Input>
+                    <Input  v-model="presoninfo.address" type="textarea" :autosize="{minRows: 2,maxRows: 5}" ></Input>
                   </FormItem>
                   <div class="h-submit">
                     <Button type="primary" @click="changeok('presoninfo')">{{$t('m.common.submit')}}</Button>
@@ -180,47 +183,12 @@
                           <span class="expand-value">{{item.additionalFeeStartDate}}</span>
                         </Col>
                         <div class="positionedit">
-                          <Button type="success" @click="editzi(key)"><i class="iconfont icon-75bianji"></i></Button>
                           <Button type="error" @click="deletezi(key)"><i class="iconfont icon-105"></i></Button>
                         </div>
                       </Row>
                     </Card>
                   </div>
                 </div>
-                <Modal
-                  title="Title"
-                  v-model="editfujiafei"
-                  :closable="false"
-                  @on-ok="editfeeok"
-                  @on-cancel="editfeecancel"
-                  :mask-closable="false">
-                  <div style="height: 240px;width:100%">
-                    <div style="float: left;margin-right: 20px;">
-                      <p class="hyyword">{{ $t("m.open.additionfeename") }}</p>
-                      <Input v-model="cusaddifee1" placeholder="" style="width: 200px"></Input>
-                      <p class="hyyword">{{ $t("m.open.additionfeetype") }}</p>
-                      <Select clearable v-model="cusaddifee2" style="width:200px" @on-change="addifeetype">
-                        <Option v-for="item in additiontypedata" :value="item.value" :key="item.value">{{ item.label }}</Option>
-                      </Select>
-                      <p class="hyyword">{{ $t("m.open.additionfeemethod") }}</p>
-                      <Select clearable v-model="cusaddifee3" style="width:200px" @on-change="addifeemethod">
-                        <Option v-for="item in additionmethoddata" :value="item.value" :key="item.value">{{ item.label }}</Option>
-                      </Select>
-                      <p class="hyyword">{{ $t("m.open.starttime") }}</p>
-                      <DatePicker v-model="cusaddifee4" type="datetime" placeholder="Select date and time" style="width:200px;" @on-change="opendateedit"></DatePicker>
-                    </div>
-                    <div style="float: left">
-                      <p class="hyyword">{{ $t("m.open.feetime") }}</p>
-                      <InputNumber :disabled="right1"  v-model="cusaddifee5" style="width: 200px"></InputNumber>
-                      <p class="hyyword">{{ $t("m.open.percent") }}</p>
-                      <InputNumber :disabled="right2" :max="100" v-model="cusaddifee6" style="width: 185px"></InputNumber> %
-                      <p class="hyyword">{{ $t("m.open.money") }}</p>
-                      <InputNumber :disabled="right3"  v-model="cusaddifee7" style="width: 185px"></InputNumber> $
-                      <p class="hyyword">{{ $t("m.open.vat") }}</p>
-                      <InputNumber :disabled="right4" :max="100" v-model="cusaddifee8" style="width: 185px"></InputNumber> %
-                    </div>
-                  </div>
-                </Modal>
                 <div class="h-submit">
                   <Button type="primary" @click="changeaddiok">{{$t('m.common.submit')}}</Button>
                   <Button type="ghost" style="margin-left: 8px" @click="changeaddicancel">{{$t('m.common.cancel')}}</Button>
@@ -246,8 +214,6 @@
 </template>
 
 <script>
-  import router from '@/router';
-  import common from '../kits/common.js';
   export default {
     data(){
       return{
@@ -426,7 +392,7 @@
           },
           {
             title: this.$t('m.open.metercolumnstitle3'),
-            key: 'customerTypeCode'
+            key: 'customerTypeName'
           },
         ],
         //查询表的数据
@@ -503,7 +469,7 @@
         this.customerdata=[];
         this.showmanagement=true;
         this.$http({
-          url:common.apiLink+'/biz/customer/findByPage.do',
+          url:'biz/customer/findByPage.do',
           body:{
             "conditions": {
               customerNum:this.customerno,
@@ -614,7 +580,7 @@
         this.customerdata=[];
         this.showmanagement=true;
         this.$http({
-          url:common.apiLink+'/biz/customer/findByPage.do',
+          url:'biz/customer/findByPage.do',
           body:{
             "conditions": {
               name:this.customername,
@@ -734,7 +700,7 @@
         this.$refs[personinfo].validate((valid) => {
           if (valid) {
             this.$http({
-              url:common.apiLink+'/biz/customer/updateBasicInfo.do',
+              url:'biz/customer/updateBasicInfo.do',
               body:{
                 'customerId':this.presoninfo.customerid,
                 'customerName': this.presoninfo.name,
@@ -772,7 +738,7 @@
       //修改表号
       meterok () {
         this.$http({
-          url:common.apiLink+'/biz/customer/updateMeter.do',
+          url:'biz/customer/updateMeter.do',
           body:{
             'customerId':this.presoninfo.customerid,
             'meter': {
@@ -805,7 +771,7 @@
       //修改债务
       debtok () {
 //        this.$http({
-//          url:common.apiLink+'/biz/customer/updateBasicInfo.do',
+//          url:'biz/customer/updateBasicInfo.do',
 //          body:{
 //            'customerId':this.presoninfo.customerid,
 //            'debt': {
@@ -829,7 +795,7 @@
       //修改附加费
       changeaddiok () {
         this.$http({
-          url:common.apiLink+'/biz/customer/editCustomerAddtion.do',
+          url:'biz/customer/editCustomerAddtion.do',
           body:{
             'customerId':this.presoninfo.customerid,
             'additionalFeeSchemeCodes': this.systemaddi,
@@ -859,18 +825,6 @@
       changeaddicancel () {
 
       },
-      editzi(index){
-        this.indexs=index;
-        this.cusaddifee1=this.customFees[index].itemName;
-        this.cusaddifee4=this.customFees[index].additionalFeeStartDate;
-        this.cusaddifee2=parseInt(this.customFees[index].additionalFeeType);
-        this.cusaddifee3=parseInt(this.customFees[index].additionalFeeDeductionMode);
-        this.cusaddifee5=this.customFees[index].additionalFeeDeductionTimes;
-        this.cusaddifee6=this.customFees[index].additionalFeeDeductionRate;
-        this.cusaddifee7=this.customFees[index].additionalFeeDeductionAmount;
-        this.cusaddifee8=this.customFees[index].additionalFeeVat;
-        this.editfujiafei=true;
-      },
       deletezi(index){
         this.customFees.splice(index,1)
       },
@@ -884,7 +838,6 @@
         this.customFees[this.indexs].additionalFeeDeductionAmount=this.cusaddifee7;
         this.customFees[this.indexs].additionalFeeVat=this.cusaddifee8;
       },
-      editfeecancel(){},
       addifeetype(value){
         if(value==0){
           this.right1=false;
@@ -960,7 +913,7 @@
         this.modal1=true;
         this.query1 = true;
         this.$http({
-          url:common.apiLink+'/biz/meterStock/findByPage.do',
+          url:'biz/meterStock/findByPage.do',
           body: {conditions:{},"limit": 8,
             "page": 1},
           credentials:true,
@@ -977,7 +930,7 @@
       changemeterpage(page){
         this.loading=true;
         this.$http({
-          url:common.apiLink+'/biz/meterStock/findByPage.do',
+          url:'biz/meterStock/findByPage.do',
           body: {conditions:{meterNum:this.querycondition},"limit": 8,
             "page": page},
           credentials:true,
@@ -993,7 +946,7 @@
       },
       requerymeter(){
         this.$http({
-          url:common.apiLink+'/biz/meterStock/findByPage.do',
+          url:'biz/meterStock/findByPage.do',
           body: {conditions: {meterNum:this.querycondition},"limit": 8,
             "page": 1},
           credentials:true,
@@ -1121,7 +1074,7 @@
     created(){
       //获取行政区域
       this.$http({
-        url:common.apiLink+'/sys/region/findRegion.do',
+        url:'sys/region/findRegion.do',
         body:{
           id:0,
         },
@@ -1168,8 +1121,10 @@
       });
       //获取附加费
       this.$http({
-        url:common.apiLink+'/sys/additionalFeeScheme/findAll.do',
-        body:{conditions: {}},
+        url:'sys/additionalFeeScheme/findAll.do',
+        body:{conditions: {
+            nostate:0,
+          }},
         credentials:true,
         method: 'POST',
         headers: {

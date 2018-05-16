@@ -73,7 +73,6 @@
 </template>
 
 <script>
-  import common from '../kits/common.js';
   export default {
     name: 'meter',
     data () {
@@ -211,7 +210,7 @@
         let endtime=this.datearray[1];
         this.loading=true;
         this.$http({
-          url:common.apiLink+'/biz/meterStock/findByPage.do',
+          url:'biz/meterStock/findByPage.do',
           body: {conditions: {meterNum:this.querymeterno,startTime:starttime,endTime:endtime},"limit": 10, "page": 1},
           credentials:true,
           method: 'POST',
@@ -230,7 +229,7 @@
         let endtime=this.datearray[1];
         this.loading=true;
         this.$http({
-          url:common.apiLink+'/biz/meterStock/findByPage.do',
+          url:'biz/meterStock/findByPage.do',
           body: {conditions: {meterNum:this.querymeterno,startTime:starttime,endTime:endtime},"limit": 10,
             "page": page},
           credentials:true,
@@ -257,7 +256,7 @@
       importmeter(){
         if(this.qiehuan1==false){
           this.$http({
-            url:common.apiLink+'/biz/meterStock/addBatch.do',
+            url:'biz/meterStock/addBatch.do',
             body: {customerTypeCode:this.customertypecode,startMeterNumber:this.meterno,stsKeyId:1,tidBaseTime:'2014'},
             credentials:true,
             method: 'POST',
@@ -283,7 +282,7 @@
           })
         }else{
           this.$http({
-            url:common.apiLink+'/biz/meterStock/addBatch.do',
+            url:'biz/meterStock/addBatch.do',
             body: {customerTypeCode:this.customertypecode,startMeterNumber:this.startmeterno,stsKeyId:1,endMeterNumber:this.endmeterno,tidBaseTime:'2014'},
             credentials:true,
             method: 'POST',
@@ -296,7 +295,8 @@
                 title: 'Meter import',
                 content:'<p>'+this.$t('m.common.tips')+'</p><p>'+response.body.msg+'</p>',
                 onOk: () => {
-                  this.meterno='';
+                  this.startmeterno='';
+                  this.endmeterno='';
                   this.customertypecode='';
                 },
               });
@@ -326,12 +326,14 @@
       },
       removeconfirm () {
         this.$http({
-          url:common.apiLink+'/biz/meterStock/del.do',
-          body: "id="+this.meterid,
+          url:'biz/meterStock/del.do',
+          body:{
+            meterId:this.meterid
+          },
           credentials:true,
           method: 'POST',
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            'Content-Type': 'application/json;'
           },
         }).then((response) => {
           if(response.body.msg){
@@ -347,7 +349,7 @@
 
     created() {
       this.$http({
-        url:common.apiLink+'/sys/customerType/findAll.do',
+        url:'sys/customerType/findAll.do',
         body:{'conditions':{}},
         credentials:true,
         method: 'POST',

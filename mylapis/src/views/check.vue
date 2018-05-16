@@ -14,7 +14,6 @@
   </div>
 </template>
 <script>
-  import common from '../kits/common.js';
   export default {
     data () {
       return {
@@ -75,7 +74,7 @@
       },
       ok(){
         this.$http({
-          url:common.apiLink+'/biz/trade/batchAuditRefundApply.do',
+          url:'biz/trade/batchAuditRefundApply.do',
           body:this.restask,
           credentials:true,
           method: 'POST',
@@ -96,7 +95,7 @@
     },
     created(){
       this.$http({
-        url:common.apiLink+'/biz/trade/findUnauditRefundApply.do',
+        url:'biz/trade/findUnauditRefundApply.do',
         body:{
           "conditions": {
           },

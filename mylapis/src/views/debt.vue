@@ -53,7 +53,6 @@
 
 </style>
 <script>
-  import common from '../kits/common.js';
   export default {
     name:'debt',
     data() {
@@ -264,7 +263,7 @@
           this.customerdata=[];
         this.showmanagement=true;
         this.$http({
-          url:common.apiLink+'/biz/customer/findByPage.do',
+          url:'biz/customer/findByPage.do',
           body:{
             "conditions": {
               name:this.name,
@@ -371,7 +370,7 @@
       changePage(page){
         this.customerdata=[];
         this.$http({
-          url:common.apiLink+'/biz/customer/findByPage.do',
+          url:'biz/customer/findByPage.do',
           body:{
             "conditions": {
               name:this.customername,
@@ -481,7 +480,7 @@
       adddebt(){
         var customerid=this.customerdata[this.addindex].customerid;
         this.$http({
-          url:common.apiLink+'/biz/debt/increaseDebt.do',
+          url:'biz/debt/increaseDebt.do',
           body:{
             customerId:customerid,
             increaseNumber: this.addamount,
@@ -498,7 +497,7 @@
           if(response.body.code==0){
             this.$Message.success(this.$t('m.debt.message1'));
           }else{
-            this.$Message.error(this.$t('m.debt.message2'));
+            this.$Message.error(response.body.errors);
           }
         })
       },
@@ -520,7 +519,7 @@
         }
         var customerid=this.customerdata[this.reduceindex].customerid;
         this.$http({
-          url:common.apiLink+'/biz/debt/discountDebt.do',
+          url:'biz/debt/discountDebt.do',
           body:{
             customerId: customerid,
             discountNumber: this.discountnum,
@@ -552,7 +551,7 @@
       repaydebt(){
         var customerid=this.customerdata[this.repayindex].customerid;
         this.$http({
-          url:common.apiLink+'/biz/debt/repayDebt.do',
+          url:'biz/debt/repayDebt.do',
           body:{
             customerId:customerid,
             repayNumber: this.repayamount,

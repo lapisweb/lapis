@@ -22,15 +22,14 @@
   </div>
 </template>
 <script>
-  import common from '../kits/common.js';
   export default {
     name:'password',
     data(){
       var validatePass2 = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('请再次输入密码'));
+          callback(new Error(this.$t('m.validation.confirmpsw')));
         } else if (value !== this.passValidate.newpass) {
-          callback(new Error('两次输入密码不一致!'));
+          callback(new Error(this.$t('m.validation.two')));
         } else {
           callback();
         }
@@ -42,8 +41,8 @@
           conpass:'',
         },
         passValidates:{
-          oldpass:[ { required: true, message: '不能为空', trigger: 'blur,change' }],
-          newpass:[{ required: true, message:'不能为空', trigger: 'blur,change' }],
+          oldpass:[ { required: true, message: this.$t('m.validation.oldpsw'), trigger: 'blur,change' }],
+          newpass:[{ required: true, message:this.$t('m.validation.newpsw'), trigger: 'blur,change' }],
           conpass:[
             {  validator: validatePass2,  trigger: 'blur,change' },
 //            { field: newpass, message: '两次密码必须一致', trigger: 'blur' },
@@ -53,13 +52,14 @@
     },
     methods:{
       editpsw(Validate){
+        console.log(this.oldpass,this.newpass)
         this.$refs[Validate].validate((valid) => {
           if (valid) {
             this.$http({
-              url: common.apiLink + '/changePass.do',
+              url: 'changePass.do',
               body: {
-                oldpass: this.oldpass,
-                newpass: this.newpass,
+                oldpass: this.passValidate.oldpass,
+                newpass: this.passValidate.newpass,
               },
               credentials: true,
               method: 'POST',
@@ -68,15 +68,10 @@
               },
             }).then((response) => {
               if (response.body.msg) {
-                this.$Modal.success({
-                  title: 'Change PSW',
-                  content: '<p>' + this.$t("m.common.tips") + '</p><p>' + response.body.msg + '</p>',
-                });
+                this.$Message.success(response.body.msg,);
+                setTimeout(this.logout(),2000);
               } else {
-                this.$Modal.error({
-                  title: 'Change PSW',
-                  content: '<p>' + this.$t("m.common.tips") + '</p><p>' + response.body.errors + '</p>',
-                });
+                this.$Message.error(response.body.errors,);
               }
             })
           }
@@ -86,7 +81,22 @@
         this.oldpass='';
         this.newpass='';
         this.conpass='';
-      }
+      },
+      logout(){
+        this.$http({
+          url:'logout.do',
+          credentials:true,
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          method: 'POST',
+        }).then((response) => {
+          if(response.body.logout=='ok'){
+            sessionStorage.removeItem('userdata');
+            location.href='/#/login'
+          }
+        })
+      },
     }
   }
 </script>

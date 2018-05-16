@@ -5,95 +5,116 @@
         <img src="../assets/img/logos.png" alt="">
       </div>
       <div class="loginbox">
-        <div class="chang">
-          <p>welcome</p>
-          <p>login</p>
+        <div class="loginimg">
+          <img src="../assets/img/login2.png" alt="" style="width: 100%;">
         </div>
-        <div class="photo"></div>
-        <div class="loginimg"></div>
-        <Form>
+        <Form ref="loginValidate" :model="loginValidate" :rules="loginrule">
           <div class="heng">
-            <div class="img">
-              <img src="../assets/img/icon1.png" alt="">
-            </div>
-            <input type="text" id='username' name="username" v-model="account" :placeholder="$t('m.login.username')">
+            <FormItem prop="account">
+              <Input clearable type="text" id='username' name="username" v-model="loginValidate.account" :placeholder="$t('m.login.username')" @on-keyup.enter="show('loginValidate')">
+                <span slot="prepend">
+                  &nbsp;<Icon type="android-person" size="14"></Icon>&nbsp;
+                </span>
+              </Input>
+            </FormItem>
           </div>
           <div class="heng">
-            <div class="img">
-              <img src="../assets/img/icon2.png" alt="">
-            </div>
-            <input type="password" id='password' name="password" v-model="password" :placeholder="$t('m.login.password')">
+            <FormItem prop="password">
+              <Input clearable type="password" id='password' name="password" v-model="loginValidate.password" :placeholder="$t('m.login.password')" @on-keyup.enter="show('loginValidate')">
+              <span slot="prepend">
+                  &nbsp;<Icon type="android-lock" size="14"></Icon>&nbsp;
+              </span>
+              </Input>
+            </FormItem>
           </div>
           <div class="heng">
-            <div class="img">
-              <img src="../assets/img/icon3.png" alt="">
-            </div>
-            <input type="text" name="validate" size="10" v-model="pin" :placeholder="$t('m.login.pin')">
+            <FormItem prop="pin">
+              <Input type="text" name="validate" v-model="loginValidate.pin" :placeholder="$t('m.login.pin')" @on-keyup.enter="show('loginValidate')">
+              <span slot="prepend">
+                  &nbsp;<Icon type="pricetag" size="14"></Icon>&nbsp;
+              </span>
+              </Input>
+            </FormItem>
             <div class="pin">
               <img alt="" :src=imgsrc id="authImg" align="absmiddle" @click="qiehuan()">
             </div>
           </div>
-          <div class="login" :class="{actives:active}" @click="send()">
-            <p>{{logining}}</p>
+          <div class="heng">
+            <Button type="primary" :class="{actives:active}" long @click="send('loginValidate')">{{logining}}</Button>
           </div>
         </Form>
-      </div>
-      <div class="loginfoo">
-        <p>ADD: ZHEJIANG UNIVERSITY SCIENCE PARK,NO.525 XIXI ROAD,HANGZHOU,CHINA</p>
-        <p>COPYRIGHT 2013 LAISON All RIGHTTS RESERVED. ZHE ICP1202424-1 POWERED BY:DS</p>
       </div>
     </div>
   </div>
 </template>
 <script>
-  import router from '@/router';
-  import common from '../kits/common.js';
+  let apiLink='http://www.laison.com:8080/';
+  // let apiLink='/api/';
   export default{
     name: 'login',
     data: function () {
       return {
         logining:this.$t('m.login.login'),
         active:false,
-        imgsrc:common.apiLink+'/validateCodeServlet?aa='+ Math.random(),
-        account: '',
-        password: '',
-        pin:'',
+        imgsrc:apiLink+'validateCodeServlet?aa='+ Math.random(),
+        loginValidate: {
+          account: '',
+          password: '',
+          pin:'',
+        },
+        loginrule: {
+          account: [
+            { required: true, message: this.$t('m.validation.name'), trigger: 'blur' }
+          ],
+          password: [
+            { required: true, message:this.$t('m.validation.psw'), trigger: 'blur' }
+          ],
+          pin: [
+            { required: true, message:this.$t('m.validation.pin'), trigger: 'blur' }
+          ],
+        }
       }
     },
     methods: {
-      send: function () {
-        this.active=true;
-        this.logining=this.$t('m.login.loging');
-        let vm=this;
-        vm.$http({
-          url:common.apiLink+'/login.do',
-          body:"username="+vm.account+"&password="+vm.password+"&validate="+vm.pin,
-          credentials:true,
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-          },
-        }).then((response) => {
-          this.active=false;
-          this.logining=this.$t('m.login.login');
-          if(response.body.errors){
-            this.$Message.error(response.body.errors);
-          }else{
-            this.$Message.success(response.body.msg);
-            if(response.body.code==0){
-              window.localStorage.setItem('userdata',JSON.stringify(response.body.user.dept));
-              window.localStorage.setItem('user',JSON.stringify(response.body.user.loginName));
-              this.$router.push('/');
-            }
+      send: function (name) {
+        this.$refs[name].validate((valid) => {
+          if (valid) {
+            this.active=true;
+            this.logining=this.$t('m.login.loging');
+            let vm=this;
+            vm.$http({
+              url:'login.do',
+              body:"username="+vm.loginValidate.account+"&password="+vm.loginValidate.password+"&validate="+vm.loginValidate.pin,
+              credentials:true,
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+              },
+            }).then((response) => {
+              this.active=false;
+              this.logining=this.$t('m.login.login');
+              if(response.body.errors){
+                this.$Message.error(response.body.errors);
+              }else{
+                this.$Message.success(response.body.msg);
+                if(response.body.code==0){
+                  window.localStorage.setItem('userdata',JSON.stringify(response.body.user.dept));
+                  window.localStorage.setItem('user',JSON.stringify(response.body.user.loginName));
+                  this.$router.push('/');
+                }
+              }
+            })
+              .catch(function (response) {
+                console.log(response)
+              })
           }
-        })
-        .catch(function (response) {
-          console.log(response)
-        })
+        });
       },
       qiehuan() {
-        this.imgsrc=common.apiLink+'/validateCodeServlet?aa='+ Math.random();
-        console.log(this.imgsrc)
+        this.imgsrc=apiLink+'validateCodeServlet?aa='+ Math.random();
+      },
+      show(name) {
+        this.send(name)
       }
     },
   }
@@ -104,7 +125,7 @@
     width:100%;
     position: absolute;
     background-color: #193c6d;
-    filter: progid: DXImageTransform.Microsoft.gradient(gradientType=1, startColorstr='#003073', endColorstr='#029797');
+    /*filter: progid: DXImageTransform.Microsoft.gradient(gradientType=1, startColorstr='#003073', endColorstr='#029797');*/
     background-image: -webkit-gradient(linear, 0 0, 100% 100%, color-stop(0, #003073), color-stop(100%, #029797));
     background-image: -webkit-linear-gradient(135deg, #003073, #029797);
     background-image: -moz-linear-gradient(45deg, #003073, #029797);
@@ -163,8 +184,7 @@
   .loginimg{
     height:110px;
     width:100%;
-    background-image: url("/static/img/login2.png");
-    background-position: center -140px;
+    overflow: hidden;
   }
   .logo{
     position: absolute;
@@ -180,74 +200,28 @@
     height:45px;
     width:65%;
     margin:15px auto;
-    /*background: rgba(255,255,255,0);*/
+    position: relative;
   }
   .heng:first-child{
     margin-top:30px;
   }
-  .heng .img{
-    height:100%;
-    width:10%;
-    float:left;
-    margin-right: 10px;
-  }
-  .heng .img img{
-    margin-top: 20%;
-    width:100%;
-  }
-  .heng input{
-    height:36px;
-    width:83%;
-    float:left;
-    margin-top: 4px;
-    border-radius: 4px;
-    border:1px solid #ccc;
-    padding-left:15px;
+  .heng:nth-child(3){
+    position: relative;
   }
   .heng:nth-child(3) input{
-    width:55%;
+    width:70%;
+    float: left;
   }
   .heng .pin{
-    width:20%;
+    width:24%;
     height:50px;
-    margin-top: 9px;
     margin-left: 10px;
-    float: left;
+    position:absolute;
+    right:0;
+    top:0;
   }
   .heng .pin img{
     width:100%;
-  }
-  .login{
-    height:35px;
-    width:65%;
-    margin:15px auto;
-    border-radius: 4px;
-    line-height: 35px;
-    text-align: center;
-    cursor: pointer;
-    background: linear-gradient(to top,#B6B6B7,#F0F0F0);
-  }
-  .login:hover{
-    background:#2b85e4;
-  }
-  .login:hover p{
-    color: #fff;
-  }
-  .login p{
-    font-size: 14px;
-    color: #000;
-  }
-  .actives{
-    background:#B6B6B7;
-  }
-  .loginfoo {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    height: 60px;
-    width: 100%;
-    text-align: center;
-    color:#B6B6B7
   }
   @media (max-width:768px) {
     .heng{
@@ -270,7 +244,6 @@
     }
     .logo{
       display:none;
-
     }
     footer p{
       display: none;

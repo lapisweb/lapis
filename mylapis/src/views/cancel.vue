@@ -98,8 +98,6 @@
   }
 </style>
 <script>
-  import router from '@/router';
-  import common from '../kits/common.js';
   export default {
     name:'cancel',
     data(){
@@ -206,7 +204,7 @@
         this.customerdata=[];
         this.showmanagement=true;
         this.$http({
-          url:common.apiLink+'/biz/customer/findByPage.do',
+          url:'biz/customer/findByPage.do',
           body:{
             "conditions": {
               name:this.name,
@@ -316,7 +314,7 @@
       changePage(page){
         this.customerdata=[];
         this.$http({
-          url:common.apiLink+'/biz/customer/findByPage.do',
+          url:'biz/customer/findByPage.do',
           body:{
             "conditions": {
               name:this.customername,
@@ -422,7 +420,7 @@
       confirm(){
         this.token=true;
         this.$http({
-          url:common.apiLink+'/biz/trade/applyRefundTrade.do',
+          url:'biz/trade/applyRefundTrade.do',
           body:{
             customerId:this.currentcustomer.customerid,
             refundTradeId:this.traderecord.tradeId,
@@ -450,7 +448,7 @@
         this.message=true;
         this.currentcustomer=e;
         this.$http({
-          url:common.apiLink+'/biz/trade/findCanRefundTrade.do',
+          url:'biz/trade/findCanRefundTrade.do',
           body:{
             uid:this.currentcustomer.customerid,
           },
@@ -463,7 +461,7 @@
           this.traderecord=response.body.tradeRecord;
           if(this.traderecord){
             this.$http({
-              url:common.apiLink+'/biz/trade/getRefundTradeTask.do',
+              url:'biz/trade/getRefundTradeTask.do',
               body:{
                 refundTradeId:this.traderecord.tradeId,
               },
@@ -503,7 +501,7 @@
       },
       overtasks(){
         this.$http({
-          url:common.apiLink+'/biz/trade/endTaskUnDoRefund.do',
+          url:'biz/trade/endTaskUnDoRefund.do',
           body:{
             customerId:this.currentcustomer.customerid,
             refundTradeId:this.traderecord.tradeId,
@@ -526,7 +524,7 @@
       },
       instance(){
         this.$http({
-          url:common.apiLink+'/biz/trade/doRefundLocale.do',
+          url:'biz/trade/doRefundLocale.do',
           body:{
             customerId:this.currentcustomer.customerid,
             refundTradeId:this.traderecord.tradeId,
@@ -551,7 +549,7 @@
       },
       reapply(){
         this.$http({
-          url:common.apiLink+'/biz/trade/reApplyRefundTrade.do',
+          url:'biz/trade/reApplyRefundTrade.do',
           body:{
             customerId:this.currentcustomer.customerid,
             taskId: this.taskid,
