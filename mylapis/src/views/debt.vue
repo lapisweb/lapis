@@ -158,8 +158,7 @@
                     trigger:"hover",
                     content:this.$t('m.debt.repay')
                   },
-                },[
-                  h('Button', {
+                },[h('Button', {
                       props: {
                         type: 'primary',
                         size: 'small'
@@ -187,8 +186,7 @@
                       trigger:"hover",
                       content:this.$t('m.debt.add')
                     },
-                  },[
-                  h('Button', {
+                  },[h('Button', {
                       props: {
                         type: 'info',
                         size: 'small',
@@ -216,8 +214,7 @@
                       trigger:"hover",
                       content:this.$t('m.debt.reduce')
                     },
-                  },[
-                    h('Button', {
+                  },[h('Button', {
                         props: {
                           type: 'success',
                           size: 'small',

@@ -240,7 +240,6 @@
             this.tradingdata=response.body.pageInfo.list;
             this.loading=false;
           }
-
         })
       },
       changePage(page) {
@@ -249,6 +248,13 @@
           url:'biz/tradeView/findByPage.do',
           body:{
             "conditions": {
+              // customerIdCode:this.idcard,
+              // customerName:this.name,
+              // operatorId:this.operator,
+              // tradeType:this.tradetype,
+              // billState:this.billstate,
+              // startTime:starttime,
+              // endTime:endtime,
               orderByClause :'trade_date desc'
             },
             "limit":10,

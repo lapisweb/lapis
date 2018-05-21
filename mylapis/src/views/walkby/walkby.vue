@@ -3,9 +3,14 @@
     <div class="h-content">
       <div style="margin:10px 100px;">
         <Button icon="plus-round" type="info" @click="addtask">新增任务</Button>
-        <Button icon="trash-a" type="warning">删除已完成任务</Button>
+        <!--<Button icon="trash-a" type="warning">删除已完成任务</Button>-->
         <div style="margin:10px 0;">
-          <Table ref="selection" :columns="columns4" :data="data1"></Table>
+          <Table ref="selection" :columns="columnslist" :data="tasklist"></Table>
+          <div style="margin: 10px;overflow: hidden">
+            <div style="float: right;">
+              <Page :total="tasktotal" :current="1" @on-change="changePage" :show-total="true" :show-elevator="true"></Page>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -21,84 +26,52 @@
     data() {
       return {
         index:'',
-        columns4: [
+        tasktotal:0,
+        columnslist: [
           {
-            title: '操作员',
-            key: 'name',
-            fixed: 'left',
-            width: 150,
+            title: '任务编号',
+            key: 'taskID',
+          },
+          {
+            title: '任务名',
+            key: 'taskName',
           },
           {
             title: '创建日期',
-            key: 'time',
-            fixed: 'left',
-            width: 160,
+            key: 'updateDate',
           },
           {
             title: '抄表员',
-            key: 'name',
-            width: 150,
+            key: 'technicianName',
           },
           {
             title: '表计数量',
-            key: 'num',
-            width: 120,
+            key: 'meterCount',
           },
-          {
-            title: '计划开始日期',
-            key: 'time',
-            width: 180,
-          },
-          {
-            title: '计划结束日期',
-            key: 'time',
-            width: 180,
-          },
-          {
-            title: '状态',
-            key: 'name',
-            width: 180,
-            render: (h, params) => {
-              const row = params.row;
-              const color = row.status === 1 ? 'blue' : row.status === 2 ? 'green' : 'red';
-              const text = row.status === 1 ? 'Working' : row.status === 2 ? 'Success' : 'Fail';
 
-              return h('Tag', {
-                props: {
-                  type: 'dot',
-                  color: color
-                }
-              }, text);
-            }
-          },
-          {
-            title: '抄表成功的表计数量',
-            key: 'num',
-            width: 140,
-          },
-          {
-            title: '手动录入的表计数量',
-            key: 'num',
-            width: 140,
-          },
-          {
-            title: '抄表失败的表计数量',
-            key: 'num',
-            width: 140,
-          },
-          {
-            title: '任务文件名',
-            key: 'name',
-            width: 200,
-          },
           {
             title: this.$t('m.meter.operate'),
             key: 'action',
             align: 'center',
-            fixed: 'right',
-            width: 100,
             render: (h, params) => {
               return h('div', [
+                h('Button', {
+                    props: {
+                      type: 'success',
+                      size: 'small'
+                    },
+                    on: {
+                      click: () => {
+                        this.edittask(params)
+                      }
+                    }
+                  },[h('Icon',{
+                    props:{
+                      color:'#fff',
+                      type: 'edit',
+                    }
+                  })]
+                ),
                 h('Button', {
                     props: {
                       type: 'error',
@@ -115,103 +88,84 @@
                       type: 'android-delete',
                     }
                   })]
-                )
+                ),
               ]);
             }
           }
         ],
-        data1: [
-          {
-            name: 'John Brown',
-            time: '2018-03-20 16:48:15',
-            num: 100,
-          },
-          {
-            name: 'John Brown',
-            time: '2018-03-20 16:48:15',
-            num: 100,
-          },
-          {
-            name: 'John Brown',
-            time: '2018-03-20 16:48:15',
-            num: 100,
-          },
-          {
-            name: 'John Brown',
-            time: '2018-03-20 16:48:15',
-            num: 100,
-          },
-          {
-            name: 'John Brown',
-            time: '2018-03-20 16:48:15',
-            num: 100,
-          },
-          {
-            name: 'John Brown',
-            time: '2018-03-20 16:48:15',
-            num: 100,
-          },
-          {
-            name: 'John Brown',
-            time: '2018-03-20 16:48:15',
-            num: 100,
-          },
-          {
-            name: 'John Brown',
-            time: '2018-03-20 16:48:15',
-            num: 100,
-          },
-          {
-            name: 'John Brown',
-            time: '2018-03-20 16:48:15',
-            num: 100,
-          },
-          {
-            name: 'John Brown',
-            time: '2018-03-20 16:48:15',
-            num: 100,
-          },
-        ]
+        tasklist: []
       }
     },
     methods: {
+      query(){
+        this.$http({
+          url:'walkby/findByPage.do',
+          body: {conditions: {},"limit": 10, "page": 1},
+          credentials:true,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        }).then((response) => {
+          this.tasktotal=parseInt(response.body.pageInfo.total);
+          this.tasklist=response.body.pageInfo.list;
+        })
+      },
+      changePage(page){
+        this.$http({
+          url:'walkby/findByPage.do',
+          body: {conditions: {},"limit": 10, "page": page},
+          credentials:true,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        }).then((response) => {
+          this.tasklist=response.body.pageInfo.list;
+        })
+      },
       addtask(){
         this.$router.push('/index/walkby/addtask');
       },
-      remove(index){
-        // this.meterid=this.meterdata[index].meterId;
-        this.index=index;
-        this.$Modal.confirm({
-          title: 'Meter import',
-          content:'<p>'+this.$t('m.common.tips')+'</p><p>'+this.$t('m.common.sure')+'</p>',
-          onOk: () => {
-            this.removeconfirm();
-          },
-          onCancel: () => {
-//            this.$Message.info('Clicked cancel');
-          }
-        });
+      edittask(params){
+        console.log(params)
+//         this.index=index;
+//         this.$Modal.confirm({
+//           title: 'Meter import',
+//           content:'<p>'+this.$t('m.common.tips')+'</p><p>'+this.$t('m.common.sure')+'</p>',
+//           onOk: () => {
+//             this.removeconfirm();
+//           },
+//           onCancel: () => {
+// //            this.$Message.info('Clicked cancel');
+//           }
+//         });
       },
       removeconfirm () {
-        this.data1.splice(this.index, 1);
-        // this.$http({
-        //   url:common.apiLink+'/biz/meterStock/del.do',
-        //   body: "id="+this.meterid,
-        //   credentials:true,
-        //   method: 'POST',
-        //   headers: {
-        //     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-        //   },
-        // }).then((response) => {
-        //   if(response.body.msg){
-        //     this.meterdata.splice(this.index, 1);
-        //     this.metertotal=this.metertotal-1;
-        //     this.$Message.success(response.body.msg);
-        //   }else{
-        //     this.$Message.error(response.body.errors);
-        //   }
-        // });
+        let taskid=this.tasklist[this.index].taskID;
+        this.$http({
+          url:'walkby/del.do',
+          body: {
+            id:taskid
+          },
+          credentials:true,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        }).then((response) => {
+          if(response.body.msg){
+            this.tasklist.splice(this.index, 1);
+            this.tasktotal=this.metertotal-1;
+            this.$Message.success(response.body.msg);
+          }else{
+            this.$Message.error(response.body.errors);
+          }
+        });
       }
+    },
+    created(){
+      this.query()
     }
   }
 </script>
