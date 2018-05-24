@@ -288,5 +288,177 @@
 
   //       var markerCluster = new MarkerClusterer(map, markers,
   //         {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+  // RectangularBoundsProcessing(coordinate1, coordinate2) {
+  //   if (coordinate1 != null && coordinate2 != null) {
+  //     var myNorthEast = null;
+  //     var mySouthWest = null;
+  //     var maxRectangularLat = coordinate1.lat();
+  //     var maxRectangularLng = coordinate1.lng();
+  //     var minRectangularLat = coordinate1.lat();
+  //     var minRectangularLng = coordinate1.lng();
+  //     if (coordinate2.lat() > maxRectangularLat) {
+  //       maxRectangularLat = coordinate2.lat();
+  //     }
+  //     if (coordinate2.lng() > maxRectangularLng) {
+  //       maxRectangularLng = coordinate2.lng();
+  //     }
+  //     if (coordinate2.lat() < minRectangularLat) {
+  //       minRectangularLat = coordinate2.lat();
+  //     }
+  //     if (coordinate2.lng() < minRectangularLng) {
+  //       minRectangularLng = coordinate2.lng();
+  //     }
+  //     myNorthEast = new google.maps.LatLng(maxRectangularLat, minRectangularLng);
+  //     mySouthWest = new google.maps.LatLng(minRectangularLat, maxRectangularLng);
+  //     var myBounds = new google.maps.LatLngBounds(myNorthEast, mySouthWest);
+  //   }
+  //   return myBounds;
+  // },
+
+
+  // var dian1 = null;
+  // var dian1lat = null;
+  // var dian1lng = null;
+  // var dian2 = null;
+  // var dian2lat = null;
+  // var dian2lng = null;
+  // var bounds = null;
+  // var juxing = null;
+  // var tuodong = null;
+  // var tuodong1 = null;
+  // var clickEvent = null;
+  //
+  // var huawanyidongdian1 = null;
+  // var huawanyidongdian2 = null;
+  // var huawanyidongchazhilat = null;
+  // var huawanyidongchazhilng = null;
+  // var huawanshubiaodianjishijian = null;
+  // var huawanshubiaoyidongshijian = null;
+  //
+  // clickEvent = google.maps.event.addListener(vm.map, 'click', function (event) {
+  //   if (dian1 == null) {
+  //     dian1 = event.latLng;
+  //     dian1lat = event.latLng.lat();
+  //     dian1lng = event.latLng.lng();
+  //     tuodong = google.maps.event.addListener(vm.map, 'mousemove', function (event) {
+  //       dian2lat = event.latLng.lat();
+  //       dian2lng = event.latLng.lng();
+  //       if (dian1lat > dian2lat) {
+  //         dian2lat = dian2lat + 0.0005;
+  //       } else {
+  //         dian2lat = dian2lat - 0.0005;
+  //       }
+  //       if (dian1lng > dian2lng) {
+  //         dian2lng = dian2lng + 0.0005;
+  //       } else {
+  //         dian2lng = dian2lng - 0.0005;
+  //       }
+  //       if (juxing == null) {
+  //
+  //         dian2 = new google.maps.LatLng(dian2lat, dian2lng);
+  //         bounds = vm.RectangularBoundsProcessing(dian1, dian2);
+  //         var newRectangularAttribute = {
+  //           strokeColor: "#6f77ff",
+  //           strokeOpacity: 0.5,
+  //           strokeWeight: 2,
+  //           fillColor: "#4a85ff",
+  //           fillOpacity: 0.3,
+  //           draggable:true,
+  //           //editable: true,
+  //           map: vm.map,
+  //           bounds: bounds
+  //         };
+  //         juxing = new google.maps.Rectangle(newRectangularAttribute);
+  //       } else {
+  //         if (dian2 != new google.maps.LatLng(dian2lat, dian2lng)) {
+  //           dian2 = new google.maps.LatLng(dian2lat, dian2lng);
+  //           bounds = vm.RectangularBoundsProcessing(dian1, dian2);
+  //           juxing.setBounds(bounds);
+  //           tuodong1 = google.maps.event.addDomListener(juxing, 'mousemove', function (event) {
+  //             dian2lat = event.latLng.lat();
+  //             dian2lng = event.latLng.lng();
+  //             if (dian1lat > dian2lat) {
+  //               dian2lat = dian2lat + 0.0005;
+  //             } else {
+  //               dian2lat = dian2lat - 0.0005;
+  //             }
+  //             if (dian1lng > dian2lng) {
+  //               dian2lng = dian2lng + 0.0005;
+  //             } else {
+  //               dian2lng = dian2lng - 0.0005;
+  //             }
+  //             if (dian2 != new google.maps.LatLng(dian2lat, dian2lng)) {
+  //               dian2 = new google.maps.LatLng(dian2lat, dian2lng);
+  //               bounds = vm.RectangularBoundsProcessing(dian1, dian2);
+  //               juxing.setBounds(bounds);
+  //             }
+  //           });
+  //         }
+  //       }
+  //     });
+  //   } else {
+  //     try {
+  //       juxing.setMap(null);
+  //       bounds = vm.RectangularBoundsProcessing(dian1, dian2);
+  //       var newRectangularAttribute = {
+  //         strokeColor: "#6f77ff",
+  //         strokeOpacity: 0.5,
+  //         strokeWeight: 2,
+  //         fillColor: "#4a85ff",
+  //         fillOpacity: 0.3,
+  //         editable: true,
+  //         draggable:true,
+  //         map: vm.map,
+  //         bounds: bounds
+  //       };
+  //       juxing = new google.maps.Rectangle(newRectangularAttribute);
+  //       dian1 = null;
+  //       dian1lat = null;
+  //       dian1lng = null;
+  //       dian2 = null;
+  //       dian2lat = null;
+  //       dian2lng = null;
+  //       bounds = null;
+  //       google.maps.event.removeListener(clickEvent);
+  //       clickEvent = null;
+  //       google.maps.event.removeListener(tuodong);
+  //       tuodong = null;
+  //       google.maps.event.removeListener(tuodong1);
+  //       tuodong1 = null;
+  //     } catch (e) { }
+  //     huawanshubiaodianjishijian = google.maps.event.addDomListener(juxing, 'click', function (event) {
+  //       if (huawanyidongdian1 == null) {
+  //         huawanyidongdian1 = event.latLng;
+  //         huawanshubiaoyidongshijian = google.maps.event.addDomListener(juxing, 'mousemove', function (event) {
+  //           if ((huawanyidongdian1 != null)) {
+  //             huawanyidongdian2 = event.latLng;
+  //             huawanyidongchazhilat = huawanyidongdian2.lat() - huawanyidongdian1.lat();
+  //             huawanyidongchazhilng = huawanyidongdian2.lng() - huawanyidongdian1.lng();
+  //             juxing.setBounds(new google.maps.LatLngBounds(new google.maps.LatLng(juxing.getBounds().getSouthWest().lat() + huawanyidongchazhilat, juxing.getBounds().getSouthWest().lng() + huawanyidongchazhilng), new google.maps.LatLng(juxing.getBounds().getNorthEast().lat() + huawanyidongchazhilat, juxing.getBounds().getNorthEast().lng() + huawanyidongchazhilng)));
+  //             huawanyidongdian1 = huawanyidongdian2;
+  //           }
+  //         });
+  //         tuodong = google.maps.event.addListener(map, 'mousemove', function (event) {
+  //           if (huawanshubiaoyidongshijian != null && huawanyidongdian1 != null) {
+  //             huawanyidongdian2 = event.latLng;
+  //             huawanyidongchazhilat = huawanyidongdian2.lat() - huawanyidongdian1.lat();
+  //             huawanyidongchazhilng = huawanyidongdian2.lng() - huawanyidongdian1.lng();
+  //             juxing.setBounds(new google.maps.LatLngBounds(new google.maps.LatLng(juxing.getBounds().getSouthWest().lat() + huawanyidongchazhilat, juxing.getBounds().getSouthWest().lng() + huawanyidongchazhilng), new google.maps.LatLng(juxing.getBounds().getNorthEast().lat() + huawanyidongchazhilat, juxing.getBounds().getNorthEast().lng() + huawanyidongchazhilng)));
+  //             huawanyidongdian1 = huawanyidongdian2;
+  //           }
+  //         });
+  //       } else {
+  //         google.maps.event.removeListener(huawanshubiaoyidongshijian);
+  //         huawanshubiaoyidongshijian = null;
+  //         google.maps.event.removeListener(tuodong);
+  //         tuodong = null;
+  //         huawanyidongdian1 = null;
+  //         huawanyidongdian2 = null;
+  //         huawanyidongchazhilat = null;
+  //         huawanyidongchazhilng = null;
+  //       }
+  //     });
+  //   }
+  // });
 </script>
 

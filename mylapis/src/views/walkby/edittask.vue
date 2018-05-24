@@ -50,7 +50,6 @@
   }
 </style>
 <script>
-  // import "../../assets/js/keydragzoom.js"
   export default {
     nane:'addtask',
     data() {
@@ -58,6 +57,7 @@
         lacations: [],
         region:[],
         selectedregion:[],
+        seleregion:[],
         map:'',
         selectedrow:[],
         markers:[],
@@ -65,6 +65,9 @@
         meterIDs:[],
         technician:'',
         technicianList:[],
+        technicianID:'',
+        id:'',
+        meterlist:[],
         //查询表号的表格
         //列名
         metercolumns: [
@@ -96,8 +99,9 @@
       },
       submit(){
         this.$http({
-          url:'walkby/addTask.do',
+          url:'walkby/updateTask.do',
           body: {
+            taskID:this.id,
             regionIDs:this.selectedregion,
             meterIDs:this.meterIDs,
             technicianID:this.technician,
@@ -120,10 +124,15 @@
         if (!!tree && tree.length !== 0) {
           tree.forEach(item => {
             let obj = {};
+            obj.checked=false;
+            obj.expand = true;
+            for(let i=0;i<=this.seleregion.length;i++){
+              if(item.regionCode==this.seleregion[i]){
+                obj.checked=!obj.checked;
+              }
+            }
             obj.title = item.regionName;
             obj.regionCode = item.regionCode;
-            obj.expand = false;
-            obj.selected = false;
             obj.children = this.getTree(item.childRegions); // 递归调用
             arr.push(obj);
           });
@@ -139,7 +148,7 @@
         });
         this.selectedrow=data;
         this.markers.forEach(function (val,index) {
-          val.setIcon(img1);
+          val.setIcon(img1)
           data.forEach(function (val1,index1) {
             if(val1.meterNumber==val.title){
               val.setIcon(img)
@@ -148,7 +157,7 @@
         })
       },
       selregion(selected){
-        // this.meterIDs=[];
+        this.meterIDs=[];
         let arr=[];
         selected.forEach( (val,index)=> {
           arr.push(val.regionCode);
@@ -167,11 +176,10 @@
             val._checked=false;
           });
           this.lacations=response.body.meterList;
-          console.log(this.lacations)
           var point;
           this.lacations.forEach(function (val,index) {
-             point = new google.maps.LatLng(val.latitude, val.longitude);
-             val.location=point;
+            point = new google.maps.LatLng(val.latitude, val.longitude);
+            val.location=point;
           });
           var markers=this.lacations.forEach((val, i)=> {
             var marker= new google.maps.Marker({
@@ -793,40 +801,107 @@
             }
           })
         })
+      },
+      //获取行政区
+      getregion(){
+        this.$http({
+          url:'sys/region/findRegion.do',
+          body:{
+            id:0,
+          },
+          credentials:true,
+          method: 'POST',
+          headers: {
+            'Content-Type':'application/json; charset=UTF-8'
+          },
+        }).then((response) => {
+          this.region.push(response.body.Region);
+          this.region=this.getTree(this.region);
+        });
+      },
+      getmeterinfo(){
+        this.$http({
+          url:'walkby/getMeter.do',
+          credentials:true,
+          body:this.seleregion,
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          method: 'POST',
+        }).then((response) => {
+          response.body.meterList.forEach(function (val,index) {
+            val._checked=false;
+          });
+          this.lacations=response.body.meterList;
+          var point;
+          this.lacations.forEach(function (val,index) {
+            point = new google.maps.LatLng(val.latitude, val.longitude);
+            val.location=point;
+          });
+          var markers=this.lacations.forEach((val, i)=> {
+            var marker= new google.maps.Marker({
+              position: val.location,
+              animation: google.maps.Animation.DROP,
+              map: this.map,
+              title:val.meterNumber,
+              icon:'http://tech2hn.com.au/Images/sc-sl-red.png'
+            });
+            this.meterlist.forEach(function (val1,index1) {
+              if(val1.meterNumber==val.meterNumber){
+                val._checked=true;
+                marker.setIcon('http://tech2hn.com.au/Images/JobSelected.png')
+              }
+            });
+            this.markers.push(marker);
+            return marker;
+          });
+        });
+      },
+      //获取抄表员
+      gettechnicianList(){
+        this.$http({
+          url:'walkby/listTechnician.do',
+          body:{
+            isAll:true,
+          },
+          credentials:true,
+          method: 'POST',
+          headers: {
+            'Content-Type':'application/json; charset=UTF-8'
+          },
+        }).then((response) => {
+          this.technicianList=response.body.technicians;
+          this.technician=this.technicianID
+        });
       }
     },
     mounted(){
-        this.MapInitialize()
-      },
+      this.MapInitialize()
+    },
     created(){
-      //获取行政区
+      //获取当前选中数据
+      this.id = this.$route.params.id;
       this.$http({
-        url:'sys/region/findRegion.do',
-        body:{
-          id:0,
+        url:'walkby/findOne.do',
+        body: {
+          id:this.id
         },
         credentials:true,
         method: 'POST',
         headers: {
-          'Content-Type':'application/json; charset=UTF-8'
+          'Content-Type': 'application/json'
         },
       }).then((response) => {
-        this.region.push(response.body.Region);
-        this.region=this.getTree(this.region);
-      });
-      //获取抄表员
-      this.$http({
-        url:'walkby/listTechnician.do',
-        body:{
-
-        },
-        credentials:true,
-        method: 'POST',
-        headers: {
-          'Content-Type':'application/json; charset=UTF-8'
-        },
-      }).then((response) => {
-        this.technicianList=response.body.technicians;
+        this.technicianID=response.body.walkByTaskInfo.technicianID;
+        this.selectedregion=response.body.walkByTaskInfo.regionIDList
+        response.body.walkByTaskInfo.walkByTaskJson.meterlist.forEach((val,index)=> {
+            val.meterNumber=val.meternumber;
+        });
+        this.meterlist=response.body.walkByTaskInfo.walkByTaskJson.meterlist;
+        this.seleregion=response.body.walkByTaskInfo.regionIDList;
+        this.getregion();
+        this.getmeterinfo();
+        this.gettechnicianList();
       });
       this.keydragzoom ()
     },
@@ -861,7 +936,8 @@
     float:left;
   }
   .addtasktitle{
-      line-height: 45px;
+    line-height: 45px;
   }
 </style>
+
 

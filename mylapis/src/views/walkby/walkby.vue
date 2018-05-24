@@ -60,15 +60,19 @@
                       type: 'success',
                       size: 'small'
                     },
+                    style: {
+                      marginRight: '5px'
+                    },
                     on: {
                       click: () => {
-                        this.edittask(params)
+                        this.edittask(params.row)
                       }
                     }
                   },[h('Icon',{
                     props:{
                       color:'#fff',
                       type: 'edit',
+                      size:12
                     }
                   })]
                 ),
@@ -107,6 +111,7 @@
             'Content-Type': 'application/json'
           },
         }).then((response) => {
+          console.log(response.body.pageInfo.list)
           this.tasktotal=parseInt(response.body.pageInfo.total);
           this.tasklist=response.body.pageInfo.list;
         })
@@ -127,19 +132,18 @@
       addtask(){
         this.$router.push('/index/walkby/addtask');
       },
-      edittask(params){
-        console.log(params)
-//         this.index=index;
-//         this.$Modal.confirm({
-//           title: 'Meter import',
-//           content:'<p>'+this.$t('m.common.tips')+'</p><p>'+this.$t('m.common.sure')+'</p>',
-//           onOk: () => {
-//             this.removeconfirm();
-//           },
-//           onCancel: () => {
-// //            this.$Message.info('Clicked cancel');
-//           }
-//         });
+      remove(index){
+        this.index=index;
+        this.$Modal.confirm({
+          title: 'Meter import',
+          content:'<p>'+this.$t('m.common.tips')+'</p><p>'+this.$t('m.common.sure')+'</p>',
+          onOk: () => {
+            this.removeconfirm();
+          },
+          onCancel: () => {
+//            this.$Message.info('Clicked cancel');
+          }
+        });
       },
       removeconfirm () {
         let taskid=this.tasklist[this.index].taskID;
@@ -162,7 +166,17 @@
             this.$Message.error(response.body.errors);
           }
         });
-      }
+      },
+      edittask(row){
+        let id=row.taskID;
+        this.$router.push({
+          path: '/index/walkby/edittask',
+          name: 'edittask',
+          params:  {
+            id:id
+          }
+        })
+      },
     },
     created(){
       this.query()

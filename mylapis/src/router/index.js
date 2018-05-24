@@ -21,7 +21,9 @@ import CheckList from '@/views/check'
 import Realtime from '@/views/realtime'
 import Walkby from '@/views/walkby/walkby'
 import Addtask from '@/views/walkby/addtask'
+import Edittask from '@/views/walkby/Edittask'
 import Repair from '@/views/complain/repair'
+import Monthdata from '@/views/monthdata'
 import addRepair from '@/views/complain/addrepair'
 import Maintain from '@/views/complain/maintain'
 import OpenInvoice from '@/views/invoice-open'
@@ -55,9 +57,11 @@ const router = new Router({
         { path: 'realtime', component:Realtime, name: 'realtime' },
         { path: 'walkby', component:Walkby, name: 'walkby' ,},
         { path: 'walkby/addtask', component:Addtask, name: 'addtask' ,},
+        { path: 'walkby/edittask', component:Edittask, name: 'edittask' ,},
         { path: 'repair', component:Repair, name: 'repair' ,},
         { path: 'repair/addrepair', component:addRepair, name: 'addrepair' ,},
         { path: 'maintain', component:Maintain, name: 'maintain' ,},
+        { path: 'monthdata', component:Monthdata, name: 'monthdata' ,},
         {
           path: 'invoiceopen',
           component:OpenInvoice,
