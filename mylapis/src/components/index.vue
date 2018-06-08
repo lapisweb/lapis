@@ -1,5 +1,8 @@
 <template>
   <div>
+    <Alert v-if="install" closable show-icon style="position:absolute;z-index:10000;width:50%;top:100px;left:50%;margin-left:-25%;text-align: center">
+      {{ $t("m.common.install1")}} <a href="http://laisontechsoft.xicp.net:7778/file/CLodop_Setup_for_Win32NT_3.029.exe">{{ $t("m.common.install2")}}</a> {{ $t("m.common.install3")}}
+    </Alert>
       <div class="layout-ceiling">
         <div class="layout-logo">
           <a href="/#/">
@@ -25,11 +28,32 @@
           </div>
           <div class="layout-right">
             <div class="bigscreen">
-              <a href="javascript:;">
-                <Badge dot>
-                  <Icon type="android-notifications" size="16"></Icon>
-                </Badge>
-              </a>
+              <Dropdown trigger="custom" :visible="visible">
+                <a href="javascript:;" @click.stop="handleOpen">
+                  <Badge :count="count" class-name="demo-badge-alone">
+                    <Icon type="android-notifications" color="white" size="16" style="margin-top: -5px;"></Icon>
+                  </Badge>
+                </a>
+                <DropdownMenu slot="list" style="width:240px;">
+                  <h3 style="padding:0 10px;border-bottom: 1px solid #ccc; font-size: 12px;line-height: 28px;">共有 <span style="color: #2d8cf0">{{count}}</span> 条未读消息</h3>
+                  <div class="alalist">
+                    <ul v-if="count==0">
+                      <li>
+                        <p class="nop">暂无未读信息</p>
+                      </li>
+                    </ul>
+                    <ul v-for="item in alarminfo" v-else>
+                      <li>
+                        <p>{{item.alarmContent1}}</p>
+                        <p class="secondp"><span style="float: left">类型 {{item.alarmType}}</span> <span style="float: right">{{item.alarmDate}}</span></p>
+                      </li>
+                    </ul>
+                  </div>
+                  <div style="text-align:center;padding:0 5px;width:100%;line-height: 30px;border-top:1px solid #ccc">
+                    <a href="javascript:;" @click="more">查看更多</a>
+                  </div>
+                </DropdownMenu>
+              </Dropdown>
               <Dropdown  placement="bottom-end">
                 <a href="javascript:void(0)">
                   <Icon type="android-person" color="white" size="16"></Icon>
@@ -119,6 +143,10 @@
         receipt:'',
         invoicelist:[],
         size:'',
+        visible:false,
+        count:0,
+        alarminfo:[],
+        install:false,
       }
     },
     methods:{
@@ -134,7 +162,7 @@
         }).then((response) => {
           if(response.body.logout=='ok'){
             localStorage.removeItem('userdata');
-            location.href='/#/login'
+            this.$router.push('/login');
           }
         })
       },
@@ -157,56 +185,126 @@
           window.localStorage.language=lang;
           window.location.reload()
         })
+      },
+      alarmevent(){
+        this.$Modal.warning({
+          title: '告警信息',
+          content: "ahafhasfhk"
+        });
+      },
+      handleOpen () {
+        this.visible = true;
+        setTimeout(()=>{
+          //展开菜单的时候添加到document的click事件
+          document.addEventListener("click",this.removeEvt)
+        },0)
+      },
+      removeEvt(){
+        this.visible = false
+      },
+      more(){
+        this.$router.push('/index/alarm');
+        // this.count=0;
+      },
+      //获取系统配置
+      getsystem(){
+        this.$http({
+          url:'sysConfig/findAll.do',
+          body: {conditions: {}},
+          credentials:true,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        }).then((response) => {
+          response.body.list.forEach((val,index)=> {
+            if(val.name=='enableDebt'){
+              if(val.state===0){
+                this.enableDebt=0;
+              }
+            }
+          })
+        });
+      },
+      //获取菜单
+      getmenu(){
+        this.$http({
+          url:'getMyBusinessMenu.do',
+          credentials:true,
+          method: 'POST',
+        }).then((response) => {
+          response.body.menu.childMenus.forEach((val,index)=> {
+            if(val.childMenus){
+              val.childMenus.forEach((val1,index1) => {
+                if(val1.url=='/index/debt'){
+                  if(this.enableDebt==0){
+                    val.childMenus.splice(index1,1);
+                  }
+                }
+              })
+            }
+          });
+          if(response.body.menu.childMenus){
+            this.nav=response.body.menu.childMenus;
+          }
+        });
+      },
+      //查询告警信息
+      getalarm(){
+        this.$http({
+          url:'getMyAlarm.do',
+          credentials:true,
+          body:{
+            conditions: {
+            },
+            limit: 10,
+            page: 1
+          },
+          method: 'POST',
+        }).then((response) => {
+          response.body.pageInfo.list.forEach(function (val,index) {
+            val.alarmContent=JSON.parse(val.alarmContent);
+            val.alarmContent.forEach(function (val1,index1) {
+              val.alarmContent1='walkby抄表任务\n'+val1.taskName+'还未执行';
+            });
+          });
+          this.alarminfo=response.body.pageInfo.list;
+          this.count=response.body.pageInfo.total;
+        });
+      },
+      //获取打印机
+      getprinter(){
+        LODOP.Printers.list.forEach(function (val,index) {
+          val.value=index;
+        });
+        this.invoicelist=LODOP.Printers.list;
       }
     },
     created(){
       //读取电脑上的打印机设备
-      LODOP.Printers.list.forEach(function (val,index) {
-        val.value=index;
-      });
-      this.invoicelist=LODOP.Printers.list;
-      //获取系统配置
-      this.$http({
-        url:'sysConfig/findAll.do',
-        body: {conditions: {}},
-        credentials:true,
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-      }).then((response) => {
-        response.body.list.forEach((val,index)=> {
-          if(val.name=='enableDebt'){
-            if(val.state===0){
-              this.enableDebt=0;
-            }
-          };
-        })
-      });
-      this.$http({
-        url:'getMyBusinessMenu.do',
-        credentials:true,
-        method: 'POST',
-      }).then((response) => {
-        response.body.menu.childMenus.forEach((val,index)=> {
-          if(val.childMenus){
-            val.childMenus.forEach((val1,index1) => {
-              if(val1.url=='/index/debt'){
-                if(this.enableDebt==0){
-                  val.childMenus.splice(index1,1);
-                }
-              }
-            })
-          }
-        });
-        if(response.body.menu.childMenus){
-          this.nav=response.body.menu.childMenus;
-        }
-      });
+      try
+      {
+        this.getprinter()
+      }
+      catch(err)
+      {
+        this.install=true;
+      }
+      this.getsystem();
+      this.getmenu();
+      this.getalarm();
     }
   }
 </script>
 <style>
+  .bigscreen .demo-badge-alone{
+    height: 15px;
+    border-radius: 10px;
+    min-width: 15px;
+    line-height: 13px;
+    padding: 0 2px;
+    font-size: 12px;
+  }
   .disview{
     width:200px;
     background: #fff;
@@ -280,6 +378,28 @@
   }
   .layout-ceiling-main .ivu-menu-horizontal .ivu-menu-submenu{
     padding:0 10px;
+  }
+  .alalist{
+    max-height:180px;
+    overflow: auto;
+    padding:0 10px;
+  }
+  .alalist ul li{
+    line-height: 20px;
+    border-bottom:1px solid #DEDEDE;
+    padding: 5px 0 0
+  }
+  .alalist ul li .nop{
+    line-height: 40px;
+    text-align: center;
+  }
+  .alalist ul li .secondp{
+    overflow: hidden;
+    color: #bbb;
+    font-size: 10px;
+  }
+  .alalist ul li:last-child{
+    border-bottom:none;
   }
   @media (max-width:1100px) {
     .ivu-menu-submenu-title span{

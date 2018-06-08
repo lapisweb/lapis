@@ -1,14 +1,11 @@
 <template>
-  <div class="h-content">
-    <div style="margin:10px 60px;">
-      <div class="h-title">
-        <p>{{$t('m.walkby.addtask')}}</p>
-      </div>
-      <Card style="overflow: hidden;">
-        <p class="addtasktitle">{{$t('m.walkby.sel1')}}</p>
+  <div>
+    <div class="h-content">
+      <Card style="overflow: hidden;margin:10px 60px;">
+        <p class="addtasktitle">选择表计</p>
         <div class="task-left">
           <div style="padding: 5px 15px;">
-            <p style="font-size: 12px">{{$t('m.walkby.sel2')}}</p>
+            <p>选择行政区域</p>
             <Tree :data="region" show-checkbox @on-check-change="selregion"></Tree>
           </div>
         </div>
@@ -21,15 +18,14 @@
           </div>
         </div>
       </Card>
-      <Card>
-        <p class="addtasktitle">{{$t('m.walkby.sel3')}}</p>
-        <Select v-model="technician" clearable style="width:200px" :placeholder="$t('m.walkby.reader')">
+      <Card style="margin:10px 60px;">
+        <p class="addtasktitle">选择抄表员</p>
+        <Select v-model="technician" clearable style="width:200px">
           <Option v-for="item in technicianList" :value="item.id" :key="item.id">{{ item.loginName }}</Option>
         </Select>
       </Card>
-      <div style="margin:10px 0">
-        <Button type="primary" @click="submit()">{{$t('m.common.confirm')}}</Button>
-        <Button @click="cancel()">{{$t('m.common.cancel')}}</Button>
+      <div style="margin:10px 60px;">
+        <Button type="primary" @click="submit()">确定</Button>
       </div>
     </div>
   </div>
@@ -54,19 +50,21 @@
   }
 </style>
 <script>
+  // import "../../assets/js/keydragzoom.js"
   export default {
     nane:'addtask',
     data() {
       return {
+        lacations: [],
         region:[],
+        selectedregion:[],
         map:'',
+        selectedrow:[],
         markers:[],
         walkbycurrent:0,
-        icons:['../../static/icon1.png','../../static/icon2.png'],
+        meterIDs:[],
         technician:'',
         technicianList:[],
-        selectedregions:[],
-        lacations: [],
         //查询表号的表格
         //列名
         metercolumns: [
@@ -81,24 +79,12 @@
         ],
       }
     },
-    computed: {
-      // 计算属性的 getter
-      meterIDs:function () {
-        let arr=[];
-        this.lacations.forEach((val,index)=> {
-          if(val._checked){
-            arr.push(val.meterId);
-          }
-        });
-        return arr;
-      },
-    },
     methods: {
       submit(){
         this.$http({
           url:'walkby/addTask.do',
           body: {
-            regionIDs:this.selectedregions,
+            regionIDs:this.selectedregion,
             meterIDs:this.meterIDs,
             technicianID:this.technician,
           },
@@ -114,9 +100,6 @@
             this.$router.push('/index/walkby');
           }
         })
-      },
-      cancel(){
-        this.$router.push('/index/walkby');
       },
       getTree(tree = []) {
         let arr = [];
@@ -134,67 +117,71 @@
         return arr;
       },
       metersel(data){
-        this.lacations.forEach((val,index)=>{
-          val._checked=false;
-          data.forEach((val1,index1)=> {
-            if(val1.meterId === val.meterId){
-              val._checked=true;
-            }
-          });
+        let img='http://tech2hn.com.au/Images/JobSelected.png';
+        let img1='http://tech2hn.com.au/Images/sc-sl-red.png';
+        let meters=[];
+        data.forEach((val,index)=> {
+          meters.push(val.meterId)
         });
-        this.markers.forEach(function (val,index) {
-          val.setIcon(val.iconList[1]);
-          data.forEach(function (val1,index1) {
+        this.meterIDs.push(meters);
+        this.selectedrow=data;
+        this.markers.forEach( (val,index)=> {
+          val.setIcon(img1);
+          data.forEach( (val1,index1)=> {
             if(val1.meterNumber==val.title){
-              val.setIcon(val.iconList[0])
+              val.setIcon(img)
             }
           });
         })
       },
       selregion(selected){
+        this.markers.forEach( (val,index) =>{
+          val.setMap(null)
+        });
         let arr=[];
         selected.forEach( (val,index)=> {
           arr.push(val.regionCode);
         });
-        this.selectedregions=arr;
+        this.selectedregion=arr;
         this.$http({
-          url:'walkby/getUnTaskMeter.do',
+          url:'walkby/getMeter.do',
           credentials:true,
-          body:this.selectedregions,
+          body:this.selectedregion,
           headers: {
             'Content-Type': 'application/json'
           },
           method: 'POST',
         }).then((response) => {
-          this.markers.forEach((val,index)=>{
-            val.setMap(null);
-          });
-          this.markers=[];
-          response.body.meterList.forEach((val,index)=> {
+          response.body.meterList.forEach(function (val,index) {
             val._checked=false;
-            this.meterIDs.forEach(function (val1,index1) {
-              if(val1===val.meterId){
-                val._checked=true;
-              }
-            });
-            val.location=new google.maps.LatLng(val.latitude, val.longitude);
           });
           this.lacations=response.body.meterList;
-
+          var point;
+          this.lacations.forEach(function (val,index) {
+            point = new google.maps.LatLng(val.latitude, val.longitude);
+            val.location=point;
+          });
           var markers=this.lacations.forEach((val, i)=> {
-
             var marker= new google.maps.Marker({
               position: val.location,
               animation: google.maps.Animation.DROP,
               map: this.map,
               title:val.meterNumber,
-              meter:val,
-              iconList:this.icons,
-              icon:val._checked?this.icons[0]:this.icons[1]
+              icon:'http://tech2hn.com.au/Images/sc-sl-red.png'
             });
             google.maps.event.addListener(marker, 'click', ()=> {
               val._checked= !val._checked;
-              marker.setIcon(val._checked?this.icons[0]:this.icons[1]);
+              marker.setIcon(val._checked?'http://tech2hn.com.au/Images/JobSelected.png':'http://tech2hn.com.au/Images/sc-sl-red.png');
+              if(val._checked==true){
+                this.meterIDs.push(val.meterId);
+              }else{
+                this.meterIDs.forEach( (val2,i2)=> {
+                  if(val2==val.meterId){
+                    this.meterIDs.splice(i2,1);
+                  }
+                })
+              }
+              console.log(this.meterIDs)
             });
             this.markers.push(marker);
             return marker;
@@ -202,39 +189,26 @@
         });
       },
       MapInitialize() {
-        // if (navigator.geolocation) {
-          //获取当前地理位置信息
-          let latitude,longitude;
-          navigator.geolocation.getCurrentPosition((pos,error)=>{
-            console.log("asfasfasfs")
-            latitude = pos.coords.latitude;
-            longitude = pos.coords.longitude;
-            console.log("当前位置：经度：" + latitude + " 纬度：" + longitude);
-          });
-            var vm=this;
-            //构建经纬度点
-            var uluru = {lat: 30.26, lng:120.19};
-            var myOptions =
-              {
-                zoom: 12,
-                center: uluru,
-                // mapTypeId: google.maps.MapTypeId.HYBRID,
-                //关闭 API 的默认用户界面设置
-                // disableDefaultUI: true,
-                mapTypeControl: false,
-                gestureHandling: 'greedy',
-                //标尺
-                scaleControl: true,
-                scaleControlOptions: {
-                  position: google.maps.ControlPosition.RIGHT_BOTTOM
-                }
-              };
-            this.map = new google.maps.Map(document.getElementById("map"), myOptions); //实例化地图
-            this.map.enableKeyDragZoom();
-
-        // } else {
-        //   alert("你的浏览器不支持HTML5来获取地理位置信息。");
-        // }
+        var vm=this;
+        //构建经纬度点
+        var latlng = new google.maps.LatLng(30.2635975183, 120.1073916361);
+        var myOptions =
+          {
+            zoom: 15,
+            center: latlng,
+            // mapTypeId: google.maps.MapTypeId.HYBRID,
+            //关闭 API 的默认用户界面设置
+            // disableDefaultUI: true,
+            mapTypeControl: false,
+            gestureHandling: 'greedy',
+            //标尺
+            scaleControl: true,
+            scaleControlOptions: {
+              position: google.maps.ControlPosition.RIGHT_BOTTOM
+            }
+          };
+        this.map = new google.maps.Map(document.getElementById("map"), myOptions); //实例化地图
+        this.map.enableKeyDragZoom();
       },
       keydragzoom () {
         let vm=this;
@@ -675,7 +649,9 @@
          */
 
         DragZoom.prototype.onMouseUp_ = function (e) {
+
           this.mouseDown_ = false;
+
           if (this.dragging_) {
             // MyBnd = null;
             var left = Math.min(this.startPt_.x, this.endPt_.x);
@@ -736,6 +712,10 @@
             google.maps.event.trigger(this, 'deactivate');
           }
         };
+
+
+
+
         /**
          * @name google.maps.Map
          * @class These are new methods added to the Google Maps API's
@@ -786,15 +766,28 @@
         };
       },
       SelectMarkers(Bounds) {
+        this.meterIDs=[];
+        let img='http://tech2hn.com.au/Images/JobSelected.png';
+        let img1='http://tech2hn.com.au/Images/sc-sl-red.png';
+        let draglist=[];
         for (var i = 0; i < this.markers.length; i++) {
           let marker = this.markers[i];
-          marker.setIcon(this.icons[1]);
-          marker.meter._checked=false;
+          marker.setIcon(img1);
           if (Bounds.contains(marker.getPosition()) == true) {
-            marker.setIcon(this.icons[0])
-            marker.meter._checked=true;
+            draglist.push(marker);
+            marker.setIcon(img)
           }
         }
+        this.selectedrow=draglist;
+        this.lacations.forEach((val1,i1)=> {
+          val1._checked=false;
+          this.selectedrow.forEach( (val2,i2)=> {
+            if(val1.meterNumber==val2.title){
+              val1._checked=true;
+              this.meterIDs.push(val1.meterId);
+            }
+          })
+        })
       },
       //获取行政区
       getregion(){
@@ -870,18 +863,6 @@
   }
   .addtasktitle{
     line-height: 45px;
-  }
-  .h-title{
-    height:35px;
-    width:100%;
-    background:#5cadff;
-    margin-top:10px;
-    border-radius: 4px 4px 0 0;
-  }
-  .h-title p{
-    color:#fff;
-    line-height: 35px;
-    padding:0 10px;
   }
 </style>
 

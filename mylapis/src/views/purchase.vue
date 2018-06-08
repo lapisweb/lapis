@@ -372,7 +372,7 @@
           {
             title: this.$t('m.customerinfo.label9'),
             key: 'status',
-            width:'160px',
+            width:160,
             render: (h, params) => {
               const row = params.row;
               let color = row.status;
@@ -393,7 +393,6 @@
                 color='blue';
                 text=this.$t('m.cancel.text5')
               }
-
               return h('Tag', {
                 props: {
                   type: 'dot',

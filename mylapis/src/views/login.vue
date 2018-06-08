@@ -115,7 +115,7 @@
       },
       show(name) {
         this.send(name)
-      }
+      },
     },
   }
 </script>

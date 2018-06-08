@@ -298,7 +298,7 @@
         </div>
         <div style="margin:20px auto 120px;width: 300px;">
           <Button type="primary" :disabled="prevable" @click="prev('formValidateopen')">{{ $t("m.open.prev") }}</Button>
-          <Button type="primary" @click="next('formValidateopen')">{{xiayibu}}</Button>
+          <Button type="primary" :loading="nextloading" @click="next('formValidateopen')">{{xiayibu}}</Button>
         </div>
       </Form>
       <div v-if="opensuccess">
@@ -471,6 +471,7 @@
         current: 0,
         loading:false,
         prevable:false,
+        nextloading:false,
         querycondition:'',
 
         addfujiafei:false,
@@ -669,6 +670,7 @@
               }
               if (this.current ==2) {
                 this.current = 2;
+                this.nextloading=true;
                 this.$http({
                   url:'biz/customer/openAccount.do',
                   body: {
@@ -691,6 +693,7 @@
                   this.invoicedata=response.body.tradeRecord;
                   if(response.body.msg){
                     this.opensuccess=true;
+                    this.nextloading=false;
                     this.kaihufapiao=true;
                   }else{
                     this.$Message.error(response.body.errors);
@@ -705,6 +708,7 @@
               }
               if (this.current ==3) {
                 this.current = 3;
+                this.nextloading=true;
                 this.$http({
                   url:'biz/customer/openAccount.do',
                   body: {
@@ -729,6 +733,7 @@
                   this.invoicedata=response.body.tradeRecord;
                   if(response.body.msg){
                     this.opensuccess=true;
+                    this.nextloading=false;
                     this.kaihufapiao=true;
                   }else{
                     this.$Message.error(response.body.errors);
@@ -743,6 +748,7 @@
               }
               if (this.current ==3) {
                 this.current = 3;
+                this.nextloading=true;
                 this.$http({
                   url:'biz/customer/openAccount.do',
                   body: {
@@ -768,6 +774,7 @@
                   this.invoicedata=response.body.tradeRecord;
                   if(response.body.msg){
                     this.opensuccess=true;
+                    this.nextloading=false;
                     this.kaihufapiao=true;
                   }else{
                     this.$Message.error(response.body.errors);
@@ -782,6 +789,7 @@
               }
               if (this.current ==4) {
                 this.current = 4;
+                this.nextloading=true;
                 this.$http({
                   url:'biz/customer/openAccount.do',
                   body: {
@@ -811,6 +819,7 @@
                   this.incusdata=response.body.customerInfo;
                   if(response.body.msg){
                     this.opensuccess=true;
+                    this.nextloading=false;
                     this.kaihufapiao=true;
                   }else{
                     this.$Message.error(response.body.errors);
@@ -928,6 +937,7 @@
         this.formValidateopen.debt=0;
         this.formValidateopen.meterno="";
         this.xiayibu=this.$t("m.open.next");
+        this.nextloading=false;
         this.myprint()
       },
       addifeeok () {

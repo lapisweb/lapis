@@ -4,12 +4,15 @@
       <div style="margin:10px 100px;">
         <Input clearable v-model="name" :placeholder="$t('m.customerinfo.label1')" style="width: 180px"></Input>
         <Input clearable  v-model="tel" :placeholder="$t('m.customerinfo.label3')" style="width: 180px"></Input>
-        <Input clearable  v-model="meterno" placeholder="表号" style="width: 180px"></Input>
+        <Input clearable  v-model="meterno" :placeholder="$t('m.open.metercolumnstitle1')" style="width: 180px"></Input>
         <div style="margin:8px 0"></div>
-        <DatePicker split-panels type="daterange" placement="bottom-start" placeholder="日期" style="width: 180px" @on-change="changedate"></DatePicker>
+        <DatePicker split-panels type="daterange" placement="bottom-start" :placeholder="$t('m.form.selectdate')" style="width: 180px" @on-change="changedate"></DatePicker>
+        <!--<div style="position: relative">-->
+          <!--<Tree :data="region" show-checkbox @on-check-change="selregion"></Tree>-->
+        <!--</div>-->
         <Button type="primary" icon="ios-search" @click="query">{{$t('m.common.query')}}</Button>
         <div style="margin:10px 0;">
-          <Table ref="selection" :columns="monthcolumns" :data="monthdatas"></Table>
+          <Table :loading="loading" stripe ref="selection" :columns="monthcolumns" :data="monthdatas"></Table>
           <div style="margin: 10px;overflow: hidden">
             <div style="float: right;">
               <Page :total="monthdatatotal" :current="1" @on-change="changePage" :show-total="true" :show-elevator="true"></Page>
@@ -29,41 +32,47 @@
     nane:'monthdata',
     data() {
       return {
+        loading:false,
         name:'',
         tel:'',
         meterno:'',
         selecttime:[],
         monthcolumns:[
           {
-            title: '客户名',
+            title: this.$t('m.customerinfo.label1'),
             key: 'customerName',
           },
           {
-            title: '电话号',
+            title: this.$t('m.customerinfo.label3'),
             key: 'telephone',
           },
           {
-            title: '表号',
+            title: this.$t('m.customerinfo.label7'),
             key: 'meterNumber',
           },
           {
-            title: '冻结时间',
+            title: this.$t('m.walkby.ftime'),
             key: 'freezeDate',
           },
           {
-            title: '冻结数据',
+            title: this.$t('m.walkby.fdata'),
             key: 'freezeVolume',
           },
         ],
         monthdatas:[],
         monthdatatotal:0,
+        region:[],
       }
     },
     methods: {
+      selregion(selected){
+        console.log(selected)
+      },
       changedate(date){
         this.selecttime=date;
       },
       query(){
+        this.loading=true;
         let startTime=this.selecttime[0];
         let endTime=this.selecttime[1];
         this.$http({
@@ -84,12 +93,13 @@
             'Content-Type': 'application/json'
           },
         }).then((response) => {
-          console.log(response.body.pageInfo.list)
           this.monthdatatotal=parseInt(response.body.pageInfo.total);
           this.monthdatas=response.body.pageInfo.list;
+          this.loading=false;
         })
       },
       changePage(page){
+        this.loading=true;
         let startTime=this.selecttime[0];
         let endTime=this.selecttime[1];
         this.$http({
@@ -109,11 +119,44 @@
           },
         }).then((response) => {
           this.monthdatas=response.body.pageInfo.list;
+          this.loading=false;
         })
+      },
+      getTree(tree = []) {
+        let arr = [];
+        if (!!tree && tree.length !== 0) {
+          tree.forEach(item => {
+            let obj = {};
+            obj.title = item.regionName;
+            obj.regionCode = item.regionCode;
+            obj.expand = false;
+            obj.selected = false;
+            obj.children = this.getTree(item.childRegions); // 递归调用
+            arr.push(obj);
+          });
+        }
+        return arr;
+      },
+      getregion(){
+        this.$http({
+          url:'sys/region/findRegion.do',
+          body:{
+            id:0,
+          },
+          credentials:true,
+          method: 'POST',
+          headers: {
+            'Content-Type':'application/json; charset=UTF-8'
+          },
+        }).then((response) => {
+          this.region.push(response.body.Region);
+          this.region=this.getTree(this.region);
+        });
       },
     },
     created(){
-      this.query()
+      this.query();
+      this.getregion();
     }
   }
 </script>

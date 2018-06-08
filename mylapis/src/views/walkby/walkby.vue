@@ -2,10 +2,17 @@
   <div>
     <div class="h-content">
       <div style="margin:10px 100px;">
-        <Button icon="plus-round" type="info" @click="addtask">新增任务</Button>
-        <!--<Button icon="trash-a" type="warning">删除已完成任务</Button>-->
+        <div>
+          <Select v-model="technician" clearable style="width:180px" :placeholder="$t('m.walkby.reader')">
+            <Option v-for="item in technicianList" :value="item.id" :key="item.id" >{{ item.loginName }}</Option>
+          </Select>
+          <DatePicker type="daterange" placement="bottom-start" split-panels :placeholder="$t('m.walkby.seltime')" style="width: 200px" @on-change="slectetime"></DatePicker>
+          <Button type="primary" icon="ios-search" @click="query">{{$t('m.common.query')}}</Button>
+        </div>
         <div style="margin:10px 0;">
-          <Table ref="selection" :columns="columnslist" :data="tasklist"></Table>
+          <Button icon="plus-round" type="info" @click="addtask" style="margin-bottom: 5px;">{{$t('m.walkby.addtask')}}</Button>
+          <Button icon="plus-round" type="primary" @click="taskdistribute" style="margin-bottom: 5px;">任务分布</Button>
+          <Table :loading="loading" ref="selection" :columns="columnslist" :data="tasklist"></Table>
           <div style="margin: 10px;overflow: hidden">
             <div style="float: right;">
               <Page :total="tasktotal" :current="1" @on-change="changePage" :show-total="true" :show-elevator="true"></Page>
@@ -25,75 +32,143 @@
     nane:'walkby',
     data() {
       return {
+        technician:'',
+        time:[],
+        technicianList:[],
         index:'',
         tasktotal:0,
+        loading:false,
         columnslist: [
           {
-            title: '任务编号',
+            title: this.$t('m.walkby.col1'),
             key: 'taskID',
           },
           {
-            title: '任务名',
+            title:this.$t('m.walkby.col2'),
             key: 'taskName',
           },
           {
-            title: '创建日期',
+            title: this.$t('m.walkby.col3'),
             key: 'updateDate',
           },
           {
-            title: '抄表员',
+            title: this.$t('m.walkby.col4'),
             key: 'technicianName',
           },
           {
-            title: '表计数量',
+            title: this.$t('m.walkby.col5'),
             key: 'meterCount',
           },
-
+          {
+            title: this.$t('m.walkby.col6'),
+            key: 'taskState',
+            render: (h, params) => {
+              const row = params.row;
+              let colors = row.taskState;
+              let texts = row.taskState;
+              if(row.taskState === 1){
+                colors='green';
+                texts=this.$t('m.walkby.state2')
+              }else if(row.taskState === 0){
+                colors='blue';
+                texts=this.$t('m.walkby.state1')
+              }else{
+                colors='blue';
+                texts=this.$t('m.walkby.state1')
+              }
+              return h('Tag', {
+                props: {
+                  type: 'dot',
+                  color: colors
+                }
+              }, texts);
+            }
+          },
           {
             title: this.$t('m.meter.operate'),
             key: 'action',
-            align: 'center',
             render: (h, params) => {
-              return h('div', [
-                h('Button', {
-                    props: {
-                      type: 'success',
-                      size: 'small'
-                    },
-                    style: {
-                      marginRight: '5px'
-                    },
-                    on: {
-                      click: () => {
-                        this.edittask(params.row)
+              if(params.row.state==0){
+                return h('div', [
+                  h('Button', {
+                      props: {
+                        type: 'primary',
+                        size: 'small'
+                      },
+                      style: {
+                        marginRight: '5px'
+                      },
+                      on: {
+                        click: () => {
+                          this.edittask(params.row)
+                        }
                       }
-                    }
-                  },[h('Icon',{
+                    },[h('Icon',{
+                      props:{
+                        color:'#fff',
+                        type: 'android-create',
+                        size:12
+                      }
+                    })]
+                  ),
+                  h('Button', {
+                      props: {
+                        type: 'error',
+                        size: 'small'
+                      },
+                      on: {
+                        click: () => {
+                          this.remove(params.index)
+                        }
+                      }
+                    },[h('Icon',{
+                      props:{
+                        color:'#fff',
+                        type: 'android-delete',
+                      }
+                    })]
+                  ),
+                ]);
+              }else{
+                return h('div', [
+                  h('Button', {
+                      props: {
+                        type: 'success',
+                        size: 'small'
+                      },
+                      style: {
+                        marginRight: '5px'
+                      },
+                      on: {
+                        click: () => {
+                          this.showinfo(params.row)
+                        }
+                      }
+                    },[h('Icon',{
                     props:{
                       color:'#fff',
-                      type: 'edit',
-                      size:12
+                      type: 'ios-eye',
                     }
-                  })]
-                ),
-                h('Button', {
-                    props: {
-                      type: 'error',
-                      size: 'small'
-                    },
-                    on: {
-                      click: () => {
-                        this.remove(params.index)
+                  })],),
+                  h('Button', {
+                      props: {
+                        type: 'error',
+                        size: 'small'
+                      },
+                      on: {
+                        click: () => {
+                          this.remove(params.index)
+                        }
                       }
-                    }
-                  },[h('Icon',{
-                    props:{
-                      color:'#fff',
-                      type: 'android-delete',
-                    }
-                  })]
-                ),
-              ]);
+                    },[h('Icon',{
+                      props:{
+                        color:'#fff',
+                        type: 'android-delete',
+                      }
+                    })]
+                  ),
+                ]);
+              }
             }
           }
         ],
@@ -101,25 +176,50 @@
       }
     },
     methods: {
+      slectetime(time){
+          this.time=time;
+      },
       query(){
+        this.loading=true;
         this.$http({
           url:'walkby/findByPage.do',
-          body: {conditions: {},"limit": 10, "page": 1},
+          body: {
+            conditions: {
+              technicianID:this.technician,
+              startTime:this.time[0],
+              endTime:this.time[1],
+            },
+            "limit": 10,
+            "page": 1
+          },
           credentials:true,
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
         }).then((response) => {
-          console.log(response.body.pageInfo.list)
+          response.body.pageInfo.list.forEach((val,index)=> {
+            if(val.walkByTaskExecuteRecord){
+              val.taskState=val.walkByTaskExecuteRecord.taskState;
+              val.state=1;
+            }else{
+              val.state=0;
+            }
+          });
           this.tasktotal=parseInt(response.body.pageInfo.total);
           this.tasklist=response.body.pageInfo.list;
+          this.loading=false;
         })
       },
       changePage(page){
+        this.loading=true;
         this.$http({
           url:'walkby/findByPage.do',
-          body: {conditions: {},"limit": 10, "page": page},
+          body: {conditions: {
+              technicianID:this.technician,
+              startTime:this.time[0],
+              endTime:this.time[1],
+            },"limit": 10, "page": page},
           credentials:true,
           method: 'POST',
           headers: {
@@ -127,7 +227,11 @@
           },
         }).then((response) => {
           this.tasklist=response.body.pageInfo.list;
+          this.loading=false;
         })
+      },
+      taskdistribute(){
+        this.$router.push('/index/walkby/distributetask');
       },
       addtask(){
         this.$router.push('/index/walkby/addtask');
@@ -140,9 +244,6 @@
           onOk: () => {
             this.removeconfirm();
           },
-          onCancel: () => {
-//            this.$Message.info('Clicked cancel');
-          }
         });
       },
       removeconfirm () {
@@ -169,6 +270,7 @@
       },
       edittask(row){
         let id=row.taskID;
+        window.sessionStorage.setItem('taskid',JSON.stringify(id));
         this.$router.push({
           path: '/index/walkby/edittask',
           name: 'edittask',
@@ -177,9 +279,40 @@
           }
         })
       },
+      showinfo(row){
+        let content=`
+          <p style="line-height: 24px">${this.$t('m.walkby.con1')}: ${row.meterCount}</p>
+          <p style="line-height: 24px">${this.$t('m.walkby.con2')}: ${row.walkByTaskExecuteRecord.readingSuccessCount}</p>
+          <p style="line-height: 24px">${this.$t('m.walkby.con3')}: ${row.walkByTaskExecuteRecord.manualInputCount}</p>
+          <p style="line-height: 24px">${this.$t('m.walkby.con4')}: ${row.walkByTaskExecuteRecord.readingFailedCount}</p>
+          <p style="line-height: 24px">${this.$t('m.walkby.con5')}: ${row.walkByTaskExecuteRecord.taskDate}</p>`;
+        this.$Modal.info({
+          title:this.$t('m.walkby.con'),
+          content: content,
+          width:'500px',
+        })
+      },
+      //获取抄表员
+      gettechnicianList(){
+        this.$http({
+          url:'walkby/listTechnician.do',
+          body:{
+            isAll:true,
+          },
+          credentials:true,
+          method: 'POST',
+          headers: {
+            'Content-Type':'application/json; charset=UTF-8'
+          },
+        }).then((response) => {
+          this.technicianList=response.body.technicians;
+          this.technician=this.technicianID
+        });
+      }
     },
     created(){
-      this.query()
+      this.gettechnicianList();
+      this.query();
     }
   }
 </script>

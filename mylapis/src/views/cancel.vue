@@ -159,7 +159,7 @@
           {
             title: this.$t('m.customerinfo.label9'),
             key: 'status',
-            width:'160px',
+            width:160,
             render: (h, params) => {
               const row = params.row;
               let color = row.status;

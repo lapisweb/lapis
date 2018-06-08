@@ -1,6 +1,6 @@
 <template>
   <div class="h-content" style="margin:0 100px;">
-    <h3 class="title">选择客户</h3>
+    <h3 class="title">{{$t('m.maintain.selcus')}}</h3>
     <div>
       <Input clearable v-model="name" :placeholder="$t('m.customerinfo.label1')" style="width: 180px"></Input>
       <Input clearable v-model="idcard" :placeholder="$t('m.customerinfo.label2')" style="width: 180px"></Input>
@@ -32,17 +32,17 @@
         </div>
       </div>
     </div>
-    <h3 class="title">故障信息</h3>
-    <p style="line-height: 24px;">故障代码</p>
+    <h3 class="title">{{$t('m.maintain.faultinfo')}}</h3>
+    <p style="line-height: 24px;">{{$t('m.maintain.faultcode')}}</p>
     <Select clearable v-model="breakdownid" style="width:200px">
       <Option v-for="item in breakdown" :value="item.value" :key="item.value">{{ item.label }}</Option>
     </Select>
-    <p style="line-height: 24px;">故障描述</p>
+    <p style="line-height: 24px;">{{$t('m.maintain.faultinfo')}}</p>
     <Input clearable v-model="value6" type="textarea" :rows="3" placeholder="Enter something..."></Input>
-    <h3 class="title">转到维修部</h3>
+    <h3 class="title">{{$t('m.maintain.shift')}}</h3>
     <RadioGroup v-model="state">
-      <Radio label="是"></Radio>
-      <Radio label="否"></Radio>
+      <Radio :label="$t('m.maintain.yes')"></Radio>
+      <Radio :label="$t('m.maintain.no')"></Radio>
     </RadioGroup>
     <div class="h-submit">
       <Button type="primary" @click="queding">{{$t('m.common.submit')}}</Button>
@@ -72,7 +72,7 @@
         message:false,
         customertotal:0,
         currentcustomer:{},
-        state:'是',
+        state:this.$t('m.maintain.yes'),
         breakdownid:'',
         loading:false,
         //用户信息列表
@@ -113,7 +113,6 @@
           {
             title: this.$t('m.customerinfo.label9'),
             key: 'status',
-            width:'160px',
             render: (h, params) => {
               const row = params.row;
               let color = row.status;
@@ -146,35 +145,35 @@
         ],
         //表中信息
         customerdata: [],
-        animal: '是',
+        animal: this.$t('m.maintain.yes'),
         breakdown: [
           {
             value: '0',
-            label: '无任何反应'
+            label: this.$t('m.maintain.fault1')
           },
           {
             value: '1',
-            label: '阀门无法开启'
+            label: this.$t('m.maintain.fault2')
           },
           {
             value: '2',
-            label: '充值提示错误'
+            label: this.$t('m.maintain.fault3')
           },
           {
             value: '3',
-            label: '机械部分不计量'
+            label: this.$t('m.maintain.fault4')
           },
           {
             value: '4',
-            label: '电子部分不计量'
+            label: this.$t('m.maintain.fault5')
           },
           {
             value: '5',
-            label: '液晶付费查看'
+            label: this.$t('m.maintain.fault6')
           },
           {
             value: '6',
-            label: '其他'
+            label: this.$t('m.maintain.fault7')
           }
         ],
       }
@@ -417,9 +416,9 @@
       },
       queding(){
         let state;
-        if(this.state=='是'){
+        if(this.state==$t('m.maintain.yes')){
           state=0
-        } else if(this.state=='否'){
+        } else if(this.state==$t('m.maintain.no')){
           state=3
         }
         this.$http({
@@ -443,7 +442,6 @@
             this.$Message.success(response.body.msg);
             this.$router.push('/index/repair');
           }
-          // this.traderecord=response.body.tradeRecord;
         });
 
       }

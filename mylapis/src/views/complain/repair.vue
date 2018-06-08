@@ -4,23 +4,22 @@
       <div style="margin:10px 100px;">
         <div style="margin:10px 0;">
           <Input clearable v-model="name" :placeholder="$t('m.customerinfo.label1')" style="width: 180px"></Input>
-          <Select clearable v-model="operator" style="width:200px" placeholder="操作员">
+          <Select clearable v-model="operator" style="width:200px" :placeholder="$t('m.deal.operator')">
             <Option v-for="item in alloperators" :value="item.id" :key="item.id">{{ item.loginName }}</Option>
           </Select>
-          <!--<Input v-model="repairid" placeholder="故障代码" style="width: 180px"></Input>-->
-          <Select clearable v-model="complaintTypeId" style="width:200px" placeholder="故障代码">
+          <Select clearable v-model="complaintTypeId" style="width:200px" :placeholder="$t('m.maintain.faultcode')">
             <Option v-for="item in allcomplaintTypeId" :value="item.complaintTypeId" :key="item.complaintTypeId">{{ item.description }}</Option>
           </Select>
           <div style="margin-top: 10px;">
-            <Button type="primary" icon="ios-search" @click="query">全部</Button>
-            <Button type="success" icon="ios-search" @click="waiting">待审核列表</Button>
+            <Button type="primary" icon="ios-search" @click="query">{{$t('m.maintain.button1')}}</Button>
+            <Button type="success" icon="ios-search" @click="waiting">{{$t('m.maintain.case3')}}</Button>
           </div>
         </div>
         <div class="retablebox">
           <header class="filter">
-            <Button class="addbutton" icon="plus-round" type="info" @click="addrepair">添加维修记录</Button>
+            <Button class="addbutton" icon="plus-round" type="info" @click="addrepair">{{$t('m.maintain.button2')}}</Button>
           </header>
-          <Table ref="selection" :columns="columns4" :data="data1"></Table>
+          <Table :loading="loading" ref="selection" :columns="repaircolumns" :data="data1"></Table>
           <div style="margin: 10px;overflow: hidden" v-if="all">
             <div style="float: right;">
               <Page :total="repairtotal" :current="1" @on-change="changePages" :show-total="true" :show-elevator="true"></Page>
@@ -35,35 +34,35 @@
       </div>
     </div>
     <Modal
-      title="审核"
+      :title="$t('m.maintain.check')"
       v-model="shenhebox"
       width="700"
       @on-ok="shenheok"
       :mask-closable="false">
       <div style="background:#eee;padding: 20px">
         <Card :bordered="false">
-          <p slot="title">审核信息</p>
+          <p slot="title">{{$t('m.maintain.checkinfo')}}</p>
           <p>
-            <span>{{$t('m.customerinfo.label1')}}:{{baseinfo.customerName}}</span>
-            <span>{{$t('m.customerinfo.label2')}}:{{baseinfo.identityCode}}</span>
-            <span>{{$t('m.customerinfo.label3')}}:{{baseinfo.telephone}}</span>
+            <span>{{$t('m.customerinfo.label1')}}: {{baseinfo.customerName}}</span>
+            <span>{{$t('m.customerinfo.label2')}}: {{baseinfo.identityCode}}</span>
+            <span>{{$t('m.customerinfo.label3')}}: {{baseinfo.telephone}}</span>
           </p>
           <p>
-            <span>{{$t('m.customerinfo.label5')}}:{{baseinfo.physicalAddress}}</span>
-            <span>提交时间:{{details.complainDate}}</span>
+            <span>{{$t('m.customerinfo.label5')}}: {{baseinfo.physicalAddress}}</span>
+            <span>{{$t('m.maintain.time1')}}: {{details.complainDate}}</span>
           </p>
-          <p>故障代码: {{details.complaintType}}</p>
-          <p>故障描述: {{details.complainContent}}</p>
+          <p>{{$t('m.maintain.faultcode')}}: {{details.complaintType}}</p>
+          <p>{{$t('m.maintain.faultinfo')}}: {{details.complainContent}}</p>
         </Card>
       </div>
       <div style="padding:5px 20px">
-        <p style="line-height: 30px">维修人员{{details.maintainerId}}</p>
-        <p style="line-height: 30px">处理时间{{details.complainDate}}</p>
-        <p style="line-height: 30px">维修记录{{details.handingMethod}}</p>
-        <p>审核</p>
+        <p style="line-height: 30px">{{$t('m.maintain.man')}}: {{details.maintainerId}}</p>
+        <p style="line-height: 30px">{{$t('m.maintain.time2')}}: {{details.complainDate}}</p>
+        <p style="line-height: 30px">{{$t('m.maintain.record')}}: {{details.handingMethod}}</p>
+        <p>{{$t('m.maintain.check')}}</p>
         <RadioGroup v-model="result">
-          <Radio label="审核通过"></Radio>
-          <Radio label="重新维修"></Radio>
+          <Radio :label="$t('m.maintain.pass')"></Radio>
+          <Radio :label="$t('m.maintain.again')"></Radio>
         </RadioGroup>
       </div>
     </Modal>
@@ -92,71 +91,61 @@
         operator:'',
         repairid:'',
         index:'',
+        loading:false,
         repairtotal:0,
         shtotal:0,
         baseinfo:{},
         details:{},
         value:0,
         shenhebox:false,
-        result:'审核通过',
+        result:this.$t('m.maintain.pass'),
         complaintId:'',
         all:true,
         wait:false,
-        columns4: [
+        repaircolumns: [
           {
-            title: '客户姓名',
+            title: this.$t('m.customerinfo.label1'),
             key:'customerName'
           },
           {
-            title: '操作员',
+            title: this.$t('m.deal.operator'),
             key: 'operatorName',
           },
           {
-            title: '提交日期',
+            title:this.$t('m.maintain.time1'),
             key: 'complainDate',
           },
           {
-            title: '故障代码',
+            title: this.$t('m.maintain.faultcode'),
             key: 'complaintType',
           },
           {
-            title: '故障描述',
+            title: this.$t('m.maintain.faultinfo'),
             key: 'complainContent',
           },
           {
-            title: '状态',
+            title: this.$t('m.customerinfo.label9'),
             key: 'state',
-            width: 180,
+            width:200,
             filters: [
               {
-                label: '未分配',
+                label: this.$t('m.maintain.case1'),
                 value: 0
               },
               {
-                label: '维修员处理中',
+                label: this.$t('m.maintain.case2'),
                 value: 1
               },
               {
-                label: '待审核',
+                label: this.$t('m.maintain.case3'),
                 value: 2
               },
               {
-                label: '完成',
+                label: this.$t('m.maintain.case4'),
                 value: 3
               },
             ],
             filterMultiple: false,
-            // filterMethod (value, row) {
-            //   if (value === 0) {
-            //     return this.filter(0);
-            //   } else if (value === 1) {
-            //     return row.state == 1;
-            //   }else if (value === 2) {
-            //     return row.state == 2;
-            //   }else if (value === 3) {
-            //     return row.state == 3;
-            //   }
-            // },
             filterRemote(val,key,row){
               this.filter(val[0])
             },
@@ -166,16 +155,16 @@
               let text = row.state;
               if(row.state === 1 ){
                 color= 'orange';
-                text='维修员处理中';
+                text=this.$t('m.maintain.case2');
               }else if(row.state === 0){
                 color='red';
-                text='未分配'
+                text=this.$t('m.maintain.case1')
               }else if(row.state === 3){
                 color='green';
-                text='完成'
+                text=this.$t('m.maintain.case4')
               }else if(row.state === 2){
                 color='blue';
-                text='待审核'
+                text=this.$t('m.maintain.case3')
               }
 
               return h('Tag', {
@@ -187,20 +176,20 @@
             }
           },
           {
-            title: '操作',
-            align:'center',
+            title:this.$t('m.meter.operate'),
             render: (h, params) => {
               if(params.row.state==2&&JSON.parse(localStorage.getItem('user'))==params.row.operatorName){
                 return h('Button', {
                   props: {
                     type: 'primary',
+                    size: 'small'
                   },
                   on: {
                     click: () => {
                       this.check(params.row)
                     }
                   }
-                }, '审核');
+                }, this.$t('m.maintain.check'));
               }
 
             }
@@ -214,6 +203,7 @@
     },
     methods: {
       query(){
+        this.loading=true;
         this.all=true;
         this.wait=false;
         this.$http({
@@ -241,9 +231,11 @@
             val.complaintType=val.type.description;
           });
           this.data1=response.body.pageInfo.list;
+          this.loading=false;
         });
       },
       changePages(page){
+        this.loading=true;
         this.$http({
           url:'biz/complaint/findByPage.do',
           body:{
@@ -269,13 +261,13 @@
 
           });
           this.data1=response.body.pageInfo.list;
+          this.loading=false;
         });
       },
       addrepair(){
         this.$router.push('/index/repair/addrepair');
       },
       remove(index){
-        // this.meterid=this.meterdata[index].meterId;
         this.index=index;
         this.$Modal.confirm({
           title: 'Meter import',
@@ -283,12 +275,10 @@
           onOk: () => {
             this.removeconfirm();
           },
-          onCancel: () => {
-//            this.$Message.info('Clicked cancel');
-          }
         });
       },
       waiting(){
+        this.loading=true;
         this.all=false;
         this.wait=true;
         this.$http({
@@ -316,9 +306,11 @@
             val.complaintType=val.type.description;
           });
           this.data1=response.body.pageInfo.list;
+          this.loading=false;
         });
       },
       shchangePages(page){
+        this.loading=true;
         this.$http({
           url:'biz/complaint/findUAC.do',
           body:{
@@ -344,6 +336,7 @@
 
           });
           this.data1=response.body.pageInfo.list;
+          this.loading=false;
         });
       },
       check(row){
@@ -354,7 +347,7 @@
       },
       shenheok(){
         let state;
-        if(this.result=='审核通过'){
+        if(this.result==this.$t('m.maintain.pass')){
           state=3;
         }else{
           state=0;
@@ -372,7 +365,7 @@
           },
         }).then((response) => {
             if(response.body.code==0){
-              this.$Message.success('审核通过');
+              this.$Message.success(this.$t('m.maintain.pass'));
               this.waiting()
             }else{
               this.$Message.error(response.body.errors);
@@ -380,6 +373,7 @@
         });
       },
       filter(state){
+        this.loading=true;
         this.$http({
           url:'biz/complaint/findByPage.do',
           body:{
@@ -406,6 +400,7 @@
             val.complaintType=val.type.description;
           });
           this.data1=response.body.pageInfo.list;
+          this.loading=false;
         });
       }
     },

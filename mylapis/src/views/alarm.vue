@@ -1,49 +1,336 @@
 <template>
   <div>
-      <div class="move-left">
-        <ul>
-          <li>
-            <h3>筛选条件</h3>
-          </li>
-          <li>
-            <p>事件类型</p>
-            <Select v-model="model10" multiple style="width:200px">
-              <Option v-for="item in cityList" :value="item.value" :key="item.value">{{ item.label }}</Option>
-            </Select>
-          </li>
-          <li>
-            <p>客户基本信息</p>
-            <Input v-model="value4"  style="width: 100px" placeholder="姓名"></Input>
-            <Input v-model="value4"  style="width: 100px" placeholder="电话号"></Input>
-            <div style="height:6px;" ></div>
-            <Input v-model="value4"  style="width: 200px" placeholder="身份证号"></Input>
-          </li>
-          <li>
-            <p>时间范围</p>
-            <DatePicker  type="daterange" placement="bottom-start" placeholder="选择日期" style="width: 200px"></DatePicker>
-          </li>
-          <li>
-            <p>表号</p>
-            <Input v-model="value4"  style="width: 200px"></Input>
-          </li>
-          <li>
-            <Button type="primary" icon="ios-search">搜索</Button>
-          </li>
-        </ul>
+    <div class="move-left">
+      <ul>
+        <li>
+          <h3>{{$t('m.alarm.filter')}}</h3>
+        </li>
+        <li>
+          <p>{{$t('m.alarm.alarmcol4')}}</p>
+          <Select v-model="type" clearable style="width:200px">
+            <Option v-for="item in alarmtype" :value="item.value" :key="item.value">{{ item.label }}</Option>
+          </Select>
+        </li>
+        <li>
+          <p>{{$t('m.deal.daterange')}}</p>
+          <DatePicker  type="daterange" placement="bottom-start" :placeholder="$t('m.deal.daterange')" split-panels style="width: 200px" @on-change="rangedate"></DatePicker>
+        </li>
+        <li>
+          <p>{{$t('m.alarm.alarmcol3')}}</p>
+          <Select v-model="source" clearable style="width:200px">
+            <Option v-for="item in alarmsource" :value="item.value" :key="item.value">{{ item.label }}</Option>
+          </Select>
+        </li>
+        <li>
+          <p>{{$t('m.walkby.col6')}}</p>
+          <Select v-model="state" clearable style="width:200px">
+            <Option v-for="item in alarmstate" :value="item.value" :key="item.value">{{ item.label }}</Option>
+          </Select>
+        </li>
+        <li>
+          <Button type="primary" icon="ios-search" @click="query">{{$t('m.common.query')}}</Button>
+        </li>
+      </ul>
+    </div>
+    <div class="fiterRight">
+      <!--<Button type="success" size="large" @click="exportData(2)"><Icon type="ios-printer-outline"></Icon> 打印</Button>-->
+      <!--<Table :loading="loading" :data="alarmData" :columns="alarmColumns" stripe></Table>-->
+      <!--<div style="margin: 10px;overflow: hidden">-->
+        <!--<div style="float: right;">-->
+          <!--<Page :total="alarmtotal" :current="1" @on-change="changePage" :show-total="true" :show-elevator="true"></Page>-->
+        <!--</div>-->
+      <!--</div>-->
+      <div style="padding:5px 20px;">
+        <Tabs value="name1">
+          <TabPane label="全部警告" name="name1">
+            <ul v-for="row in alarmData">
+              <li style="padding:5px 0 0;border-bottom: 1px solid #DDDEE1;position:relative;">
+                <p style="line-height: 40px;font-size: 14px;">{{row.alarmContent1}}</p>
+                <p style="color:#999;line-height: 30px;">
+                  <span>状态:<Tag color="yellow" style="height:20px;line-height: 20px;">{{row.state | shiftnum}}</Tag></span>
+                  <span>告警来源：{{row.alarmSource | shiftnum1}}</span>
+                  <span>告警类型：{{row.alarmType | shiftnum2}}</span>
+                  <span>时间：{{row.alarmDate}}</span></p>
+                <Button v-if="row.state!=1" type="primary" style="position:absolute;top:16px;right:20px;" @click="dispose(row.alarmId)"><Icon type="wrench"></Icon></Button>
+              </li>
+              <li style="margin: 10px 0;overflow: hidden;">
+                <div style="float: right;">
+                  <Page :total="alarmtotal" :current="1" @on-change="changePage" :show-total="true" :show-elevator="true"></Page>
+                </div>
+              </li>
+            </ul>
+          </TabPane>
+          <TabPane label="未处理警告" name="name2">标签二的内容</TabPane>
+        </Tabs>
       </div>
-      <div class="fiterRight">
-        <Button type="success" size="large" @click="exportData(2)"><Icon type="ios-printer-outline"></Icon> 打印</Button>
-        <div style="height:10px"></div>
-        <Table :data="tableData1" :columns="tableColumns1" stripe></Table>
-        <div style="margin: 10px;overflow: hidden">
-          <div style="float: right;">
-            <Page :total="100" :current="1" @on-change="changePage"></Page>
-          </div>
-        </div>
-        <my-footer></my-footer>
-      </div>
+    </div>
+    <Modal
+      v-model="modal1"
+      :title="$t('m.alarm.title')"
+      @on-ok="deal"
+      >
+      <p style="line-height: 24px;">{{$t('m.walkby.col6')}}</p>
+      <Select v-model="state1" clearable style="width:200px">
+        <Option v-for="item in alarmstate" :value="item.value" :key="item.value">{{ item.label }}</Option>
+      </Select>
+      <p style="margin-top: 10px;line-height: 24px;">{{$t('m.alarm.way')}}</p>
+      <Input v-model="dealmethod" type="textarea" :rows="3" placeholder="Enter something..."></Input>
+    </Modal>
   </div>
 </template>
+<script>
+  export default {
+    name:'alarm',
+    data() {
+      return {
+        loading:false,
+        alarmId:'',
+        modal1:false,
+        dealmethod:'',
+        type:'',
+        source:'',
+        alarmTime:[],
+        alarmtype:[
+          {
+            value:1,
+            label:this.$t('m.alarm.type1'),
+          }
+        ],
+        alarmsource:[
+          {
+            value:1,
+            label:this.$t('m.alarm.source1'),
+          },
+          {
+            value:2,
+            label:this.$t('m.alarm.source2'),
+          },
+        ],
+        state:'',
+        state1:'',
+        alarmstate:[
+          {
+            value:0,
+            label:this.$t('m.alarm.state1'),
+          },
+          {
+            value:1,
+            label:this.$t('m.alarm.state4'),
+          },
+          {
+            value:2,
+            label:this.$t('m.alarm.state2'),
+          },
+          {
+            value:3,
+            label:this.$t('m.alarm.state3'),
+          },
+        ],
+        alarmtotal:0,
+
+        alarmColumns: [
+          {
+            title: this.$t('m.alarm.alarmcol1'),
+            key: 'alarmContent1'
+          },
+          {
+            title: this.$t('m.walkby.col6'),
+            key: 'state',
+            render: (h, params) => {
+              const row = params.row;
+              let color = row.state;
+              let text = row.state;
+              if(row.state == 2 ){
+                color= 'orange';
+                text=this.$t('m.alarm.state2');
+              }else if(row.state == 0){
+                color='red';
+                text=this.$t('m.alarm.state1');
+              }else if(row.state == 3){
+                color='blue';
+                text=this.$t('m.alarm.state3');
+              }else if(row.state == 1){
+                color='green';
+                text=this.$t('m.alarm.state4');
+              }
+              return h('Tag', {
+                props: {
+                  type: 'dot',
+                  color: color
+                }
+              }, text);
+            }
+          },
+          {
+            title: this.$t('m.alarm.alarmcol3'),
+            key: 'alarmSource',
+            render: (h, params) => {
+              const row = params.row;
+              let text = row.alarmSource;
+              if (row.alarmSource == 1) {
+                text = this.$t('m.alarm.source1');
+              } else if (row.status == 2) {
+                text = this.$t('m.alarm.source2');
+              }
+              return h('p', text);
+            }
+          },
+          {
+            title: this.$t('m.alarm.alarmcol4'),
+            key: 'alarmType',
+            render: (h, params) => {
+              const row = params.row;
+              let text = row.alarmType;
+              if (row.alarmType == 1) {
+                text = this.$t('m.alarm.type1');
+              }
+              return h('p', text);
+            }
+          },
+          {
+            title: this.$t('m.alarm.alarmcol5'),
+            key: 'alarmDate',
+          },
+          {
+            title:this.$t('m.meter.operate'),
+            align:'center',
+            render: (h, params) => {
+                return h('Tooltip',
+                  {
+                    props:{
+                      content:this.$t('m.alarm.deal') ,
+                      placement:"top"
+                    },
+                  }, [h('Button', {
+                    props: {
+                      type: 'primary',
+                      size: 'small'
+                    },
+                    on: {
+                      click: () => {
+                        this.dispose(params.row)
+                      }
+                    }
+                  },[h('Icon',{
+                    props:{
+                      color:'#fff',
+                      type: 'wrench',
+                      size:12
+                    }
+                  })])
+                ],);
+              }
+          },
+        ],
+        alarmData:[],
+      }
+    },
+    filters:{
+      shiftnum:(data)=> {
+        if(data==1){
+          return "完成";
+        }else if(data==0){
+          return "未分配";
+        }
+      },
+      shiftnum1:(data)=> {
+        if(data==1){
+          return "系统";
+        }else if(data==2){
+          return "表计";
+        }
+      },
+      shiftnum2:function (data) {
+        if(data==1){
+          return "Walkby";
+        }
+      },
+    },
+    methods: {
+      rangedate(date){
+        this.alarmTime=date;
+      },
+      query(){
+        this.loading=true;
+        this.$http({
+          url:'getMyAlarm.do',
+          credentials:true,
+          body:{
+            conditions: {
+              alarmtype:this.type,
+              alarmsource:this.source,
+              alarmState:this.state,
+              startTime:this.alarmTime[0],
+              endTime:this.alarmTime[1],
+            },
+            limit: 10,
+            page: 1
+          },
+          method: 'POST',
+        }).then((response) => {
+          this.alarmtotal=parseInt(response.body.pageInfo.total);
+          response.body.pageInfo.list.forEach(function (val,index) {
+            val.alarmContent=JSON.parse(val.alarmContent);
+            val.alarmContent.forEach(function (val1,index1) {
+              val.alarmContent1='walkby抄表任务\n'+val1.taskName+'还未执行';
+            });
+          });
+          this.alarmData=response.body.pageInfo.list;
+          this.loading=false;
+        });
+      },
+      changePage(page) {
+        this.loading=true;
+        this.$http({
+          url:'getMyAlarm.do',
+          credentials:true,
+          body:{
+            conditions: {
+            },
+            limit: 10,
+            page: page
+          },
+          method: 'POST',
+        }).then((response) => {
+          response.body.pageInfo.list.forEach(function (val,index) {
+            val.alarmContent=JSON.parse(val.alarmContent);
+            val.alarmContent.forEach(function (val1,index1) {
+              val.alarmContent1='walkby抄表任务\n'+val1.taskName+'还未执行';
+            });
+
+          });
+          this.alarmData=response.body.pageInfo.list;
+          this.loading=false;
+        });
+      },
+      dispose(row){
+        this.alarmId=row;
+        this.modal1=true;
+      },
+      deal(){
+        this.$http({
+          url:'alarm/process.do',
+          credentials:true,
+          body:{
+            alarmId:this.alarmId,
+            state:this.state1,
+            processMethod:this.dealmethod,
+          },
+          method: 'POST',
+        }).then((response) => {
+            if(response.body.msg){
+              this.$Message.success(response.body.msg);
+            }else{
+              this.$Message.error(response.body.errors);
+            }
+        });
+      }
+    },
+    created(){
+      this.query()
+    }
+  }
+</script>
 <style>
   .move-left{
     width: 240px;
@@ -52,7 +339,7 @@
     left: 0;
     bottom: 0;
     z-index: 2;
-    overflow-y: auto;
+    /*overflow-y: auto;*/
     background: #EEEEEE;
     padding-top: 8px;
     border-right: 1px solid #d7dde4;
@@ -82,261 +369,8 @@
     position: relative;
     top: 84px;
     margin-left: 260px;
-    margin-right: 30px;
+    margin-right: 20px;
+    background: #fff;
   }
 </style>
-<script>
-  export default {
-    name:'alarm',
-    data() {
-      return {
-        cityList: [
-          {
-            value: 'beijing',
-            label: '北京市'
-          },
-          {
-            value: 'shanghai',
-            label: '上海市'
-          },
-          {
-            value: 'shenzhen',
-            label: '深圳市'
-          },
-          {
-            value: 'hangzhou',
-            label: '杭州市'
-          },
-          {
-            value: 'nanjing',
-            label: '南京市'
-          },
-          {
-            value: 'chongqing',
-            label: '重庆市'
-          }
-        ],
-        model10: [],
-        value1: [],
-        data: [{
-          value: 'beijing',
-          label: '北京',
-          children: [
-            {
-              value: 'gugong',
-              label: '故宫'
-            },
-            {
-              value: 'tiantan',
-              label: '天坛'
-            },
-            {
-              value: 'wangfujing',
-              label: '王府井'
-            }
-          ]
-        }, {
-          value: 'jiangsu',
-          label: '江苏',
-          children: [
-            {
-              value: 'nanjing',
-              label: '南京',
-              children: [
-                {
-                  value: 'fuzimiao',
-                  label: '夫子庙',
-                }
-              ]
-            },
-            {
-              value: 'suzhou',
-              label: '苏州',
-              children: [
-                {
-                  value: 'zhuozhengyuan',
-                  label: '拙政园',
-                },
-                {
-                  value: 'shizilin',
-                  label: '狮子林',
-                }
-              ]
-            }
-          ],
-        }],
-        cityList1: [
-          {
-            value: 'beijing',
-            label: '北京市'
-          },
-          {
-            value: 'shanghai',
-            label: '上海市'
-          },
-          {
-            value: 'shenzhen',
-            label: '深圳市'
-          },
-          {
-            value: 'hangzhou',
-            label: '杭州市'
-          },
-        ],
-        models1: '',
-        cityList2: [
-          {
-            value: 'beijing',
-            label: '北京市'
-          },
-          {
-            value: 'shanghai',
-            label: '上海市'
-          },
-          {
-            value: 'shenzhen',
-            label: '深圳市'
-          },
-          {
-            value: 'hangzhou',
-            label: '杭州市'
-          },
-        ],
-        models2: '',
-        tableData1: this.mockTableData1(),
-        tableColumns1: [
-          {
-            title: '名称',
-            key: 'name'
-          },
-          {
-            title: '状态',
-            key: 'status',
-            render: (h, params) => {
-              const row = params.row;
-              const color = row.status === 1 ? 'blue' : row.status === 2 ? 'green' : 'red';
-              const text = row.status === 1 ? '构建中' : row.status === 2 ? '构建完成' : '构建失败';
-
-              return h('Tag', {
-                props: {
-                  type: 'dot',
-                  color: color
-                }
-              }, text);
-            }
-          },
-          {
-            title: '画像内容',
-            key: 'portrayal',
-            render: (h, params) => {
-              return h('Poptip', {
-                props: {
-                  trigger: 'hover',
-                  title: params.row.portrayal.length + '个画像',
-                  placement: 'bottom'
-                }
-              }, [
-                h('Tag', params.row.portrayal.length),
-                h('div', {
-                  slot: 'content'
-                }, [
-                  h('ul', this.tableData1[params.index].portrayal.map(item => {
-                    return h('li', {
-                      style: {
-                        textAlign: 'center',
-                        padding: '4px'
-                      }
-                    }, item)
-                  }))
-                ])
-              ]);
-            }
-          },
-          {
-            title: '选定人群数',
-            key: 'people',
-            render: (h, params) => {
-              return h('Poptip', {
-                props: {
-                  trigger: 'hover',
-                  title: params.row.people.length + '个客群',
-                  placement: 'bottom'
-                }
-              }, [
-                h('Tag', params.row.people.length),
-                h('div', {
-                  slot: 'content'
-                }, [
-                  h('ul', this.tableData1[params.index].people.map(item => {
-                    return h('li', {
-                      style: {
-                        textAlign: 'center',
-                        padding: '4px'
-                      }
-                    }, item.n + '：' + item.c + '人')
-                  }))
-                ])
-              ]);
-            }
-          },
-          {
-            title: '取样时段',
-            key: 'time',
-            render: (h, params) => {
-              return h('div', '近' + params.row.time + '天');
-            }
-          },
-          {
-            title: '更新时间',
-            key: 'update',
-            render: (h, params) => {
-              return h('div', this.formatDate(this.tableData1[params.index].update));
-            }
-          }
-        ]
-      }
-    },
-    methods: {
-      mockTableData1() {
-        let data = [];
-        for (let i = 0; i < 10; i++) {
-          data.push({
-            name: '商圈' + Math.floor(Math.random() * 100 + 1),
-            status: Math.floor(Math.random() * 3 + 1),
-            portrayal: ['城市渗透', '人群迁移', '消费指数', '生活指数', '娱乐指数'],
-            people: [
-              {
-                n: '客群' + Math.floor(Math.random() * 100 + 1),
-                c: Math.floor(Math.random() * 1000000 + 100000)
-              },
-              {
-                n: '客群' + Math.floor(Math.random() * 100 + 1),
-                c: Math.floor(Math.random() * 1000000 + 100000)
-              },
-              {
-                n: '客群' + Math.floor(Math.random() * 100 + 1),
-                c: Math.floor(Math.random() * 1000000 + 100000)
-              }
-            ],
-            time: Math.floor(Math.random() * 7 + 1),
-            update: new Date()
-          })
-        }
-        return data;
-      },
-      formatDate(date) {
-        const y = date.getFullYear();
-        let m = date.getMonth() + 1;
-        m = m < 10 ? '0' + m : m;
-        let d = date.getDate();
-        d = d < 10 ? ('0' + d) : d;
-        return y + '-' + m + '-' + d;
-      },
-      changePage() {
-        // 这里直接更改了模拟的数据，真实使用场景应该从服务端获取数据
-        this.tableData1 = this.mockTableData1();
-      }
-    }
-  }
-</script>
 

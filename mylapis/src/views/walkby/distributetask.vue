@@ -2,57 +2,33 @@
   <div class="h-content">
     <div style="margin:10px 60px;">
       <div class="h-title">
-        <p>{{$t('m.walkby.addtask')}}</p>
+        <Button icon="chevron-left" @click="$router.push('/index/walkby')" size="small" style="float: left;margin-top: 6px;margin-left: 5px;">返回</Button>
+        <p style="text-align: center">查看任务分布</p>
       </div>
-      <Card style="overflow: hidden;">
-        <p class="addtasktitle">{{$t('m.walkby.sel1')}}</p>
+      <div>
+        <div style="padding:20px 0">
+          <CheckboxGroup>
+            <Checkbox label="item.id" v-for="item,index in technicianList" :key="item.id">
+              <Icon :color="colors[index]" type="flag"></Icon>
+              <span>{{item.loginName}}</span>
+            </Checkbox>
+          </CheckboxGroup>
+        </div>
         <div class="task-left">
           <div style="padding: 5px 15px;">
             <p style="font-size: 12px">{{$t('m.walkby.sel2')}}</p>
             <Tree :data="region" show-checkbox @on-check-change="selregion"></Tree>
           </div>
         </div>
-        <div class="task-left2">
-          <Table height="850" size="small" :columns="metercolumns" :data="lacations" :highlight-row="true" @on-selection-change="metersel"></Table>
-        </div>
         <div class="taskRight">
           <div style="width:100%;height:850px;">
             <div id="map" style="width:100%;height:100%"></div>
           </div>
         </div>
-      </Card>
-      <Card>
-        <p class="addtasktitle">{{$t('m.walkby.sel3')}}</p>
-        <Select v-model="technician" clearable style="width:200px" :placeholder="$t('m.walkby.reader')">
-          <Option v-for="item in technicianList" :value="item.id" :key="item.id">{{ item.loginName }}</Option>
-        </Select>
-      </Card>
-      <div style="margin:10px 0">
-        <Button type="primary" @click="submit()">{{$t('m.common.confirm')}}</Button>
-        <Button @click="cancel()">{{$t('m.common.cancel')}}</Button>
       </div>
     </div>
   </div>
 </template>
-<style>
-  .demo-tabs-style2 > .ivu-tabs.ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-tab{
-    border-radius: 0;
-    background: #fff;
-  }
-  .demo-tabs-style2 > .ivu-tabs.ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-tab-active{
-    border-top: 1px solid #3399ff;
-  }
-  .demo-tabs-style2 > .ivu-tabs.ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-tab-active:before{
-    content: '';
-    display: block;
-    width: 100%;
-    height: 1px;
-    background: #3399ff;
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
-</style>
 <script>
   export default {
     nane:'addtask',
@@ -67,6 +43,7 @@
         technicianList:[],
         selectedregions:[],
         lacations: [],
+        colors : ['#5793f3', '#d14a61'],
         //查询表号的表格
         //列名
         metercolumns: [
@@ -94,30 +71,6 @@
       },
     },
     methods: {
-      submit(){
-        this.$http({
-          url:'walkby/addTask.do',
-          body: {
-            regionIDs:this.selectedregions,
-            meterIDs:this.meterIDs,
-            technicianID:this.technician,
-          },
-          credentials:true,
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-        }).then((response) => {
-          if(response.body.errors){
-            this.$Message.error(response.body.errors);
-          }else{
-            this.$router.push('/index/walkby');
-          }
-        })
-      },
-      cancel(){
-        this.$router.push('/index/walkby');
-      },
       getTree(tree = []) {
         let arr = [];
         if (!!tree && tree.length !== 0) {
@@ -133,24 +86,6 @@
         }
         return arr;
       },
-      metersel(data){
-        this.lacations.forEach((val,index)=>{
-          val._checked=false;
-          data.forEach((val1,index1)=> {
-            if(val1.meterId === val.meterId){
-              val._checked=true;
-            }
-          });
-        });
-        this.markers.forEach(function (val,index) {
-          val.setIcon(val.iconList[1]);
-          data.forEach(function (val1,index1) {
-            if(val1.meterNumber==val.title){
-              val.setIcon(val.iconList[0])
-            }
-          });
-        })
-      },
       selregion(selected){
         let arr=[];
         selected.forEach( (val,index)=> {
@@ -158,7 +93,7 @@
         });
         this.selectedregions=arr;
         this.$http({
-          url:'walkby/getUnTaskMeter.do',
+          url:'walkby/getMeter.do',
           credentials:true,
           body:this.selectedregions,
           headers: {
@@ -206,7 +141,6 @@
           //获取当前地理位置信息
           let latitude,longitude;
           navigator.geolocation.getCurrentPosition((pos,error)=>{
-            console.log("asfasfasfs")
             latitude = pos.coords.latitude;
             longitude = pos.coords.longitude;
             console.log("当前位置：经度：" + latitude + " 纬度：" + longitude);
@@ -818,7 +752,7 @@
         this.$http({
           url:'walkby/listTechnician.do',
           body:{
-
+            isAll:true,
           },
           credentials:true,
           method: 'POST',
@@ -828,7 +762,46 @@
         }).then((response) => {
           this.technicianList=response.body.technicians;
         });
-      }
+      },
+      //获取正在执行的任务
+      gettask(){
+        this.$http({
+          url:'walkby/getDoingTasks.do',
+          body:{
+
+          },
+          credentials:true,
+          method: 'POST',
+          headers: {
+            'Content-Type':'application/json; charset=UTF-8'
+          },
+        }).then((response) => {
+          response.body.tasks.forEach((val,index)=> {
+            val.walkByTaskJson.meterlist.forEach((val2,index2)=>{
+                val2.location=new google.maps.LatLng(val2.latitude, val2.longitude)
+            this.technicianList.forEach((val1,index1)=>{
+              if(val.technicianID==val1.id){
+                  var marker= new google.maps.Marker({
+                    position: val2.location,
+                    animation: google.maps.Animation.DROP,
+                    map: this.map,
+                    title:val2.meterNumber,
+                    meter:val2,
+                    iconList:this.icons,
+                    icon:val2._checked?this.icons[0]:this.icons[1]
+                  });
+                  google.maps.event.addListener(marker, 'click', ()=> {
+                    val2._checked= !val._checked;
+                    marker.setIcon(val._checked?this.icons[0]:this.icons[1]);
+                  });
+                  this.markers.push(marker);
+                  return marker;
+              }
+            })
+            });
+          })
+        });
+      },
     },
     mounted(){
       this.MapInitialize()
@@ -836,13 +809,14 @@
     created(){
       this.getregion();
       this.gettechnicianList();
+      this.gettask();
       this.keydragzoom ();  ////初始化dragzoom
     },
   }
 </script>
 <style>
   .taskRight{
-    margin-left: 450px;
+    margin-left: 240px;
   }
   .task-top{
     width: 80%;
@@ -863,23 +837,19 @@
     background: #eeeeee;
     padding-top: 8px;
   }
-  .task-left2{
-    width: 200px;
-    height:850px;
-    float:left;
-  }
   .addtasktitle{
     line-height: 45px;
   }
   .h-title{
-    height:35px;
+    height:38px;
     width:100%;
-    background:#5cadff;
+    /*background:#5cadff;*/
     margin-top:10px;
-    border-radius: 4px 4px 0 0;
+    border-bottom:1px solid #5cadff;
+    /*border-radius: 4px 4px 0 0;*/
   }
   .h-title p{
-    color:#fff;
+    /*color:#fff;*/
     line-height: 35px;
     padding:0 10px;
   }
