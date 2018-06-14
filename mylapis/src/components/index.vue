@@ -5,7 +5,7 @@
     </Alert>
       <div class="layout-ceiling">
         <div class="layout-logo">
-          <a href="/#/">
+          <a href="/#/index">
             <img src="../assets/img/logo.png" alt="">
             <img src="../assets/img/logo1.png" alt="">
           </a>
@@ -54,30 +54,23 @@
                   </div>
                 </DropdownMenu>
               </Dropdown>
-              <Dropdown  placement="bottom-end">
+              <Dropdown @on-click="itemclick"  placement="bottom-end">
                 <a href="javascript:void(0)">
                   <Icon type="android-person" color="white" size="16"></Icon>
                   <Icon type="chevron-down" color="white" size="10"></Icon>
                 </a>
                 <DropdownMenu slot="list">
-                  <DropdownItem>
-                    <!--<a href="/#/index/print">-->
-                    <a href="javascript:;" @click="modal1=true">
+                  <DropdownItem name="print">
                     <Icon type="person-add" size="14"></Icon>&nbsp;&nbsp;
                     <span>{{$t('m.header.print')}}</span>
-                    </a>
                   </DropdownItem>
-                  <DropdownItem>
-                    <a href="/#/index/password">
+                  <DropdownItem name="changepsd">
                     <Icon type="android-unlock" size="14"></Icon>&nbsp;&nbsp;
                     <span>{{$t('m.header.changepassword')}}</span>
-                    </a>
                   </DropdownItem>
-                  <DropdownItem>
-                    <a href="javascript:;" @click="logout">
+                  <DropdownItem name="logout">
                     <Icon type="log-out" size="14"></Icon>&nbsp;&nbsp;
                     <span>{{$t('m.header.logout')}}</span>
-                    </a>
                   </DropdownItem>
                 </DropdownMenu>
               </Dropdown>
@@ -150,8 +143,17 @@
       }
     },
     methods:{
-      logout(e){
-        e.preventDefault();
+      itemclick(el){
+        if(el=='print'){
+          this.modal1=true
+        }else if(el=='changepsd'){
+          this.$router.push("password")
+        }else if(el=='logout'){
+          this.logout()
+        }
+      },
+      logout(){
+        console.log(11111111111)
         this.$http({
           url:'logout.do',
           credentials:true,
@@ -233,19 +235,24 @@
           credentials:true,
           method: 'POST',
         }).then((response) => {
-          response.body.menu.childMenus.forEach((val,index)=> {
-            if(val.childMenus){
-              val.childMenus.forEach((val1,index1) => {
-                if(val1.url=='/index/debt'){
-                  if(this.enableDebt==0){
-                    val.childMenus.splice(index1,1);
+          if(response.body.menu==null){
+            this.$Message.warning({content:'没有权限，请重新登录',duration: 5});
+            this.logout();
+          }else{
+            response.body.menu.childMenus.forEach((val,index)=> {
+              if(val.childMenus){
+                val.childMenus.forEach((val1,index1) => {
+                  if(val1.url=='/index/debt'){
+                    if(this.enableDebt==0){
+                      val.childMenus.splice(index1,1);
+                    }
                   }
-                }
-              })
+                })
+              }
+            });
+            if(response.body.menu.childMenus){
+              this.nav=response.body.menu.childMenus;
             }
-          });
-          if(response.body.menu.childMenus){
-            this.nav=response.body.menu.childMenus;
           }
         });
       },
@@ -343,7 +350,7 @@
     height:70px;
     position:fixed;
     top:0;
-    z-index: 5;
+    z-index: 10;
     width:100%;
     background: #2d8cf0;
   }
@@ -401,7 +408,7 @@
   .alalist ul li:last-child{
     border-bottom:none;
   }
-  @media (max-width:1100px) {
+  @media (max-width:990px) {
     .ivu-menu-submenu-title span{
       display: none;
     }

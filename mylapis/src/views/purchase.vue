@@ -5,9 +5,9 @@
     </Alert>
     <div class="h-content">
       <div style="margin:10px 100px;">
-        <Input clearable v-model="name" :placeholder="$t('m.customerinfo.label1')" style="width: 180px"></Input>
-        <Input clearable v-model="idcard" :placeholder="$t('m.customerinfo.label2')" style="width: 180px"></Input>
-        <Input clearable  v-model="tel" :placeholder="$t('m.customerinfo.label3')" style="width: 180px"></Input>
+        <Input clearable v-model.trim="name" :placeholder="$t('m.customerinfo.label1')" style="width: 180px"></Input>
+        <Input clearable v-model.trim="idcard" :placeholder="$t('m.customerinfo.label2')" style="width: 180px"></Input>
+        <Input clearable  v-model.trim="tel" :placeholder="$t('m.customerinfo.label3')" style="width: 180px"></Input>
         <Button type="primary" icon="ios-search" @click="query">{{$t('m.common.query')}}</Button>
         <ul v-show="message" class="purmessage">
           <li>
@@ -55,7 +55,7 @@
         <div style="margin:10px 0">
           <p style="line-height:30px;color:#888;">{{$t('m.purchase.purchase')}}($)/(m³)</p>
           <InputNumber v-model="pregoumai" style="width:220px" :max="100000" :min="0.1"></InputNumber>
-          <RadioGroup v-model="paytype" style="margin-left: 15px;">
+          <RadioGroup v-model="paytype" style="margin-left: 15px;" type="button">
             <Radio :label="$t('m.purchase.amount')" ></Radio>
             <Radio :label="$t('m.purchase.volume')"></Radio>
           </RadioGroup>

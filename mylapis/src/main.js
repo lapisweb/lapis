@@ -16,7 +16,7 @@ import en from 'iview/dist/locale/en-US';
 import ggheader from './components/index.vue';
 import footer from './components/footer.vue';
 import footer1 from './components/footer1.vue';
-// import customer from './components/customer.vue';
+import customer from './components/customer.vue';
 import ien from './common/lang/en';
 import izh from './common/lang/zh';
 
@@ -46,7 +46,7 @@ Vue.locale('zh_CN', messages.zh);
 Vue.component('my-header',ggheader);
 Vue.component('my-footer',footer);
 Vue.component('my-footer1',footer1);
-// Vue.component('my-customer',customer);
+Vue.component('my-customer',customer);
 Vue.config.productionTip = false;
 
 // vueGooglemap.initGooglemap({
@@ -80,7 +80,6 @@ Vue.http.interceptors.push((request, next) => {
   next((response) => {
     // console.log(response.body.code);
     let Token=response.body.code;
-
     // //在响应之后传给then之前对response进行修改和逻辑判断。
     // // 对于token时候已过期的判断，就添加在此处，页面中任何一次http请求都会先调用此处方法
     if(Token==501){

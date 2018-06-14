@@ -188,6 +188,7 @@
               technicianID:this.technician,
               startTime:this.time[0],
               endTime:this.time[1],
+              orderByClause: "open_date desc",
             },
             "limit": 10,
             "page": 1
@@ -215,17 +216,30 @@
         this.loading=true;
         this.$http({
           url:'walkby/findByPage.do',
-          body: {conditions: {
+          body: {
+            conditions: {
               technicianID:this.technician,
               startTime:this.time[0],
               endTime:this.time[1],
-            },"limit": 10, "page": page},
+              orderByClause: "open_date desc",
+            },
+            "limit": 10,
+            "page": page
+          },
           credentials:true,
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
         }).then((response) => {
+          response.body.pageInfo.list.forEach((val,index)=> {
+            if(val.walkByTaskExecuteRecord){
+              val.taskState=val.walkByTaskExecuteRecord.taskState;
+              val.state=1;
+            }else{
+              val.state=0;
+            }
+          });
           this.tasklist=response.body.pageInfo.list;
           this.loading=false;
         })

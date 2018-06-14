@@ -24,19 +24,19 @@
         </div>
         <div class="center1" v-if="current==1">
           <FormItem :label="$t('m.customerinfo.label1')" prop="name">
-            <Input v-model="formValidateopen.name"></Input>
+            <Input v-model.trim="formValidateopen.name"></Input>
           </FormItem>
           <FormItem :label="$t('m.customerinfo.label2')" prop="idcard">
-            <Input v-model="formValidateopen.idcard"></Input>
+            <Input v-model.trim="formValidateopen.idcard"></Input>
           </FormItem>
           <FormItem :label="$t('m.customerinfo.label3')" prop="tel">
-            <Input v-model="formValidateopen.tel"></Input>
+            <Input v-model.trim="formValidateopen.tel"></Input>
           </FormItem>
           <FormItem :label="$t('m.open.label4')" prop="districtvalue">
             <Cascader :data="district"  v-model="formValidateopen.districtvalue"></Cascader>
           </FormItem>
           <FormItem :label="$t('m.customerinfo.label5')" prop="address">
-            <Input v-model="formValidateopen.address"></Input>
+            <Input v-model.trim="formValidateopen.address"></Input>
           </FormItem>
 
         </div>
@@ -48,7 +48,7 @@
             @on-ok="ok"
             @on-cancel="cancel">
             <div style="margin-bottom: 10px;">
-              <Input v-model="querycondition" placeholder="Enter meterNo..." style="width: 200px"></Input>
+              <Input v-model.trim="querycondition" placeholder="Enter meterNo..." style="width: 200px"></Input>
               <Button type="warning" @click="requerymeter">{{$t('m.common.query')}}</Button>
             </div>
             <Table border :loading="loading" :columns="metercolumns" :data="meterdata" :highlight-row="true" @on-row-click="meternoview"></Table>
@@ -60,14 +60,14 @@
           </Modal>
           <p>{{ $t("m.open.meterno") }}</p>
           <FormItem prop="meterno">
-            <Input size="large" v-model="formValidateopen.meterno"></Input>
+            <Input size="large" v-model.trim="formValidateopen.meterno"></Input>
           </FormItem>
         </div>
         <div v-if="enableAdditionalFee==1&&enableDebt==0">
           <div class="center2" v-if="current==3">
             <div style="display: none">
               <FormItem prop="addition">
-                <Input v-model="formValidateopen.addition"></Input>
+                <Input v-model.trim="formValidateopen.addition"></Input>
               </FormItem>
             </div>
             <div class="h-switch1">
@@ -95,7 +95,7 @@
                 <div style="height: 240px;width:100%">
                   <div style="float: left;margin-right: 20px;">
                     <p class="hyyword">{{ $t("m.open.additionfeename") }}</p>
-                    <Input v-model="additionname"  style="width: 200px"></Input>
+                    <Input v-model.trim="additionname"  style="width: 200px"></Input>
                     <p class="hyyword">{{ $t("m.open.additionfeetype") }}</p>
                     <Select clearable v-model="additiontype" style="width:200px" @on-change="addifeetype">
                       <Option v-for="item in additiontypedata" :value="item.value" :key="item.value">{{ item.label }}</Option>
@@ -173,7 +173,7 @@
           <div class="center2" v-if="current==3">
             <div style="display: none">
               <FormItem prop="addition">
-                <Input v-model="formValidateopen.addition"></Input>
+                <Input v-model.trim="formValidateopen.addition"></Input>
               </FormItem>
             </div>
             <div class="h-switch1">
@@ -284,7 +284,7 @@
           <div class="center3" v-if="current==4">
             <p>{{ $t("m.open.debt") }}</p>
             <FormItem prop="debt">
-              <Input size="large" v-model="formValidateopen.debt"></Input>
+              <Input size="large" v-model.trim="formValidateopen.debt"></Input>
             </FormItem>
           </div>
         </div>
@@ -292,7 +292,7 @@
           <div class="center3" v-if="current==3">
             <p>{{ $t("m.open.debt") }}</p>
             <FormItem prop="debt">
-              <Input size="large" v-model="formValidateopen.debt"></Input>
+              <Input size="large" v-model.trim="formValidateopen.debt"></Input>
             </FormItem>
           </div>
         </div>

@@ -2,9 +2,9 @@
   <div>
     <div class="h-content">
       <div style="margin:10px 100px;">
-        <Input v-model="name" :placeholder="$t('m.customerinfo.label1')" style="width: 180px"></Input>
-        <Input v-model="idcard" :placeholder="$t('m.customerinfo.label2')" style="width: 180px"></Input>
-        <Input v-model="tel" :placeholder="$t('m.customerinfo.label3')" style="width: 180px"></Input>
+        <Input v-model.trim="name" :placeholder="$t('m.customerinfo.label1')" style="width: 180px"></Input>
+        <Input v-model.trim="idcard" :placeholder="$t('m.customerinfo.label2')" style="width: 180px"></Input>
+        <Input v-model.trim="tel" :placeholder="$t('m.customerinfo.label3')" style="width: 180px"></Input>
         <Button type="primary" icon="ios-search" @click="query">{{$t('m.common.query')}}</Button>
         <br>
         <ul v-show="message" class="purmessage">

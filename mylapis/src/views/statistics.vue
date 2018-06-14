@@ -764,7 +764,7 @@
     top:70px;
     left: 0;
     bottom: 0;
-    z-index: 2;
+    z-index: 3;
     overflow-y: auto;
     background: #EEEEEE;
     padding-top: 8px;
@@ -818,7 +818,7 @@
     height:380px;
   }
   .fiterRight .footer{
-    left:240px;
+    left:120px;
     right:0
   }
 </style>

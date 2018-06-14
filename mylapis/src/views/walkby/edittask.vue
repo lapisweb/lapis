@@ -4,29 +4,26 @@
         <div class="h-title">
           <p>{{$t('m.walkby.edittask')}}</p>
         </div>
-        <Card style="overflow: hidden;">
-          <p class="addtasktitle">{{$t('m.walkby.sel1')}}</p>
-          <div class="task-left">
-            <div style="padding: 5px 15px;">
-              <p>{{$t('m.walkby.sel2')}}</p>
-              <Tree :data="region" show-checkbox @on-check-change="selregion"></Tree>
-            </div>
+        <div class="task-left">
+          <div style="padding: 5px 15px;">
+            <p>{{$t('m.walkby.sel2')}}</p>
+            <Tree :data="region" show-checkbox @on-check-change="selregion"></Tree>
           </div>
-          <div class="task-left2">
-            <Table height="850" size="small" :columns="metercolumns" :data="lacations" :highlight-row="true" @on-selection-change="metersel"></Table>
+        </div>
+        <div class="task-left2">
+          <Table height="700" size="small" :columns="metercolumns" :data="lacations" :highlight-row="true" @on-selection-change="metersel"></Table>
+        </div>
+        <div class="taskRight">
+          <div style="width:100%;height:700px;">
+            <div id="map" style="width:100%;height:100%"></div>
           </div>
-          <div class="taskRight">
-            <div style="width:100%;height:850px;">
-              <div id="map" style="width:100%;height:100%"></div>
-            </div>
-          </div>
-        </Card>
-        <Card>
-          <p class="addtasktitle">{{$t('m.walkby.sel3')}}</p>
-          <Select v-model="technician" clearable style="width:200px">
+        </div>
+        <div style="padding:15px 0 0">
+          <span class="addtasktitle">{{$t('m.walkby.sel3')}}</span>
+          <Select v-model="technician" clearable style="width:200px" :placeholder="$t('m.walkby.reader')">
             <Option v-for="item in technicianList" :value="item.id" :key="item.id">{{ item.loginName }}</Option>
           </Select>
-        </Card>
+        </div>
         <div style="margin:10px 0;">
           <Button type="primary" @click="submit()">{{$t('m.common.confirm')}}</Button>
           <Button @click="cancel()">{{$t('m.common.cancel')}}</Button>
@@ -64,7 +61,7 @@
         map:'',
         markers:[],
         walkbycurrent:0,
-        icons:['../../static/icon1.png','../../static/icon2.png'],
+        icons:['../../static/icon1.png','../../static/icon.png'],
         technician:'',
         technicianList:[],
         selectedregions:[],
@@ -822,10 +819,12 @@
         }).then((response) => {
           response.body.meterList.forEach((val,index)=> {
             val.location=new google.maps.LatLng(val.latitude, val.longitude);
-          });
-          let allarray=response.body.meterList.concat(this.meterlist);
-          this.lacations=allarray;
+            val._checked=false;
 
+          });
+          let allarray=this.meterlist.concat(response.body.meterList);
+          this.lacations=allarray;
+          let icon;
           var markers=this.lacations.forEach((val, i)=> {
             var marker= new google.maps.Marker({
               position: val.location,
@@ -918,7 +917,7 @@
   }
   .task-left{
     width: 240px;
-    height:850px;
+    height:700px;
     overflow-y: auto;
     float:left;
     background: #eeeeee;
@@ -926,11 +925,23 @@
   }
   .task-left2{
     width: 200px;
-    height:850px;
+    height:700px;
     float:left;
   }
   .addtasktitle{
     line-height: 45px;
+  }
+  .h-title{
+    height:35px;
+    width:100%;
+    background:#5cadff;
+    margin-top:10px;
+    border-radius: 4px 4px 0 0;
+  }
+  .h-title p{
+    color:#fff;
+    line-height: 35px;
+    padding:0 10px;
   }
 </style>
 

@@ -4,29 +4,27 @@
       <div class="h-title">
         <p>{{$t('m.walkby.addtask')}}</p>
       </div>
-      <Card style="overflow: hidden;">
-        <p class="addtasktitle">{{$t('m.walkby.sel1')}}</p>
-        <div class="task-left">
-          <div style="padding: 5px 15px;">
-            <p style="font-size: 12px">{{$t('m.walkby.sel2')}}</p>
-            <Tree :data="region" show-checkbox @on-check-change="selregion"></Tree>
-          </div>
+      <div class="task-left">
+        <div style="padding: 5px 15px;">
+          <p style="font-size: 12px">{{$t('m.walkby.sel2')}}</p>
+          <Tree :data="region" show-checkbox @on-check-change="selregion"></Tree>
         </div>
-        <div class="task-left2">
-          <Table height="850" size="small" :columns="metercolumns" :data="lacations" :highlight-row="true" @on-selection-change="metersel"></Table>
+      </div>
+      <div class="task-left2" style="position: relative">
+        <p style="position: absolute;z-index:1;top:8px;right:5px;">已选中 {{total}}</p>
+        <Table height="700" size="small" :columns="metercolumns" :data="lacations" :highlight-row="true" @on-selection-change="metersel"></Table>
+      </div>
+      <div class="taskRight">
+        <div style="width:100%;height:700px;">
+          <div id="map" style="width:100%;height:100%"></div>
         </div>
-        <div class="taskRight">
-          <div style="width:100%;height:850px;">
-            <div id="map" style="width:100%;height:100%"></div>
-          </div>
-        </div>
-      </Card>
-      <Card>
-        <p class="addtasktitle">{{$t('m.walkby.sel3')}}</p>
+      </div>
+      <div style="padding:15px 0 0">
+        <span class="addtasktitle">{{$t('m.walkby.sel3')}}</span>
         <Select v-model="technician" clearable style="width:200px" :placeholder="$t('m.walkby.reader')">
           <Option v-for="item in technicianList" :value="item.id" :key="item.id">{{ item.loginName }}</Option>
         </Select>
-      </Card>
+      </div>
       <div style="margin:10px 0">
         <Button type="primary" @click="submit()">{{$t('m.common.confirm')}}</Button>
         <Button @click="cancel()">{{$t('m.common.cancel')}}</Button>
@@ -58,11 +56,12 @@
     nane:'addtask',
     data() {
       return {
+        // total:0,
         region:[],
         map:'',
         markers:[],
         walkbycurrent:0,
-        icons:['../../static/icon1.png','../../static/icon2.png'],
+        icons:['../../static/icon1.png','../../static/icon.png'],
         technician:'',
         technicianList:[],
         selectedregions:[],
@@ -92,6 +91,9 @@
         });
         return arr;
       },
+      total:function () {
+        return this.meterIDs.length;
+      }
     },
     methods: {
       submit(){
@@ -206,7 +208,6 @@
           //获取当前地理位置信息
           let latitude,longitude;
           navigator.geolocation.getCurrentPosition((pos,error)=>{
-            console.log("asfasfasfs")
             latitude = pos.coords.latitude;
             longitude = pos.coords.longitude;
             console.log("当前位置：经度：" + latitude + " 纬度：" + longitude);
@@ -857,15 +858,15 @@
   }
   .task-left{
     width: 240px;
-    height:850px;
+    height:700px;
     overflow-y: auto;
     float:left;
     background: #eeeeee;
     padding-top: 8px;
   }
   .task-left2{
-    width: 200px;
-    height:850px;
+    width: 210px;
+    height:700px;
     float:left;
   }
   .addtasktitle{

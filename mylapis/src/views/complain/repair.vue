@@ -224,6 +224,7 @@
             'Content-Type': 'application/json'
           },
         }).then((response) => {
+          console.log(response.body.pageInfo.list,"3333");
           this.repairtotal=parseInt(response.body.pageInfo.total);
           response.body.pageInfo.list.forEach(function (val,index) {
             val.customerName=val.customer.customerName;

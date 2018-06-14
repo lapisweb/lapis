@@ -2,9 +2,9 @@
   <div>
     <div class="h-content">
       <div style="margin:10px 100px;">
-        <Input clearable v-model="name" :placeholder="$t('m.customerinfo.label1')" style="width: 180px"></Input>
-        <Input clearable  v-model="tel" :placeholder="$t('m.customerinfo.label3')" style="width: 180px"></Input>
-        <Input clearable  v-model="meterno" :placeholder="$t('m.open.metercolumnstitle1')" style="width: 180px"></Input>
+        <Input clearable v-model.trim="name" :placeholder="$t('m.customerinfo.label1')" style="width: 180px"></Input>
+        <Input clearable  v-model.trim="tel" :placeholder="$t('m.customerinfo.label3')" style="width: 180px"></Input>
+        <Input clearable  v-model.trim="meterno" :placeholder="$t('m.open.metercolumnstitle1')" style="width: 180px"></Input>
         <div style="margin:8px 0"></div>
         <DatePicker split-panels type="daterange" placement="bottom-start" :placeholder="$t('m.form.selectdate')" style="width: 180px" @on-change="changedate"></DatePicker>
         <!--<div style="position: relative">-->

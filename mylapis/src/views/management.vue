@@ -6,9 +6,9 @@
             <p>{{$t('m.edit.editinfo')}}</p>
           </div>
           <div style="margin-top: 10px;">
-            <Input v-model="customername" :placeholder="$t('m.customerinfo.label1')" style="width: 180px"></Input>
-            <Input v-model="idcard" :placeholder="$t('m.customerinfo.label2')" style="width: 180px"></Input>
-            <Input v-model="tel" :placeholder="$t('m.customerinfo.label3')" style="width: 180px"></Input>
+            <Input v-model.trim="customername" :placeholder="$t('m.customerinfo.label1')" style="width: 180px"></Input>
+            <Input v-model.trim="idcard" :placeholder="$t('m.customerinfo.label2')" style="width: 180px"></Input>
+            <Input v-model.trim="tel" :placeholder="$t('m.customerinfo.label3')" style="width: 180px"></Input>
             <Button type="primary" icon="ios-search" @click="querymanage">{{$t('m.common.query')}}</Button>
           </div>
           <div style="margin-top: 10px;" v-if="showmanagement">

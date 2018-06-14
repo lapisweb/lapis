@@ -11,7 +11,7 @@
         <Form ref="loginValidate" :model="loginValidate" :rules="loginrule">
           <div class="heng">
             <FormItem prop="account">
-              <Input clearable type="text" id='username' name="username" v-model="loginValidate.account" :placeholder="$t('m.login.username')" @on-keyup.enter="show('loginValidate')">
+              <Input clearable type="text" id='username' name="username" v-model.trim="loginValidate.account" :placeholder="$t('m.login.username')" @on-keyup.enter="show('loginValidate')">
                 <span slot="prepend">
                   &nbsp;<Icon type="android-person" size="14"></Icon>&nbsp;
                 </span>
@@ -20,7 +20,7 @@
           </div>
           <div class="heng">
             <FormItem prop="password">
-              <Input clearable type="password" id='password' name="password" v-model="loginValidate.password" :placeholder="$t('m.login.password')" @on-keyup.enter="show('loginValidate')">
+              <Input clearable type="password" id='password' name="password" v-model.trim="loginValidate.password" :placeholder="$t('m.login.password')" @on-keyup.enter="show('loginValidate')">
               <span slot="prepend">
                   &nbsp;<Icon type="android-lock" size="14"></Icon>&nbsp;
               </span>
@@ -29,7 +29,7 @@
           </div>
           <div class="heng">
             <FormItem prop="pin">
-              <Input type="text" name="validate" v-model="loginValidate.pin" :placeholder="$t('m.login.pin')" @on-keyup.enter="show('loginValidate')">
+              <Input type="text" name="validate" v-model.trim="loginValidate.pin" :placeholder="$t('m.login.pin')" @on-keyup.enter="show('loginValidate')">
               <span slot="prepend">
                   &nbsp;<Icon type="pricetag" size="14"></Icon>&nbsp;
               </span>
@@ -40,6 +40,10 @@
             </div>
           </div>
           <div class="heng">
+            <!--<Button type="primary" :class="{actives:active}" long :loading="loading" @click="send('loginValidate')">-->
+              <!--<span v-if="!loading">Click me!</span>-->
+              <!--<span v-else>{{logining}}</span>-->
+            <!--</Button>-->
             <Button type="primary" :class="{actives:active}" long @click="send('loginValidate')">{{logining}}</Button>
           </div>
         </Form>
@@ -54,6 +58,7 @@
     name: 'login',
     data: function () {
       return {
+        loading:false,
         logining:this.$t('m.login.login'),
         active:false,
         imgsrc:apiLink+'validateCodeServlet?aa='+ Math.random(),
@@ -100,13 +105,13 @@
                 if(response.body.code==0){
                   window.localStorage.setItem('userdata',JSON.stringify(response.body.user.dept));
                   window.localStorage.setItem('user',JSON.stringify(response.body.user.loginName));
-                  this.$router.push('/');
+                  this.$router.push('/index');
                 }
               }
             })
-              .catch(function (response) {
-                console.log(response)
-              })
+            .catch(function (response) {
+              console.log(response)
+            })
           }
         });
       },

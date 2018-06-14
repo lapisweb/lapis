@@ -29,7 +29,7 @@ import Monthdata from '@/views/monthdata'
 import addRepair from '@/views/complain/addrepair'
 import Maintain from '@/views/complain/maintain'
 import OpenInvoice from '@/views/invoice-open'
-import AA from '@/views/mobileFooter'
+// import AA from '@/views/mobileFooter'
 
 
 Vue.use(Router);
@@ -39,8 +39,10 @@ const router = new Router({
     {
       path: '/index',
       name: '',
+      title:'首页',
       component:Layout,
       children: [
+        { path: '', component:Index, name: 'index' },
         { path: 'purchase', component:Purchase, name: 'purchase' ,meta: {
             title: '购买'
           }},
@@ -139,24 +141,16 @@ const router = new Router({
       ]
     },
     {
+      path: '/',
+      redirect:'/login',
+    },
+    {
       path: '/login',
       name: 'login',
       component:Login,
       meta: {
         title: '登录'
       }
-    },
-    {
-      path: '/aa',
-      name: '',
-      component:AA
-    },
-    {
-      path: '/',
-      component:Layout,
-      children: [
-        { path: '', component:Index, name: 'index' },
-      ]
     },
   ]
 });

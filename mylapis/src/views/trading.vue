@@ -13,10 +13,10 @@
         </li>
         <li>
           <p>{{$t('m.customerinfo.info')}}</p>
-          <Input clearable v-model="name"  style="width: 96px" :placeholder="$t('m.customerinfo.label1')"></Input>
-          <Input clearable v-model="tel"  style="width: 98px" :placeholder="$t('m.customerinfo.label3')"></Input>
+          <Input clearable v-model.trim="name"  style="width: 96px" :placeholder="$t('m.customerinfo.label1')"></Input>
+          <Input clearable v-model.trim="tel"  style="width: 98px" :placeholder="$t('m.customerinfo.label3')"></Input>
           <div style="height:6px;" ></div>
-          <Input v-model="idcard"  style="width: 200px" :placeholder="$t('m.customerinfo.label2')"></Input>
+          <Input v-model.trim="idcard"  style="width: 200px" :placeholder="$t('m.customerinfo.label2')"></Input>
         </li>
         <li>
           <p>{{$t('m.deal.daterange')}}</p>
@@ -330,7 +330,7 @@
     top: 70px;
     left: 0;
     bottom: 0;
-    z-index: 2;
+    z-index: 3;
     overflow-y: auto;
     background: #EEEEEE;
     padding-top: 8px;
@@ -365,7 +365,7 @@
     margin-right: 30px;
   }
   .fiterRight .footer{
-    left:240px;
+    left:120px;
     right:0
   }
 </style>

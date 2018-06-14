@@ -5,13 +5,13 @@
         <h2>{{$t('m.header.changepassword')}}</h2>
         <Form ref="passValidate" :model="passValidate" :rules="passValidates">
           <FormItem  prop="oldpass">
-            <Input type="password" style="width:340px;margin-top: 20px;" :placeholder="$t('m.password.oldpass')" size="large" v-model="passValidate.oldpass"></Input>
+            <Input type="password" style="width:340px;margin-top: 20px;" :placeholder="$t('m.password.oldpass')" size="large" v-model.trim="passValidate.oldpass"></Input>
           </FormItem>
           <FormItem  prop="newpass">
-            <Input type="password" style="width:340px;margin-top: 20px;" :placeholder="$t('m.password.newpass')" size="large" v-model="passValidate.newpass"></Input>
+            <Input type="password" style="width:340px;margin-top: 20px;" :placeholder="$t('m.password.newpass')" size="large" v-model.trim="passValidate.newpass"></Input>
           </FormItem>
           <FormItem  prop="conpass">
-            <Input type="password" style="width:340px;margin-top: 20px;" :placeholder="$t('m.password.confirmpass')" size="large" v-model="passValidate.conpass"></Input>
+            <Input type="password" style="width:340px;margin-top: 20px;" :placeholder="$t('m.password.confirmpass')" size="large" v-model.trim="passValidate.conpass"></Input>
           </FormItem>
           <Button type="primary" long shape="circle" style="margin-top: 25px;" size="large" @click="editpsw('passValidate')">{{$t('m.common.confirm')}}</Button>
           <Button type="error" long shape="circle" style="margin-top: 10px;" size="large" @click="cancelpsw">{{$t('m.common.cancel')}}</Button>

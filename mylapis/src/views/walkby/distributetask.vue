@@ -8,19 +8,19 @@
       <div>
         <div style="padding:20px 0">
           <CheckboxGroup>
-            <Checkbox label="item.id" v-for="item,index in technicianList" :key="item.id">
-              <Icon :color="colors[index]" type="flag"></Icon>
+            <Checkbox label="item.id" v-for="(item,index) in technicianList" :key="item.id">
+              <span class="iconfont icon-dibiao1" style="font-size: 14px;" v-color="colors[index]"></span>
               <span>{{item.loginName}}</span>
             </Checkbox>
           </CheckboxGroup>
         </div>
-        <div class="task-left">
+        <div class="task-left1">
           <div style="padding: 5px 15px;">
             <p style="font-size: 12px">{{$t('m.walkby.sel2')}}</p>
             <Tree :data="region" show-checkbox @on-check-change="selregion"></Tree>
           </div>
         </div>
-        <div class="taskRight">
+        <div class="taskRight1">
           <div style="width:100%;height:850px;">
             <div id="map" style="width:100%;height:100%"></div>
           </div>
@@ -38,12 +38,12 @@
         map:'',
         markers:[],
         walkbycurrent:0,
-        icons:['../../static/icon1.png','../../static/icon2.png'],
+        icons:['../../static/icon1.png','../../static/icon2.png','../../static/icon3.png','../../static/icon4.png'],
         technician:'',
         technicianList:[],
         selectedregions:[],
         lacations: [],
-        colors : ['#5793f3', '#d14a61'],
+        colors : ['#d14a61','#5793f3','#ff9900','#19be6b'],
         //查询表号的表格
         //列名
         metercolumns: [
@@ -70,6 +70,15 @@
         return arr;
       },
     },
+    directives:{"color":{
+      bind:function(el,binding){
+         el.style.color=binding.value
+      }
+
+      //简写   等同于把代码写在bind  和updated里面
+      //     "名字"：function(el,binding){}
+      }
+    },
     methods: {
       getTree(tree = []) {
         let arr = [];
@@ -93,7 +102,7 @@
         });
         this.selectedregions=arr;
         this.$http({
-          url:'walkby/getMeter.do',
+          url:'walkby/getUnTaskMeter.do',
           credentials:true,
           body:this.selectedregions,
           headers: {
@@ -125,7 +134,7 @@
               title:val.meterNumber,
               meter:val,
               iconList:this.icons,
-              icon:val._checked?this.icons[0]:this.icons[1]
+              icon:'../../static/icon.png'
             });
             google.maps.event.addListener(marker, 'click', ()=> {
               val._checked= !val._checked;
@@ -761,6 +770,7 @@
           },
         }).then((response) => {
           this.technicianList=response.body.technicians;
+          this.gettask();
         });
       },
       //获取正在执行的任务
@@ -776,11 +786,11 @@
             'Content-Type':'application/json; charset=UTF-8'
           },
         }).then((response) => {
-          response.body.tasks.forEach((val,index)=> {
-            val.walkByTaskJson.meterlist.forEach((val2,index2)=>{
-                val2.location=new google.maps.LatLng(val2.latitude, val2.longitude)
-            this.technicianList.forEach((val1,index1)=>{
-              if(val.technicianID==val1.id){
+          this.technicianList.forEach((val1,index1)=>{
+            response.body.tasks.forEach((val,index)=> {
+              if(val1.id==val.technicianID){
+                val.walkByTaskJson.meterlist.forEach((val2,index2)=>{
+                  val2.location=new google.maps.LatLng(val2.latitude, val2.longitude);
                   var marker= new google.maps.Marker({
                     position: val2.location,
                     animation: google.maps.Animation.DROP,
@@ -788,18 +798,16 @@
                     title:val2.meterNumber,
                     meter:val2,
                     iconList:this.icons,
-                    icon:val2._checked?this.icons[0]:this.icons[1]
+                    icon:this.icons[index]
                   });
                   google.maps.event.addListener(marker, 'click', ()=> {
                     val2._checked= !val._checked;
                     marker.setIcon(val._checked?this.icons[0]:this.icons[1]);
                   });
-                  this.markers.push(marker);
-                  return marker;
+                });
               }
             })
-            });
-          })
+          });
         });
       },
     },
@@ -809,13 +817,12 @@
     created(){
       this.getregion();
       this.gettechnicianList();
-      this.gettask();
       this.keydragzoom ();  ////初始化dragzoom
     },
   }
 </script>
 <style>
-  .taskRight{
+  .taskRight1{
     margin-left: 240px;
   }
   .task-top{
@@ -829,7 +836,7 @@
     z-index: 5;
     border-bottom: 1px solid #ccc;
   }
-  .task-left{
+  .task-left1{
     width: 240px;
     height:850px;
     overflow-y: auto;

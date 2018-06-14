@@ -15,7 +15,7 @@
           <Row>
             <Col :sm={span:24} :md="{span:9}" :lg="{span:6}" style="margin-bottom: 15px">
               <span>{{$t('m.customerinfo.label7')}}</span>
-              <Input v-model="querymeterno"  icon="pricetag" style="width: 200px"></Input>
+              <Input v-model.trim="querymeterno"  icon="pricetag" style="width: 200px"></Input>
             </Col>
             <Col :sm={span:24} :md="{span:12}" :lg="{span:9}" style="margin-bottom: 15px">
               <span>{{$t('m.deal.daterange')}}</span>
@@ -47,7 +47,7 @@
             <li>
               <p style="line-height: 25px;">{{$t('m.meter.single')}}</p>
               <div>
-                <Input :disabled="qiehuan1" style="width:200px;" v-model="meterno" ></Input>
+                <Input :disabled="qiehuan1" style="width:200px;" v-model.trim="meterno" ></Input>
               </div>
             </li>
             <li class="changeiview">
@@ -57,9 +57,9 @@
                 <Icon type="android-close" slot="close"></Icon>
               </i-Switch>
               <div>
-                <Input :disabled="qiehuan2" style="width:200px;" :placeholder="$t('m.meter.smeter')" v-model="startmeterno"></Input>
+                <Input :disabled="qiehuan2" style="width:200px;" :placeholder="$t('m.meter.smeter')" v-model.trim="startmeterno"></Input>
                 <Icon type="android-remove"></Icon>
-                <Input :disabled="qiehuan2" style="width:200px;" :placeholder="$t('m.meter.emeter')" v-model="endmeterno"></Input>
+                <Input :disabled="qiehuan2" style="width:200px;" :placeholder="$t('m.meter.emeter')" v-model.trim="endmeterno"></Input>
               </div>
             </li>
             <li>

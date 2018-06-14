@@ -1,9 +1,9 @@
 <template>
   <div>
     <div style="margin:10px 100px;">
-      <Input clearable v-model="name" :placeholder="$t('m.customerinfo.label1')" style="width: 180px"></Input>
-      <Input clearable v-model="idcard" :placeholder="$t('m.customerinfo.label2')" style="width: 180px"></Input>
-      <Input clearable  v-model="tel" :placeholder="$t('m.customerinfo.label3')" style="width: 180px"></Input>
+      <Input clearable v-model.trim="name" :placeholder="$t('m.customerinfo.label1')" style="width: 180px"></Input>
+      <Input clearable v-model.trim="idcard" :placeholder="$t('m.customerinfo.label2')" style="width: 180px"></Input>
+      <Input clearable  v-model.trim="tel" :placeholder="$t('m.customerinfo.label3')" style="width: 180px"></Input>
       <Button type="primary" icon="ios-search" @click="query">{{$t('m.common.query')}}</Button>
     </div>
     <div style="margin:10px 0" v-if="show">
@@ -21,6 +21,7 @@
     name:'purchase',
     data() {
       return {
+        aa:'3333333',
         //数据定义
         install:'',
         name: "",
@@ -68,7 +69,7 @@
           {
             title: this.$t('m.customerinfo.label9'),
             key: 'status',
-            width:'160px',
+            width:160,
             render: (h, params) => {
               const row = params.row;
               let color = row.status;
@@ -217,7 +218,12 @@
         })
       },
       changePage(page) {
+        this.tokendata = '';
+        this.message = false;
+        this.loading = true;
+        this.show = true;
         this.customerdata = [];
+        this.showmanagement = true;
         this.$http({
           url: 'biz/customer/findByPage.do',
           body: {
@@ -320,12 +326,13 @@
               )
             }
           });
+          this.loading = false;
         })
       },
       selected(e) {
         this.message = true;
-        this.show = false,
-          this.currentcustomer = e;
+        this.show = false;
+        this.currentcustomer = e;
         this.$http({
           url: 'biz/trade/findCusLastPur.do',
           body: {

@@ -1,8 +1,22 @@
 <template>
   <div>
     <div class="h-content">
-        333333333333333333333334444444444444444
-      55555555555555555555
+      <my-customer :traderecord="traderecord" :currentcustomer="currentcustomer"></my-customer>
+      {{traderecord}}
     </div>
   </div>
 </template>
+<script>
+  export default {
+    name: 'realtime',
+    data() {
+      return {
+        traderecord:{},
+        currentcustomer:{},
+      }
+    },
+    created(){
+      console.log(this._props)
+    }
+  }
+</script>
