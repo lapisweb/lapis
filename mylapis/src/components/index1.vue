@@ -7,7 +7,7 @@
         <div class="layout-logo">
           <a href="/#/index">
             <img src="../assets/img/logo.png" alt="">
-            <img src="../assets/img/logo1.png" alt="">
+            <img src="../assets/img/logo2.png" alt="">
           </a>
         </div>
         <div class="layout-ceiling-main">
@@ -31,7 +31,7 @@
               <Dropdown trigger="custom" :visible="visible">
                 <a href="javascript:;" @click.stop="handleOpen">
                   <Badge :count="count" class-name="demo-badge-alone">
-                    <Icon type="android-notifications" color="white" size="16" style="margin-top: -5px;"></Icon>
+                    <Icon type="android-notifications" size="18" style="margin-top: -5px;"></Icon>
                   </Badge>
                 </a>
                 <DropdownMenu slot="list" style="width:240px;">
@@ -56,8 +56,8 @@
               </Dropdown>
               <Dropdown @on-click="itemclick"  placement="bottom-end">
                 <a href="javascript:void(0)">
-                  <Icon type="android-person" color="white" size="16"></Icon>
-                  <Icon type="chevron-down" color="white" size="10"></Icon>
+                  <Icon type="android-person"  size="18"></Icon>
+                  <Icon type="chevron-down"  size="10"></Icon>
                 </a>
                 <DropdownMenu slot="list">
                   <DropdownItem name="print">
@@ -76,7 +76,7 @@
               </Dropdown>
               <Dropdown  placement="bottom-end">
                 <a href="javascript:void(0)">
-                  <Icon type="android-globe" color="white" size="16"></Icon>
+                  <Icon type="android-globe" size="18"></Icon>
                 </a>
                 <DropdownMenu slot="list">
                   <DropdownItem>
@@ -130,7 +130,7 @@
         isShow:false,
         islanShow:false,
         ispreShow:false,
-        theme1:'primary',
+        theme1:'light',
         enableDebt:1,
         invoice:'',
         receipt:'',
@@ -333,12 +333,12 @@
     margin-top: 10px;
   }
   .layout-logo img:first-child{
-    margin-left: 20px;
-    margin-top: 7px;
-    width: 36px;
-    height: 36px;
-    float: left;
-  }
+      margin-left: 20px;
+      margin-top: 7px;
+      width: 36px;
+      height: 36px;
+      float: left;
+    }
   .layout-logo img:nth-child(2){
     margin-top: 12px;
     width: 86px;
@@ -351,7 +351,8 @@
     top:0;
     z-index: 10;
     width:100%;
-    background: #2d8cf0;
+    background: #fff;
+    box-shadow: 0 1px 4px 0px #ccc;
   }
   .layout-ceiling-main{
     margin-left: 180px;
@@ -371,9 +372,12 @@
   .layout-right .bigscreen > a span{
     font-size: 12px;
   }
-  .layout-ceiling-main .ivu-menu-primary {
+  .layout-ceiling-main .ivu-menu-light {
     height:70px;
     line-height: 70px;
+  }
+  .ivu-menu-horizontal.ivu-menu-light:after{
+    background: #fff;
   }
   .layout-right .bigscreen > a span{
     font-size: 12px;

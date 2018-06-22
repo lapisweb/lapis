@@ -6,12 +6,12 @@
           <Select v-model="technician" clearable style="width:180px" :placeholder="$t('m.walkby.reader')">
             <Option v-for="item in technicianList" :value="item.id" :key="item.id" >{{ item.loginName }}</Option>
           </Select>
-          <DatePicker type="daterange" placement="bottom-start" split-panels :placeholder="$t('m.walkby.seltime')" style="width: 200px" @on-change="slectetime"></DatePicker>
+          <!--<DatePicker type="daterange" placement="bottom-start" split-panels :placeholder="$t('m.walkby.seltime')" style="width: 200px" @on-change="slectetime"></DatePicker>-->
           <Button type="primary" icon="ios-search" @click="query">{{$t('m.common.query')}}</Button>
         </div>
         <div style="margin:10px 0;">
           <Button icon="plus-round" type="info" @click="addtask" style="margin-bottom: 5px;">{{$t('m.walkby.addtask')}}</Button>
-          <Button icon="plus-round" type="primary" @click="taskdistribute" style="margin-bottom: 5px;">任务分布</Button>
+          <Button icon="ios-pie-outline" type="primary" @click="taskdistribute" style="margin-bottom: 5px;">{{$t('m.walkby.Taskdistribution')}}</Button>
           <Table :loading="loading" ref="selection" :columns="columnslist" :data="tasklist"></Table>
           <div style="margin: 10px;overflow: hidden">
             <div style="float: right;">
@@ -35,7 +35,6 @@
         technician:'',
         time:[],
         technicianList:[],
-        index:'',
         tasktotal:0,
         loading:false,
         columnslist: [
@@ -111,23 +110,30 @@
                       }
                     })]
                   ),
-                  h('Button', {
+                  h('Poptip',{
+                    props: {
+                      confirm:true,
+                      title:'确定删除此信息吗?',
+                    },
+                    on: {
+                      'on-ok': () => {
+                        this.remove(params.index)
+                      },
+                    }
+                  },[h('Button', {
                       props: {
                         type: 'error',
                         size: 'small'
                       },
-                      on: {
-                        click: () => {
-                          this.remove(params.index)
-                        }
-                      }
                     },[h('Icon',{
                       props:{
                         color:'#fff',
                         type: 'android-delete',
                       }
-                    })]
+                    }),
+                    ]
                   ),
+                  ]),
                 ]);
               }else{
                 return h('div', [
@@ -150,23 +156,30 @@
                       type: 'ios-eye',
                     }
                   })],),
-                  h('Button', {
+                  h('Poptip',{
+                    props: {
+                      confirm:true,
+                      title:'确定删除此信息吗?',
+                    },
+                    on: {
+                      'on-ok': () => {
+                        this.remove(params.index)
+                      },
+                    }
+                  },[h('Button', {
                       props: {
                         type: 'error',
                         size: 'small'
                       },
-                      on: {
-                        click: () => {
-                          this.remove(params.index)
-                        }
-                      }
                     },[h('Icon',{
-                      props:{
-                        color:'#fff',
-                        type: 'android-delete',
-                      }
-                    })]
+                        props:{
+                          color:'#fff',
+                          type: 'android-delete',
+                        }
+                    }),
+                    ]
                   ),
+                  ]),
                 ]);
               }
             }
@@ -186,9 +199,9 @@
           body: {
             conditions: {
               technicianID:this.technician,
-              startTime:this.time[0],
-              endTime:this.time[1],
-              orderByClause: "open_date desc",
+              // startTime:this.time[0],
+              // endTime:this.time[1],
+              orderByClause: "task_i_d  desc",
             },
             "limit": 10,
             "page": 1
@@ -219,9 +232,9 @@
           body: {
             conditions: {
               technicianID:this.technician,
-              startTime:this.time[0],
-              endTime:this.time[1],
-              orderByClause: "open_date desc",
+              // startTime:this.time[0],
+              // endTime:this.time[1],
+              orderByClause: "task_i_d  desc",
             },
             "limit": 10,
             "page": page
@@ -251,17 +264,7 @@
         this.$router.push('/index/walkby/addtask');
       },
       remove(index){
-        this.index=index;
-        this.$Modal.confirm({
-          title: 'Meter import',
-          content:'<p>'+this.$t('m.common.tips')+'</p><p>'+this.$t('m.common.sure')+'</p>',
-          onOk: () => {
-            this.removeconfirm();
-          },
-        });
-      },
-      removeconfirm () {
-        let taskid=this.tasklist[this.index].taskID;
+        let taskid=this.tasklist[index].taskID;
         this.$http({
           url:'walkby/del.do',
           body: {
@@ -274,7 +277,7 @@
           },
         }).then((response) => {
           if(response.body.msg){
-            this.tasklist.splice(this.index, 1);
+            this.tasklist.splice(index, 1);
             this.tasktotal=this.metertotal-1;
             this.$Message.success(response.body.msg);
           }else{

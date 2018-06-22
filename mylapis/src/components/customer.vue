@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div style="margin:10px 100px;">
+  <div  class="h-content" style="margin:10px 100px;">
+    <div>
       <Input clearable v-model.trim="name" :placeholder="$t('m.customerinfo.label1')" style="width: 180px"></Input>
       <Input clearable v-model.trim="idcard" :placeholder="$t('m.customerinfo.label2')" style="width: 180px"></Input>
       <Input clearable  v-model.trim="tel" :placeholder="$t('m.customerinfo.label3')" style="width: 180px"></Input>
@@ -14,14 +14,15 @@
         </div>
       </div>
     </div>
+    <purchase :currentcustomer="currentcustomer" :traderecord="traderecord" :message="message"></purchase>
   </div>
 </template>
 <script>
+  import Realtime from "../views/purchase1"
   export default {
-    name:'purchase',
+    name:'customer',
     data() {
       return {
-        aa:'3333333',
         //数据定义
         install:'',
         name: "",
@@ -29,8 +30,10 @@
         tel: "",
         show: false,
         customertotal:0,
+        message:true,
         loading:false,
-
+        currentcustomer:{},
+        traderecord:{},
         //用户信息列表
         //表头定义
         custominfo: [
@@ -103,6 +106,9 @@
         //表中信息
         customerdata: [],
       }
+    },
+    components:{
+      "purchase": Realtime
     },
     methods: {
       query: function () {
@@ -345,6 +351,7 @@
           },
         }).then((response) => {
           this.traderecord = response.body.tradeRecord;
+          console.log(response.body);
         });
         this.noclick = false;
       },

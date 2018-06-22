@@ -32,7 +32,7 @@
         </li>
       </ul>
     </div>
-    <div class="fiterRight">
+    <div class="fiterRighta">
       <!--<Button type="success" size="large" @click="exportData(2)"><Icon type="ios-printer-outline"></Icon> 打印</Button>-->
       <!--<Table :loading="loading" :data="alarmData" :columns="alarmColumns" stripe></Table>-->
       <!--<div style="margin: 10px;overflow: hidden">-->
@@ -365,7 +365,7 @@
     line-height: 50px;
     margin-top:15px;
   }
-  .fiterRight{
+  .fiterRighta{
     position: relative;
     top: 84px;
     margin-left: 260px;

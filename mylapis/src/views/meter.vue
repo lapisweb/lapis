@@ -23,7 +23,7 @@
             </Col>
               <Button type="primary" icon="ios-search" style="margin-bottom: 15px" @click="searchmeter">{{$t('m.common.query')}}</Button>
           </Row>
-          <Table :loading="loading" stripe  border ref="selection" :columns="querymetertable" :data="meterdata"></Table>
+          <Table :loading="loading" stripe  ref="selection" :columns="querymetertable" :data="meterdata"></Table>
           <div style="margin: 10px;overflow: hidden">
             <div style="float: right;">
               <Page :total="metertotal" :current="1" @on-change="changePage" :show-total="true" :show-elevator="true"></Page>
@@ -92,7 +92,6 @@
         datearray:[],
         loading:false,
         meterid:'',
-        index:'',
         //左侧导航
         ok:true,
         yes:false,
@@ -155,28 +154,33 @@
           {
             title: this.$t('m.meter.operate'),
             key: 'action',
-            align: 'center',
-
             width:160,
             render: (h, params) => {
               return h('div', [
-                h('Button', {
+                h('Poptip',{
+                  props: {
+                    confirm:true,
+                    title:'确定删除吗?',
+                  },
+                  on: {
+                    'on-ok': () => {
+                      this.remove(params.index)
+                    },
+                  }
+                },[h('Button', {
                     props: {
                       type: 'error',
                       size: 'small'
                     },
-                    on: {
-                      click: () => {
-                        this.remove(params.index)
-                      }
-                    }
                   },[h('Icon',{
                     props:{
                       color:'#fff',
                       type: 'android-delete',
                     }
-                  })]
-                )
+                  }),
+                  ]
+                ),
+                ]),
               ]);
             }
           }
@@ -312,19 +316,6 @@
       },
       remove (index) {
         this.meterid=this.meterdata[index].meterId;
-        this.index=index;
-        this.$Modal.confirm({
-          title: 'Meter import',
-          content:'<p>'+this.$t('m.common.tips')+'</p><p>Are you sure to delete it？</p>',
-          onOk: () => {
-            this.removeconfirm();
-          },
-          onCancel: () => {
-//            this.$Message.info('Clicked cancel');
-          }
-        });
-      },
-      removeconfirm () {
         this.$http({
           url:'biz/meterStock/del.do',
           body:{
@@ -337,14 +328,14 @@
           },
         }).then((response) => {
           if(response.body.msg){
-            this.meterdata.splice(this.index, 1);
+            this.meterdata.splice(index, 1);
             this.metertotal=this.metertotal-1;
             this.$Message.success(response.body.msg);
           }else{
             this.$Message.error(response.body.errors);
           }
         });
-      }
+      },
     },
 
     created() {

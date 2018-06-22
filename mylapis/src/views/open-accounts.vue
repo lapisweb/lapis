@@ -697,6 +697,7 @@
                     this.kaihufapiao=true;
                   }else{
                     this.$Message.error(response.body.errors);
+                    this.nextloading=false;
                   }
                 })
               } else {
@@ -737,6 +738,7 @@
                     this.kaihufapiao=true;
                   }else{
                     this.$Message.error(response.body.errors);
+                    this.nextloading=false;
                   }
                 })
               } else {
@@ -778,6 +780,7 @@
                     this.kaihufapiao=true;
                   }else{
                     this.$Message.error(response.body.errors);
+                    this.nextloading=false;
                   }
                 })
               } else {
@@ -823,6 +826,7 @@
                     this.kaihufapiao=true;
                   }else{
                     this.$Message.error(response.body.errors);
+                    this.nextloading=false;
                   }
                 })
               } else {
@@ -1236,7 +1240,7 @@
           let index=localStorage.getItem('invoice');
           LODOP.SET_PRINTER_INDEXA(index);
           LODOP.PREVIEW();//预览
-              // LODOP.PRINT();// 直接打印
+          // LODOP.PRINT();// 直接打印
       },
     },
     mounted(){

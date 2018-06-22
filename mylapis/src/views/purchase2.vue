@@ -1,10 +1,10 @@
 <template>
   <div>
-    <Button @click="flag=!flag">点我</Button>
+    <!--<Button @click="flag=!flag">点我</Button>-->
 
-    <transition>
-      <h3 v-if="flag">我是一个有动画的标签</h3>
-    </transition>
+    <!--<transition>-->
+      <!--<h3 v-if="flag">我是一个有动画的标签</h3>-->
+    <!--</transition>-->
 
     <my-customer></my-customer>
   </div>
@@ -23,7 +23,7 @@
       return {
         flag:false,
       }
-    }
+    },
   }
   //       var mapType = google.maps.MapTypeId.ROADMAP;
   //       // var lat = 40.714, lng = -74.005,120.2E ,30.3

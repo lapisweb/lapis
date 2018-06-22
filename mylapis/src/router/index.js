@@ -29,7 +29,7 @@ import Monthdata from '@/views/monthdata'
 import addRepair from '@/views/complain/addrepair'
 import Maintain from '@/views/complain/maintain'
 import OpenInvoice from '@/views/invoice-open'
-// import AA from '@/views/mobileFooter'
+import AA from '@/views/purchase2'
 
 
 Vue.use(Router);
@@ -85,10 +85,10 @@ const router = new Router({
         //   meta: {
         //     title: '首页入口'
         //   }},
-        // { path: 'print', component:Print, name: 'print' ,
-        //   meta: {
-        //     title: '设置打印机'
-        //   }},
+        { path: 'print', component:Print, name: 'print' ,
+          meta: {
+            title: '设置打印机'
+          }},
         { path: 'password', component:Password, name: 'password' ,
           meta: {
             title: '修改密码'
@@ -135,6 +135,10 @@ const router = new Router({
             title: '月冻结数据'
           }},
         {
+          path: 'aa',
+          component:AA,
+        },
+        {
           path: 'invoiceopen',
           component:OpenInvoice,
         },
@@ -144,6 +148,7 @@ const router = new Router({
       path: '/',
       redirect:'/login',
     },
+
     {
       path: '/login',
       name: 'login',

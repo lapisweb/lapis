@@ -2,56 +2,67 @@
   <div class="index">
     <div class="h-content">
       <div>
-        <img src="../assets/img/h-bigbg.jpg" alt="" style="width:100%">
+        <Carousel autoplay autoplay-speed="3000" v-model="value1" loop>
+          <CarouselItem>
+            <div class="demo-carousel">
+              <img src="../assets/img/h-bigbg.jpg" alt="" style="width:100%">
+            </div>
+          </CarouselItem>
+          <CarouselItem>
+            <div class="demo-carousel">
+              <img src="../assets/img/4.jpg" alt="" style="width:100%">
+            </div>
+          </CarouselItem>
+        </Carousel>
       </div>
       <div class="bigBox">
         <Row :gutter="16">
         <Col span="24">
-        <h3><Icon type="android-send"></Icon> {{$t('m.main.skyequiKey')}} </h3>
+        <h3><Icon type="android-send"></Icon> 今日统计 </h3>
         </Col>
         <Col span="6">
-          <a href="/#/index/open">
+          <!--<a href="/#/index/open">-->
+          <a href="javascript:;">
             <div class="basic basic-one">
-              <p class="tiao">{{$t('m.main.open')}}</p>
+              <p class="tiao">今日开户数</p>
               <img src="../assets/img/h-kaihu.png" alt="" class="left-icon">
               <div class="right-word">
-                <p class="aa">{{$t('m.main.user')}}</p>
                 <h3>{{customertotal}}</h3>
               </div>
             </div>
           </a>
         </Col>
         <Col span="6">
-          <a href="/#/index/purchase">
+          <!--<a href="/#/index/purchase">-->
+          <a href="javascript:;">
             <div class="basic basic-two">
-              <p class="tiao">{{$t('m.main.buysts')}}</p>
+              <p class="tiao">今日购买量</p>
               <img src="../assets/img/hgoumai.png" alt="" class="left-icon">
               <div class="right-word">
-                <p class="aa">{{$t('m.main.sale')}}</p>
                 <h3>658</h3>
               </div>
             </div>
           </a>
         </Col>
         <Col span="6">
-          <a href="/#/index/meter">
+          <!--<a href="/#/index/meter">-->
+          <a href="javascript:;">
             <div class="basic basic-three">
-              <p class="tiao">{{$t('m.main.meterimport')}}</p>
+              <p class="tiao">今日入库表量</p>
               <img src="../assets/img/hbiaoji.png" alt="" class="left-icon">
               <div class="right-word">
-                <p class="aa">{{$t('m.main.meter')}}</p>
                 <h3>{{metertotal}}</h3>
               </div>
             </div>
           </a>
         </Col>
         <Col span="6">
-          <a href="/#/index/statistic">
+          <!--<a href="/#/index/statistic">-->
+          <a href="javascript:;">
             <div class="basic basic-four">
-              <p class="tiao">{{$t('m.main.statisticalform')}}</p>
+              <p class="tiao">今日销售额</p>
               <img src="../assets/img/hbaobiao.png" alt="" class="left-icon">
               <div class="right-word">
-                <p class="aa">{{$t('m.main.daysale')}}</p>
                 <h3>$192,45</h3>
               </div>
             </div>
@@ -64,22 +75,25 @@
           </Col>
           <Col span="8">
             <div class="analysis">
+              <p class="title"><Icon type="pie-graph" size="14"></Icon> Regional Sales Analysis</p>
               <div id="main1-1" class="box"></div>
             </div>
           </Col>
           <Col span="16">
             <div class="analysis">
+              <p class="title"><Icon type="stats-bars" size="16"></Icon> Total area sales</p>
               <div id="main1-3" class="box"></div>
             </div>
           </Col>
           <Col span="24" style="margin-top: 10px;">
           <div class="analysis">
+            <p class="title"><Icon type="arrow-graph-up-right" size="16"></Icon> xx Station Monthly sales statistics</p>
             <div id="main1-2" class="box"></div>
           </div>
           </Col>
           <Col span="24" style="margin-top: 10px;">
-          <div class="analysis1">
-            <h3>{{$t('m.main.customerinfo')}}</h3>
+          <div class="analysis">
+            <p class="title"><Icon type="person-stalker" size="16"></Icon> Add customer information today</p>
             <Table :columns="columns1" :data="data8" style="margin-top: 10px;"></Table>
             <div style="margin: 10px;overflow: hidden">
               <div style="float: right;">
@@ -152,17 +166,17 @@
         myChart1.setOption({
           color: colorss,
 
-          title: {
-            text: 'Regional Sales Analysis',
-            subtext: 'virtual data',
-            left: 'center'
-          },
+          // title: {
+          //   text: 'Regional Sales Analysis',
+          //   subtext: 'virtual data',
+          //   left: 'center'
+          // },
           tooltip : {
             trigger: 'item',
             formatter: "{a} <br/>{b} : {c} ({d}%)"
           },
           legend: {
-            bottom: 10,
+            top:20,
             left: 'center',
             data: ['Cairo', 'Johannesburg','Cape Town','Nairobi','Algiers']
           },
@@ -195,10 +209,10 @@
         });
         myChart3.setOption({
           color: colors,
-          title: {
-            text: 'Total area sales',
-            subtext: 'virtual data'
-          },
+          // title: {
+          //   text: 'Total area sales',
+          //   subtext: 'virtual data'
+          // },
           tooltip: {
             trigger: 'axis',
             axisPointer: {
@@ -207,12 +221,6 @@
           },
           legend: {
             data: ['2016', '2017']
-          },
-          grid: {
-            left: '3%',
-            right: '4%',
-            bottom: '3%',
-            containLabel: true
           },
           xAxis: {
             type: 'value',
@@ -244,20 +252,11 @@
             max: 400
           },],
 
-
-          title: [{
-            left: 'center',
-            text: 'xx Station Monthly sales statistics'
-          }],
-
           xAxis: [{
             data: dateList
           }, ],
           yAxis: [{
             splitLine: {show: false}
-          }],
-          grid: [{
-            bottom: '10%'
           }],
           series: [{
             type: 'line',
@@ -293,6 +292,7 @@
         url:'biz/customer/findByPage.do',
         body:{
           "conditions": {
+            startTime:'2018-06-22',
             orderByClause :"open_date desc",
           },
           "limit": 5,
@@ -403,68 +403,39 @@
     border-bottom: 2px solid #00A5E7;
   }
   .analysis{
-    height:400px;
+    /*height:400px;*/
     border-radius:8px;
-    border:2px solid #EBEBEB;
+    background: #fff;
+    box-shadow: 0 0 4px 1px #EBEBEB;
     box-sizing: border-box;
-    padding:15px;
+    padding:10px 15px;
+    transition:all 0.2s ease-in-out
   }
-  .analysis .title{
-    width:100%;
-    height:40px;
-    line-height:40px;
-    font-size:16px;
-  }
-  .analysis ul{
-    width:100%;
-    height:auto;
-    overflow: hidden;
-  }
-  .analysis ul li{
-    float:left;
-    width:32%;
-    height:240px;
-    margin-left:2%;
-    border-radius:8px;
-    border:2px solid #EBEBEB;
-    box-sizing: border-box;
-    margin-top:20px;
+  .analysis:hover{
+    box-shadow: 0 0 10px 3px #EBEBEB;
 
   }
-  .analysis ul li:first-child,.analysis ul li:nth-child(4){
-    margin-left:0;
+  .analysis .title{
+    display: inline-block;
+    width: 100%;
+    height: 40px;
+    line-height: 35px;
+    font-size: 14px;
+    color: #1c2438;
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    border-bottom:1px solid #e9eaec;
   }
-  .analysis ul li:first-child,.analysis ul li:nth-child(2),.analysis ul li:nth-child(3){
-    margin-top:0;
-  }
-  .analysis ul li p{
-    height:40px;
-    line-height:40px;
-    text-align: center;
-    background:#F5F6F8;
-  }
-  .analysis ul li .box{
-    height:200px;
-    width:100%;
-  }
-  .analysis1{
-    border-radius:8px;
-    border:2px solid #EBEBEB;
-    box-sizing: border-box;
-    padding:15px;
-  }
-  .analysis1 h3{
-    color:#444;
-    /*text-align: center;*/
-    font-size: 16px;
-  }
+
   .left-icon{
     width:60px;
     margin:15px;
     float: left;
   }
   .right-word{
-    padding: 15px 10px;
+    padding: 26px 10px;
   }
   .right-word p.aa{
     color:#fff;

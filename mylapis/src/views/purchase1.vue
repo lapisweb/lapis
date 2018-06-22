@@ -3,12 +3,8 @@
     <Alert v-if="install" closable show-icon style="position:absolute;z-index:10000;width:50%;top:100px;left:50%;margin-left:-25%;text-align: center">
       {{ $t("m.common.install1")}} <a href="http://192.168.0.174/file/CLodop_Setup_for_Win32NT_3.029.exe">{{ $t("m.common.install2")}}</a> {{ $t("m.common.install3")}}
     </Alert>
-    <div class="h-content" style="margin:10px 100px 100px;">
+    <div>
       <div>
-        <Input clearable v-model.trim="name" :placeholder="$t('m.customerinfo.label1')" style="width: 180px"></Input>
-        <Input clearable v-model.trim="idcard" :placeholder="$t('m.customerinfo.label2')" style="width: 180px"></Input>
-        <Input clearable  v-model.trim="tel" :placeholder="$t('m.customerinfo.label3')" style="width: 180px"></Input>
-        <Button type="primary" icon="ios-search" @click="query">{{$t('m.common.query')}}</Button>
         <ul v-show="message" class="purmessage">
           <li>
             <Card :bordered="false">
@@ -262,7 +258,7 @@
           <li><span>Meter No. :</span> <span>{{invoicecusdata.customerName}}</span></li>
           <li><span>Id No. :</span> <span>{{invoicecusdata.identityCode}}</span></li>
           <li><span>Telephone :</span> <span>{{invoicecusdata.telephone}}</span></li>
-          <li><span>Address :</span> <span>{{invoicecusdata.physicalAddress}}</span></li>
+          <li style="width:180px;overflow: auto"><span>Address :</span> <span>{{invoicecusdata.physicalAddress}}</span></li>
         </ul>
       </div>
       <div class="payment fbox">
@@ -304,6 +300,7 @@
 <script>
   export default {
     name:'purchase',
+    props:['currentcustomer','traderecord','message'],
     data() {
       return {
         //数据定义
@@ -313,18 +310,18 @@
         tel: "",
         purchase:false,
         pregoumai: 0,
-        currentcustomer:{},
+        // currentcustomer:{},
         show: false,
-        message: false,
+        // message: false,
         token: "",
         tokendata:"",
         modal:false,
         customertotal:0,
         prvepurchase:{},
         fujiadetail:[],
-        traderecord:{},
+        // traderecord:{},
         loading:false,
-        noclick:true,
+        noclick:false,
         paytype:this.$t('m.purchase.amount'),
         print:false,
         fiprint:false,
@@ -333,6 +330,9 @@
         invmessage:false,
         smallmessage:false,
         currentTime:'',
+        size:window.localStorage.getItem('size'),
+        receipt:window.localStorage.getItem('receipt'),
+        invoice:window.localStorage.getItem('invoice'),
 
         //用户信息列表
         //表头定义
@@ -404,8 +404,140 @@
         ],
         //表中信息
         customerdata: [],
-
-        //发票数据
+        columns1: [
+          {
+            title: '名称',
+            key: 'name',
+            width:70,
+            textAlign:'left'
+          },
+          {
+            title: '数量',
+            key: 'count'
+          },
+          {
+            title: '单价',
+            key: 'price'
+          },
+          {
+            title: '总额',
+            key: 'total'
+          }
+        ],
+        data1: [
+          {
+            name: '最低消费',
+            count: 1,
+            price: '15.88',
+            total: '100'
+          },
+          {
+            name: '最低消费',
+            count: 1,
+            price: '15.88',
+            total: '100'
+          },
+          {
+            name: '最低消费',
+            count: 1,
+            price: '15.88',
+            total: '100'
+          },
+          {
+            name: '最低消费',
+            count: 1,
+            price: '15.88',
+            total: '100'
+          },
+        ],
+        invoicelist: [
+          {
+            title: 'Total payment',
+            key: 'volume'
+          },
+          {
+            title: 'Recharge volume',
+            key: 'volume'
+          },
+          {
+            title: 'Recharge credit',
+            key: 'money'
+          },
+          {
+            title: 'Debt payment',
+            key: 'debt'
+          },
+        ],
+        invoicelist1: [
+          {
+            title: 'Fee Name',
+            key: 'addifeename'
+          },
+          {
+            title: 'Fee Type',
+            key: 'addifeetype'
+          },
+          {
+            title: 'Deduction',
+            key: 'addifeemoney'
+          },
+        ],
+        invoicelist2: [
+          {
+            title: 'Step',
+            key: 'step'
+          },
+          {
+            title: 'Start Quantity',
+            key: 'startvolume'
+          },
+          {
+            title: 'Price',
+            key: 'price'
+          },
+        ],
+        purinvoicedata: [
+          {
+            date: '2018-03-15 16:11:46',
+            volume: '100m³',
+            money: '$60',
+            debt:'$10',
+          },
+        ],
+        purinvoicedata1: [
+          {
+            addifeename: 'Meter price',
+            addifeetype: 'Additional fee',
+            addifeemoney: '$300',
+          },
+          {
+            addifeename: 'Debt',
+            addifeetype: 'Debt payment',
+            addifeemoney: '$36.64',
+          },
+        ],
+        purinvoicedata2: [
+          {
+            step: 1,
+            startvolume: 0,
+            price: '$1.00',
+          },
+          {
+            step: 2,
+            startvolume: 10,
+            price: '$3.00',
+          },
+          {
+            step: 3,
+            startvolume: 20,
+            price: '$4.00',
+          },
+          {
+            step: 4,
+            startvolume: 30,
+            price: '$5.00',
+          },
+        ],
         fipaginvoicelist:[
           {
             title: 'Descricao',
@@ -439,224 +571,224 @@
       getLocalTime(nS) {
         return new Date(parseInt(nS) * 1000).toLocaleString().substr(0,17)
       },
-      query: function () {
-        this.tokendata = '';
-        this.message = false;
-        this.loading = true;
-        this.show = true;
-        this.customerdata = [];
-        this.showmanagement = true;
-        this.$http({
-          url: 'biz/customer/findByPage.do',
-          body: {
-            "conditions": {
-              name: this.name,
-              identityCode: this.idcard,
-              telephone: this.tel,
-              orderByClause: "open_date desc",
-            },
-            "limit": 10,
-            "page": 1
-          },
-          credentials: true,
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-
-        }).then((response) => {
-          this.customertotal = parseInt(response.body.pageInfo.total);
-          response.body.pageInfo.list.forEach((val, index) => {
-            if (val.debt && val.additionalFees) {
-              this.customerdata.push(
-                {
-                  customerid: val.customerId,
-                  customerno: val.customerNumber,
-                  name: val.customerName,
-                  idcard: val.identityCode,
-                  tel: val.telephone,
-                  opendate: val.openDate,
-                  customertype: val.customerType.customerTypeName,
-                  debt: val.debt.currentDebt,
-                  meterno: val.meter.meterNumber,
-                  address: val.physicalAddress,
-                  status: val.state,
-                  cuncode: val.villageCode,
-                  zhencode: val.townCode,
-                  shicode: val.cityCode,
-                  shengcode: val.provinceCode,
-                  additionalFees: val.additionalFees,
-                },
-              )
-            } else if (!val.debt && val.additionalFees) {
-              this.customerdata.push(
-                {
-                  customerid: val.customerId,
-                  customerno: val.customerNumber,
-                  name: val.customerName,
-                  idcard: val.identityCode,
-                  tel: val.telephone,
-                  opendate: val.openDate,
-                  customertype: val.customerType.customerTypeName,
-                  meterno: val.meter.meterNumber,
-                  address: val.physicalAddress,
-                  status: val.state,
-                  cuncode: val.villageCode,
-                  zhencode: val.townCode,
-                  shicode: val.cityCode,
-                  shengcode: val.provinceCode,
-                },
-              )
-            } else if (val.debt && !val.additionalFees) {
-              this.customerdata.push(
-                {
-                  customerid: val.customerId,
-                  customerno: val.customerNumber,
-                  name: val.customerName,
-                  idcard: val.identityCode,
-                  tel: val.telephone,
-                  opendate: val.openDate,
-                  customertype: val.customerType.customerTypeName,
-                  meterno: val.meter.meterNumber,
-                  address: val.physicalAddress,
-                  status: val.state,
-                  cuncode: val.villageCode,
-                  zhencode: val.townCode,
-                  shicode: val.cityCode,
-                  shengcode: val.provinceCode,
-                  debt: val.debt.currentDebt,
-                },
-              )
-            } else if (!val.debt && !val.additionalFees) {
-              this.customerdata.push(
-                {
-                  customerid: val.customerId,
-                  customerno: val.customerNumber,
-                  name: val.customerName,
-                  idcard: val.identityCode,
-                  tel: val.telephone,
-                  opendate: val.openDate,
-                  customertype: val.customerType.customerTypeName,
-                  meterno: val.meter.meterNumber,
-                  address: val.physicalAddress,
-                  status: val.state,
-                  cuncode: val.villageCode,
-                  zhencode: val.townCode,
-                  shicode: val.cityCode,
-                  shengcode: val.provinceCode,
-                },
-              )
-            }
-          });
-          this.loading = false;
-        })
-      },
-      changePage(page) {
-        this.customerdata = [];
-        this.$http({
-          url: 'biz/customer/findByPage.do',
-          body: {
-            "conditions": {
-              name: this.customername,
-              identityCode: this.idcard,
-              telephone: this.tel,
-              orderByClause: "open_date desc",
-            },
-            "limit": 10,
-            "page": page
-          },
-          credentials: true,
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-
-        }).then((response) => {
-          response.body.pageInfo.list.forEach((val, index) => {
-            if (val.debt && val.additionalFees) {
-              this.customerdata.push(
-                {
-                  customerid: val.customerId,
-                  customerno: val.customerNumber,
-                  name: val.customerName,
-                  idcard: val.identityCode,
-                  tel: val.telephone,
-                  opendate: val.openDate,
-                  customertype: val.customerType.customerTypeName,
-                  debt: val.debt.currentDebt,
-                  meterno: val.meter.meterNumber,
-                  address: val.physicalAddress,
-                  status: val.state,
-                  cuncode: val.villageCode,
-                  zhencode: val.townCode,
-                  shicode: val.cityCode,
-                  shengcode: val.provinceCode,
-                  additionalFees: val.additionalFees,
-                },
-              )
-            } else if (!val.debt && val.additionalFees) {
-              this.customerdata.push(
-                {
-                  customerid: val.customerId,
-                  customerno: val.customerNumber,
-                  name: val.customerName,
-                  idcard: val.identityCode,
-                  tel: val.telephone,
-                  opendate: val.openDate,
-                  customertype: val.customerType.customerTypeName,
-                  meterno: val.meter.meterNumber,
-                  address: val.physicalAddress,
-                  status: val.state,
-                  cuncode: val.villageCode,
-                  zhencode: val.townCode,
-                  shicode: val.cityCode,
-                  shengcode: val.provinceCode,
-                  additionalFees: val.additionalFees,
-                },
-              )
-            } else if (val.debt && !val.additionalFees) {
-              this.customerdata.push(
-                {
-                  customerid: val.customerId,
-                  customerno: val.customerNumber,
-                  name: val.customerName,
-                  idcard: val.identityCode,
-                  tel: val.telephone,
-                  opendate: val.openDate,
-                  customertype: val.customerType.customerTypeName,
-                  meterno: val.meter.meterNumber,
-                  address: val.physicalAddress,
-                  status: val.state,
-                  cuncode: val.villageCode,
-                  zhencode: val.townCode,
-                  shicode: val.cityCode,
-                  shengcode: val.provinceCode,
-                  debt: val.debt.currentDebt,
-                },
-              )
-            } else if (!val.debt && !val.additionalFees) {
-              this.customerdata.push(
-                {
-                  customerid: val.customerId,
-                  customerno: val.customerNumber,
-                  name: val.customerName,
-                  idcard: val.identityCode,
-                  tel: val.telephone,
-                  opendate: val.openDate,
-                  customertype: val.customerType.customerTypeName,
-                  meterno: val.meter.meterNumber,
-                  address: val.physicalAddress,
-                  status: val.state,
-                  cuncode: val.villageCode,
-                  zhencode: val.townCode,
-                  shicode: val.cityCode,
-                  shengcode: val.provinceCode,
-                },
-              )
-            }
-          });
-        })
-      },
+      // query: function () {
+      //   this.tokendata = '';
+      //   this.message = false;
+      //   this.loading = true;
+      //   this.show = true;
+      //   this.customerdata = [];
+      //   this.showmanagement = true;
+      //   this.$http({
+      //     url: 'biz/customer/findByPage.do',
+      //     body: {
+      //       "conditions": {
+      //         name: this.name,
+      //         identityCode: this.idcard,
+      //         telephone: this.tel,
+      //         orderByClause: "open_date desc",
+      //       },
+      //       "limit": 10,
+      //       "page": 1
+      //     },
+      //     credentials: true,
+      //     method: 'POST',
+      //     headers: {
+      //       'Content-Type': 'application/json'
+      //     },
+      //
+      //   }).then((response) => {
+      //     this.customertotal = parseInt(response.body.pageInfo.total);
+      //     response.body.pageInfo.list.forEach((val, index) => {
+      //       if (val.debt && val.additionalFees) {
+      //         this.customerdata.push(
+      //           {
+      //             customerid: val.customerId,
+      //             customerno: val.customerNumber,
+      //             name: val.customerName,
+      //             idcard: val.identityCode,
+      //             tel: val.telephone,
+      //             opendate: val.openDate,
+      //             customertype: val.customerType.customerTypeName,
+      //             debt: val.debt.currentDebt,
+      //             meterno: val.meter.meterNumber,
+      //             address: val.physicalAddress,
+      //             status: val.state,
+      //             cuncode: val.villageCode,
+      //             zhencode: val.townCode,
+      //             shicode: val.cityCode,
+      //             shengcode: val.provinceCode,
+      //             additionalFees: val.additionalFees,
+      //           },
+      //         )
+      //       } else if (!val.debt && val.additionalFees) {
+      //         this.customerdata.push(
+      //           {
+      //             customerid: val.customerId,
+      //             customerno: val.customerNumber,
+      //             name: val.customerName,
+      //             idcard: val.identityCode,
+      //             tel: val.telephone,
+      //             opendate: val.openDate,
+      //             customertype: val.customerType.customerTypeName,
+      //             meterno: val.meter.meterNumber,
+      //             address: val.physicalAddress,
+      //             status: val.state,
+      //             cuncode: val.villageCode,
+      //             zhencode: val.townCode,
+      //             shicode: val.cityCode,
+      //             shengcode: val.provinceCode,
+      //           },
+      //         )
+      //       } else if (val.debt && !val.additionalFees) {
+      //         this.customerdata.push(
+      //           {
+      //             customerid: val.customerId,
+      //             customerno: val.customerNumber,
+      //             name: val.customerName,
+      //             idcard: val.identityCode,
+      //             tel: val.telephone,
+      //             opendate: val.openDate,
+      //             customertype: val.customerType.customerTypeName,
+      //             meterno: val.meter.meterNumber,
+      //             address: val.physicalAddress,
+      //             status: val.state,
+      //             cuncode: val.villageCode,
+      //             zhencode: val.townCode,
+      //             shicode: val.cityCode,
+      //             shengcode: val.provinceCode,
+      //             debt: val.debt.currentDebt,
+      //           },
+      //         )
+      //       } else if (!val.debt && !val.additionalFees) {
+      //         this.customerdata.push(
+      //           {
+      //             customerid: val.customerId,
+      //             customerno: val.customerNumber,
+      //             name: val.customerName,
+      //             idcard: val.identityCode,
+      //             tel: val.telephone,
+      //             opendate: val.openDate,
+      //             customertype: val.customerType.customerTypeName,
+      //             meterno: val.meter.meterNumber,
+      //             address: val.physicalAddress,
+      //             status: val.state,
+      //             cuncode: val.villageCode,
+      //             zhencode: val.townCode,
+      //             shicode: val.cityCode,
+      //             shengcode: val.provinceCode,
+      //           },
+      //         )
+      //       }
+      //     });
+      //     this.loading = false;
+      //   })
+      // },
+      // changePage(page) {
+      //   this.customerdata = [];
+      //   this.$http({
+      //     url: 'biz/customer/findByPage.do',
+      //     body: {
+      //       "conditions": {
+      //         name: this.customername,
+      //         identityCode: this.idcard,
+      //         telephone: this.tel,
+      //         orderByClause: "open_date desc",
+      //       },
+      //       "limit": 10,
+      //       "page": page
+      //     },
+      //     credentials: true,
+      //     method: 'POST',
+      //     headers: {
+      //       'Content-Type': 'application/json'
+      //     },
+      //
+      //   }).then((response) => {
+      //     response.body.pageInfo.list.forEach((val, index) => {
+      //       if (val.debt && val.additionalFees) {
+      //         this.customerdata.push(
+      //           {
+      //             customerid: val.customerId,
+      //             customerno: val.customerNumber,
+      //             name: val.customerName,
+      //             idcard: val.identityCode,
+      //             tel: val.telephone,
+      //             opendate: val.openDate,
+      //             customertype: val.customerType.customerTypeName,
+      //             debt: val.debt.currentDebt,
+      //             meterno: val.meter.meterNumber,
+      //             address: val.physicalAddress,
+      //             status: val.state,
+      //             cuncode: val.villageCode,
+      //             zhencode: val.townCode,
+      //             shicode: val.cityCode,
+      //             shengcode: val.provinceCode,
+      //             additionalFees: val.additionalFees,
+      //           },
+      //         )
+      //       } else if (!val.debt && val.additionalFees) {
+      //         this.customerdata.push(
+      //           {
+      //             customerid: val.customerId,
+      //             customerno: val.customerNumber,
+      //             name: val.customerName,
+      //             idcard: val.identityCode,
+      //             tel: val.telephone,
+      //             opendate: val.openDate,
+      //             customertype: val.customerType.customerTypeName,
+      //             meterno: val.meter.meterNumber,
+      //             address: val.physicalAddress,
+      //             status: val.state,
+      //             cuncode: val.villageCode,
+      //             zhencode: val.townCode,
+      //             shicode: val.cityCode,
+      //             shengcode: val.provinceCode,
+      //             additionalFees: val.additionalFees,
+      //           },
+      //         )
+      //       } else if (val.debt && !val.additionalFees) {
+      //         this.customerdata.push(
+      //           {
+      //             customerid: val.customerId,
+      //             customerno: val.customerNumber,
+      //             name: val.customerName,
+      //             idcard: val.identityCode,
+      //             tel: val.telephone,
+      //             opendate: val.openDate,
+      //             customertype: val.customerType.customerTypeName,
+      //             meterno: val.meter.meterNumber,
+      //             address: val.physicalAddress,
+      //             status: val.state,
+      //             cuncode: val.villageCode,
+      //             zhencode: val.townCode,
+      //             shicode: val.cityCode,
+      //             shengcode: val.provinceCode,
+      //             debt: val.debt.currentDebt,
+      //           },
+      //         )
+      //       } else if (!val.debt && !val.additionalFees) {
+      //         this.customerdata.push(
+      //           {
+      //             customerid: val.customerId,
+      //             customerno: val.customerNumber,
+      //             name: val.customerName,
+      //             idcard: val.identityCode,
+      //             tel: val.telephone,
+      //             opendate: val.openDate,
+      //             customertype: val.customerType.customerTypeName,
+      //             meterno: val.meter.meterNumber,
+      //             address: val.physicalAddress,
+      //             status: val.state,
+      //             cuncode: val.villageCode,
+      //             zhencode: val.townCode,
+      //             shicode: val.cityCode,
+      //             shengcode: val.provinceCode,
+      //           },
+      //         )
+      //       }
+      //     });
+      //   })
+      // },
       confirm() {
         let purchaseType;
         if (this.paytype == this.$t('m.purchase.amount')) {
@@ -711,25 +843,25 @@
           }
         });
       },
-      selected(e) {
-        this.message = true;
-        this.show = false;
-        this.currentcustomer = e;
-        this.$http({
-          url: 'biz/trade/findCusLastPur.do',
-          body: {
-            uid: this.currentcustomer.customerid,
-          },
-          credentials: true,
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-        }).then((response) => {
-          this.traderecord = response.body.tradeRecord;
-        });
-        this.noclick = false;
-      },
+      // selected(e) {
+      //   this.message = true;
+      //   this.show = false,
+      //     this.currentcustomer = e;
+      //   this.$http({
+      //     url: 'biz/trade/findCusLastPur.do',
+      //     body: {
+      //       uid: this.currentcustomer.customerid,
+      //     },
+      //     credentials: true,
+      //     method: 'POST',
+      //     headers: {
+      //       'Content-Type': 'application/json'
+      //     },
+      //   }).then((response) => {
+      //     this.traderecord = response.body.tradeRecord;
+      //   });
+      //   this.noclick = false;
+      // },
       goumai() {
         let purchaseType;
         if (this.paytype == this.$t('m.purchase.amount')) {
@@ -918,9 +1050,16 @@
 
           LODOP.SET_PRINT_PAGESIZE(1,0,0,"A4");
           LODOP.ADD_PRINT_HTM(20, 20, 740, '100%',strFormHtml);
-          let index=localStorage.getItem('invoice');
-          LODOP.SET_PRINTER_INDEXA(index);
-          LODOP.PREVIEW();//预览
+          var patt = /Samsung M262x 282x Series/i;//先由用户设置
+
+          for (let j = 0, len = LODOP.Printers.list.length; j < len; j++) {
+            if (patt.test(LODOP.Printers.list[j].name)) {
+              console.log('预览');
+              LODOP.SET_PRINTER_INDEXA(j);
+              LODOP.PREVIEW();//预览
+
+            }
+          }
         }
       },
       fipagprint() {
@@ -998,22 +1137,18 @@
         if (LODOP.webskt && LODOP.webskt.readyState == 1) {
           console.log("开始打印！！");
           LODOP.PRINT_INIT('aaa');
-          let index=localStorage.getItem('receipt');
-          let size=localStorage.getItem('size');
-          if(size=='80mm'){
-            size=1000;
-          }else if(size=='58mm'){
-            size=480
+          if(this.size=="50mm"){
+            LODOP.SET_PRINT_PAGESIZE(1, 480, 2700,"");
+          }else if(this.size=="80mm"){
+            LODOP.SET_PRINT_PAGESIZE(1, 1000, 2700,"");
           }
-          LODOP.SET_PRINT_PAGESIZE(1, size, 1400,"");
           LODOP.ADD_PRINT_HTM(20, 0, '100%', '100%', strFormHtml);
-          LODOP.SET_PRINTER_INDEXA(index);
+          LODOP.SET_PRINTER_INDEXA(this.receipt);
           LODOP.PREVIEW();//预览
           // LODOP.PRINT();//打印
         }
       },
       mypurprint() {
-//       this.SelectAsDefaultPrinter();
         var strBodyStyle = `
         <style>
           *{
@@ -1091,16 +1226,13 @@
           console.log("开始打印！！");
           LODOP.PRINT_INIT(20, 20, 720, '100%', "");
 
-//          if (LODOP.CVERSION) CLODOP.On_Return=function(TaskID,Value){alert(Value);};
-//          var strResult=LODOP.SET_PRINT_MODE("WINDOW_DEFPRINTER",'\\\\192.168.0.5\\Samsung M262x 282x Series');
-
           LODOP.SET_PRINT_PAGESIZE(1, '100%', '100%', "A4");
           LODOP.ADD_PRINT_HTM(20, 20, 720, '100%', strFormHtml);
+          LODOP.SET_PRINTER_INDEXA(this.invoice);
           LODOP.PREVIEW();//预览
       // LODOP.PRINT();// 直接打印
         }
       },
-
     },
     created(){
       let myDate=new Date();
@@ -1186,11 +1318,11 @@
   }
   #openprint .fbox ul li{
     line-height: 20px;
+    word-wrap:break-word;
   }
   #openprint .fbox ul li span:nth-child(1){
     display: inline-block;
     color:#666;
-    word-break:break-word;
   }
   #openprint .customer ul li span:nth-child(1){
     width: 70px;

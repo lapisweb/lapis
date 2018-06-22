@@ -4,8 +4,8 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import VueI18n from 'vue-i18n'
+import Vuex from 'vuex'
 import echarts from 'echarts'
-import vueGooglemap from 'vue2-googlemap';
 // import 'babel-polyfill'
 
 import iView from 'iview';
@@ -14,6 +14,7 @@ import 'iview/dist/styles/iview.css';
 import zh from 'iview/dist/locale/zh-CN';
 import en from 'iview/dist/locale/en-US';
 import ggheader from './components/index.vue';
+import ggheader1 from './components/index1.vue';
 import footer from './components/footer.vue';
 import footer1 from './components/footer1.vue';
 import customer from './components/customer.vue';
@@ -25,11 +26,12 @@ Vue.prototype.$echarts = echarts;
 Vue.use(VueI18n);
 Vue.use(VueResource);
 Vue.use(iView);
+Vue.use(Vuex);
 
 Vue.http.options.root="http://www.laison.com:8080/";
 // Vue.http.options.root="/api/";
-// Vue.use(vueGooglemap);
 
+//语言设置
 if(window.localStorage.language){
   Vue.config.lang = window.localStorage.language;
 }else{
@@ -42,20 +44,29 @@ const messages = {
 Vue.locale('en_US', messages.en);
 Vue.locale('zh_CN', messages.zh);
 
-
+//全局组件
 Vue.component('my-header',ggheader);
+Vue.component('my-header1',ggheader1);
 Vue.component('my-footer',footer);
 Vue.component('my-footer1',footer1);
 Vue.component('my-customer',customer);
+
+//阻止启动生产消息
 Vue.config.productionTip = false;
 
-// vueGooglemap.initGooglemap({
-//   key: 'YOUR_KEY',
-//   language: 'zh-CN',
-//   v: '3',
-// });
+//vuex
+const store = new Vuex.Store({
+  state: {
+    print:{}
+  },
+  mutations: {
+    getPrint(data){
+      console.log(data)
+    }
+  }
+});
 
-
+//阻止向后台发送为空的信息
 function deleteEmptyProp(json){
   for (var item in json) {
     if( typeof json[item] === "object"){
@@ -73,12 +84,15 @@ function deleteEmptyProp(json){
     }
   }
 }
+
+//拦截器
 Vue.http.interceptors.push((request, next) => {
   // modify request
   request.method = 'POST';//在请求之前可以进行一些预处理和配置
+  // store.commit('deleteEmptyProp',request.body);
   deleteEmptyProp(request.body);
+  // deleteEmptyProp(request.body);
   next((response) => {
-    // console.log(response.body.code);
     let Token=response.body.code;
     // //在响应之后传给then之前对response进行修改和逻辑判断。
     // // 对于token时候已过期的判断，就添加在此处，页面中任何一次http请求都会先调用此处方法
@@ -88,10 +102,12 @@ Vue.http.interceptors.push((request, next) => {
     return response;
   });
 });
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
+  store,
   template: '<App/>',
   components: { App }
 }).$mount('#app');

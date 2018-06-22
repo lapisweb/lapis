@@ -1,8 +1,10 @@
 <template>
   <div>
     <div class="h-content">
-      <my-customer :traderecord="traderecord" :currentcustomer="currentcustomer"></my-customer>
-      {{traderecord}}
+      <pre>
+          {{aa}}{{bb}}
+      </pre>
+      啦啦啦啦啦啦 我是卖报的小行家
     </div>
   </div>
 </template>
@@ -11,12 +13,13 @@
     name: 'realtime',
     data() {
       return {
-        traderecord:{},
-        currentcustomer:{},
+        dd:'333333'
       }
     },
+    props:['aa','bb'],
     created(){
-      console.log(this._props)
+
+
     }
   }
 </script>

@@ -10,7 +10,8 @@
             <Tree :data="region" show-checkbox @on-check-change="selregion"></Tree>
           </div>
         </div>
-        <div class="task-left2">
+        <div class="task-left2" style="position: relative">
+          <p style="position: absolute;z-index:1;top:8px;right:5px;">已选中 {{total}}</p>
           <Table height="700" size="small" :columns="metercolumns" :data="lacations" :highlight-row="true" @on-selection-change="metersel"></Table>
         </div>
         <div class="taskRight">
@@ -91,6 +92,9 @@
         });
         return arr;
       },
+      total:function () {
+        return this.meterIDs.length;
+      }
     },
     methods: {
       submit(){

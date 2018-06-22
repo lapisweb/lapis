@@ -56,7 +56,6 @@
     nane:'addtask',
     data() {
       return {
-        // total:0,
         region:[],
         map:'',
         markers:[],

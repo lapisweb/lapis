@@ -6,7 +6,9 @@
         <Input clearable  v-model.trim="tel" :placeholder="$t('m.customerinfo.label3')" style="width: 180px"></Input>
         <Input clearable  v-model.trim="meterno" :placeholder="$t('m.open.metercolumnstitle1')" style="width: 180px"></Input>
         <div style="margin:8px 0"></div>
-        <DatePicker split-panels type="daterange" placement="bottom-start" :placeholder="$t('m.form.selectdate')" style="width: 180px" @on-change="changedate"></DatePicker>
+        <!--<DatePicker split-panels type="daterange" placement="bottom-start" :placeholder="$t('m.form.selectdate')" style="width: 180px" @on-change="changedate"></DatePicker>-->
+        <DatePicker type="month" placeholder="Start Time" style="width: 176px" @on-change="startdate"></DatePicker> -
+        <DatePicker type="month" placeholder="End Time" style="width: 176px" @on-change="enddate"></DatePicker>
         <!--<div style="position: relative">-->
           <!--<Tree :data="region" show-checkbox @on-check-change="selregion"></Tree>-->
         <!--</div>-->
@@ -36,7 +38,8 @@
         name:'',
         tel:'',
         meterno:'',
-        selecttime:[],
+        starttime:'',
+        endtime:'',
         monthcolumns:[
           {
             title: this.$t('m.customerinfo.label1'),
@@ -65,16 +68,14 @@
       }
     },
     methods: {
-      selregion(selected){
-        console.log(selected)
+      startdate(date){
+        this.starttime=date;
       },
-      changedate(date){
-        this.selecttime=date;
+      enddate(date){
+        this.endtime=date;
       },
       query(){
         this.loading=true;
-        let startTime=this.selecttime[0];
-        let endTime=this.selecttime[1];
         this.$http({
           url:'walkby/findFreeDataByPage.do',
           body: {
@@ -82,8 +83,8 @@
               regionCode:'',
               customerName:this.name,
               telephone:this.tel,
-              startTime:startTime,
-              endTime:endTime,
+              startTime:this.starttime,
+              endTime:this.endtime,
               meterNo:this.meterno,
             },
             "limit": 10, "page": 1},
@@ -94,22 +95,24 @@
           },
         }).then((response) => {
           this.monthdatatotal=parseInt(response.body.pageInfo.total);
+          response.body.pageInfo.list.forEach(function (val,index) {
+            let end=val.freezeDate.lastIndexOf("-");
+            val.freezeDate=val.freezeDate.substring(0,end)
+          });
           this.monthdatas=response.body.pageInfo.list;
           this.loading=false;
         })
       },
       changePage(page){
         this.loading=true;
-        let startTime=this.selecttime[0];
-        let endTime=this.selecttime[1];
         this.$http({
           url:'walkby/findFreeDataByPage.do',
           body: {conditions: {
               regionCode:'',
               customerName:this.name,
               telephone:this.tel,
-              startTime:startTime,
-              endTime:endTime,
+              startTime:this.starttime,
+              endTime:this.endtime,
               meterNo:this.meterno,
             },"limit": 10, "page": page},
           credentials:true,
@@ -118,6 +121,10 @@
             'Content-Type': 'application/json'
           },
         }).then((response) => {
+          response.body.pageInfo.list.forEach(function (val,index) {
+            let end=val.freezeDate.lastIndexOf("-");
+            val.freezeDate=val.freezeDate.substring(0,end)
+          });
           this.monthdatas=response.body.pageInfo.list;
           this.loading=false;
         })
