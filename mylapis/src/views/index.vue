@@ -2,7 +2,7 @@
   <div class="index">
     <div class="h-content">
       <div>
-        <Carousel autoplay autoplay-speed="3000" v-model="value1" loop>
+        <Carousel autoplay :autoplay-speed=3000 v-model="value1" loop>
           <CarouselItem>
             <div class="demo-carousel">
               <img src="../assets/img/h-bigbg.jpg" alt="" style="width:100%">
@@ -113,6 +113,7 @@
     name: 'index',
     data () {
       return {
+        value1:0,
         columns1: [
           {
             title: this.$t('m.customerinfo.label1'),

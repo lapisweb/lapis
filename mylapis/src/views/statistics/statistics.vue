@@ -1,0 +1,749 @@
+<template>
+  <div>
+    <div class="move-left-report">
+      <div class="h-title-report">
+        <h3>{{$t('m.form.formtype')}}</h3>
+        <p>{{$t('m.deal.operator')}}：<span>{{user}}</span></p>
+        <p>{{$t('m.form.time')}}：<span>{{timec}}</span></p>
+      </div>
+      <div class="statisticnav">
+        <Menu accordion  @on-select="tubiao" active-name="1-1" :open-names="[1]">
+          <Submenu :name=item.id v-for="item in navstas" :key="item.id">
+            <template slot="title">
+              <Icon :type=item.icon></Icon>
+              {{item.name}}
+            </template>
+            <MenuItem v-for="nav2 in item.second" :key="nav2.id" :name=nav2.id>{{nav2.name}}</MenuItem>
+          </Submenu>
+        </Menu>
+      </div>
+    </div>
+    <div class="fiterRight">
+      <router-view></router-view>
+      <my-footer1></my-footer1>
+    </div>
+  </div>
+</template>
+<script>
+  export default {
+    data() {
+      return {
+        user:'',
+        timec:'',
+        currentitem:'1-1',
+        theme2: 'light',
+        value1: [],
+        status: false,
+        activesta:'',
+        operatorId:'',
+        operatorlist:[],
+        operator:'',
+        time1:'',
+        time2:'',
+        time3:'',
+        time4:'',
+        starttime1:'',
+        endtime1:'',
+        querydate21:'',
+        querydate22:'',
+        starttime23:'',
+        endtime23:'',
+        querydate24:'',
+        dept:'',
+        dept22:'',
+        dept21:'',
+        dept24:'',
+        depthasdata:[],
+        deptdata:[],
+
+        columns21:[
+          {
+            title: this.$t('m.form.department'),
+            key: 'deptName'
+          },
+          {
+            title: this.$t('m.customerinfo.lastmoney'),
+            key: 'paymentAmount'
+          },
+          {
+            title: this.$t('m.customerinfo.lastrealmoney'),
+            key: 'purchaseAmount'
+          },
+          {
+            title: this.$t('m.customerinfo.lastrealvolum'),
+            key: 'volume'
+          },
+          {
+            title: this.$t('m.form.selectdate'),
+            key: 'tradeDate'
+          },
+        ],
+        columns22:[
+          {
+            title: this.$t('m.form.department'),
+            key: 'deptName'
+          },
+          {
+            title: this.$t('m.customerinfo.lastmoney'),
+            key: 'paymentAmount'
+          },
+          {
+            title: this.$t('m.customerinfo.lastrealmoney'),
+            key: 'purchaseAmount'
+          },
+          {
+            title: this.$t('m.customerinfo.lastrealvolum'),
+            key: 'volume'
+          },
+          {
+            title: this.$t('m.form.selectmonth'),
+            key: 'tradeDate'
+          },
+        ],
+        data21:[],
+        data22:[],
+        myCharts1:{
+          xAxis:[],
+          series:[
+            {data:[]},
+            {data:[]},
+            {data:[]},
+          ],
+        },
+        myCharts21:{
+          xAxis:[],
+          series:[
+            {data:[]},
+            {data:[]},
+            {data:[]},
+          ],
+        },
+        myCharts24:{
+          xAxis:[],
+          series:[
+            {data:[]},
+            {data:[]},
+            {data:[]},
+          ],
+        },
+        deptlist:[],
+        navtitle1:'safsaf',
+        navtitle2:'',
+        nav11:'',
+        nav21:'',
+        nav22:'',
+        nav23:'',
+        nav24:'',
+        navstas:
+          [
+            {
+              id:1,
+              icon:'person',
+              name:this.$t('m.form.operatormonthsale'),
+              second:[
+                {
+                  id:'1-1',
+                  name:this.$t('m.form.operatormonthsale'),
+                },
+              ]
+            },
+            {
+              id:2,
+              icon:'calendar',
+              name:this.$t('m.form.servicehallsale'),
+              second:[
+                {
+                  id:'2-1',
+                  name:this.$t('m.form.deptdaysale'),
+                },
+                {
+                  id:'2-2',
+                  name:this.$t('m.form.depteverymonthsale'),
+                },
+                {
+                  id:'2-3',
+                  name:this.$t('m.form.deptmonthsale'),
+                },
+                {
+                  id:'2-4',
+                  name:this.$t('m.form.deptoperatorsale'),
+                },
+              ]
+            },
+        ],
+      }
+    },
+    methods: {
+      datechange21(date){
+        this.querydate21=date;
+      },
+      startmonth1(date){
+        this.starttime1=date;
+      },
+      endmonth1(date){
+        this.endtime1=date;
+      },
+      datechange22(date){
+        this.querydate22=date;
+      },
+      startmonth23(date){
+        this.starttime23=date;
+      },
+      endmonth23(date){
+        this.endtime23=date;
+      },
+      datechange24(date){
+        this.querydate24=date;
+      },
+      queryoperator1(){
+        this.myCharts1={
+          xAxis:[],
+          series:[
+            {data:[]},
+            {data:[]},
+            {data:[]},
+          ],
+        };
+        this.$http({
+          url:'biz/tradeView/OMStats.do',
+          body: {
+            operatorId:this.operator,
+            endTime:this.endtime1,
+            startTime:this.starttime1,
+          },
+          credentials:true,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        }).then((response) => {
+          if(response.body.errors){
+            this.$Message.error(response.body.errors);
+          }else {
+
+            if(response.body.data.length<1){
+              this.myCharts1.series[0]={data:[]};
+              this.myCharts1.series[1]={data:[]};
+              this.myCharts1.series[2]={data:[]};
+              this.myCharts1.xAxis=[];
+              this.drawLine();
+            }else{
+              response.body.data.forEach((val, index) => {
+                this.myCharts1.series[0].data.push(val.paymentAmount);
+                this.myCharts1.series[1].data.push(val.purchaseAmount);
+                this.myCharts1.series[2].data.push(val.volume);
+                this.myCharts1.xAxis.push(val.tradeDate);
+                this.drawLine();
+              })
+            }
+          }
+        });
+      },
+      queryoperator21(){
+        this.$http({
+          url:'biz/tradeView/DDTStats.do',
+          body: {
+            deptId:this.dept21,
+            time:this.querydate21,
+          },
+          credentials:true,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        }).then((response) => {
+          if(response.body.errors){
+            this.$Message.error(response.body.errors);
+          }else{
+//            Vue.set(this.data21,response.body.data);
+            this.data21=response.body.data;
+          }
+        });
+      },
+      queryoperator22(){
+        this.$http({
+          url:'biz/tradeView/DMTStats.do',
+          body: {
+            deptId:this.dept22,
+            time:this.querydate22,
+          },
+          credentials:true,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        }).then((response) => {
+          if(response.body.errors){
+            this.$Message.error(response.body.errors);
+          }else {
+            this.data22 = response.body.data;
+          }
+        });
+      },
+      queryoperator23(){
+        this.myCharts21={
+          xAxis:[],
+          series:[
+            {data:[]},
+            {data:[]},
+            {data:[]},
+          ],
+        };
+        this.$http({
+          url:'biz/tradeView/DMStats.do',
+          body: {
+            deptId:this.dept,
+            endTime:this.endtime23,
+            startTime:this.starttime23,
+          },
+          credentials:true,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        }).then((response) => {
+          if(response.body.errors){
+            this.$Message.error(response.body.errors);
+          }else {
+
+            if(response.body.data.length<1){
+              this.myCharts21.series[0]={data:[]};
+              this.myCharts21.series[1]={data:[]};
+              this.myCharts21.series[2]={data:[]};
+              this.myCharts21.xAxis=[];
+              this.drawLine1();
+            }else{
+              response.body.data.forEach((val, index) => {
+                this.myCharts21.series[0].data.push(val.paymentAmount);
+                this.myCharts21.series[1].data.push(val.purchaseAmount);
+                this.myCharts21.series[2].data.push(val.volume);
+                this.myCharts21.xAxis.push(val.tradeDate);
+                this.drawLine1();
+              })
+            }
+          }
+        });
+      },
+      queryoperator24(){
+        this.myCharts24={
+          xAxis:[],
+          series:[
+            {data:[]},
+            {data:[]},
+            {data:[]},
+          ],
+        };
+        this.$http({
+          url:'biz/tradeView/EODStats.do',
+          body: {
+            deptId:this.dept24,
+            time:this.querydate24,
+          },
+          credentials:true,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        }).then((response) => {
+          if(response.body.errors){
+            this.$Message.error(response.body.errors);
+          }else {
+            if(response.body.data.length<1){
+              this.myCharts24.series[0]={data:[]};
+              this.myCharts24.series[1]={data:[]};
+              this.myCharts24.series[2]={data:[]};
+              this.myCharts24.xAxis=[];
+              this.drawLine4();
+            }else{
+              response.body.data.forEach((val, index) => {
+                this.myCharts24.series[0].data.push(val.paymentAmount);
+                this.myCharts24.series[1].data.push(val.purchaseAmount);
+                this.myCharts24.series[2].data.push(val.volume);
+                this.myCharts24.xAxis.push(val.operatorName);
+                this.drawLine4();
+              })
+            }
+          }
+        });
+      },
+      selectedmans(navName, navId) {
+        this.activesta = navName;
+        this.hid = navId;
+        this.status = !this.status;
+      },
+      tubiao(aa) {
+        this.currentitem = aa;
+      },
+      drawLine() {
+        var vm=this;
+        // 基于准备好的dom，初始化echarts实例
+        var myChart;
+        myChart = this.$echarts.init(document.querySelector(".fiterRight #myChartsss"));
+//        myChart.clear();
+        var colors = ['#5793f3', '#d14a61', '#6be6c1'];
+        myChart.setOption({
+          color:colors,
+          title : {
+            text: this.$t('m.form.operatormonthsale'),
+          },
+          tooltip : {
+            trigger: 'axis'
+          },
+          legend:{
+            data:[this.$t('m.form.total'),this.$t('m.form.recharge'),this.$t('m.form.amount')]
+          },
+          toolbox: {
+            show : true,
+            feature : {
+              mark : {show: true},
+              dataView : {show: true, readOnly: false},
+              magicType : {show: true, type: ['line', 'bar']},
+              restore : {show: true},
+              saveAsImage : {show: true}
+            }
+          },
+          calculable : true,
+          xAxis :{
+            data:vm.myCharts1.xAxis,
+          } ,
+          yAxis: [
+            {
+              type: 'value'
+            }
+          ],
+          series :[
+            {
+              data: vm.myCharts1.series[0].data,
+              name: this.$t('m.form.total'),
+              smooth: true,
+              type: "line",
+            },
+            {
+              data: vm.myCharts1.series[1].data,
+              name: this.$t('m.form.recharge'),
+              smooth: true,
+              type: "line",
+            },
+            {
+              data: vm.myCharts1.series[2].data,
+              name: this.$t('m.form.amount'),
+              smooth: true,
+              type: "line",
+            },
+          ],
+        });
+        window.onresize = myChart.resize;
+//        myChart2.setOption({
+//          color: colorss,
+//
+//          title: {
+//            text: '各站点销售统计',
+//            subtext: '虚构数据',
+//            left: 'center'
+//          },
+//          tooltip : {
+//            trigger: 'item',
+//            formatter: "{a} <br/>{b} : {c} ({d}%)"
+//          },
+//          legend: {
+//            bottom: 10,
+//            left: 'center',
+//            data: ['西凉', '益州','兖州','荆州','幽州']
+//          },
+//          series : [
+//            {
+//              type: 'pie',
+//              radius : '65%',
+//              center: ['50%', '50%'],
+//              selectedMode: 'single',
+//              data:[
+//                {
+//                  value:1548,
+//                  name: '幽州',
+//
+//                },
+//                {value:535, name: '荆州'},
+//                {value:510, name: '兖州'},
+//                {value:634, name: '益州'},
+//                {value:735, name: '西凉'}
+//              ],
+//              itemStyle: {
+//                emphasis: {
+//                  shadowBlur: 10,
+//                  shadowOffsetX: 0,
+//                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+//                }
+//              }
+//            }
+//          ]
+//        });
+      },
+      drawLine1() {
+        var vm=this;
+        // 基于准备好的dom，初始化echarts实例
+        var miaoshu;
+        vm.deptdata.forEach((val)=> {
+          if(vm.dept==val.value){
+            miaoshu=val.label
+          }
+        })
+        var myChart1;
+        myChart1 = this.$echarts.init(document.querySelector(".fiterRight #myChartsss21"));
+        myChart1.clear();
+        var colors = ['#5793f3', '#d14a61', '#6be6c1'];
+
+        myChart1.setOption({
+          color:colors,
+          title : {
+            text: miaoshu +' '+this.$t('m.form.monthsale'),
+          },
+          tooltip : {
+            trigger: 'axis'
+          },
+          legend:{
+            data:[this.$t('m.form.total'),this.$t('m.form.recharge'),this.$t('m.form.amount')]
+          },
+          toolbox: {
+            show : true,
+            feature : {
+              mark : {show: true},
+              dataView : {show: true, readOnly: false},
+              magicType : {show: true, type: ['line', 'bar']},
+              restore : {show: true},
+              saveAsImage : {show: true}
+            }
+          },
+          calculable : true,
+          xAxis :{
+            data:vm.myCharts21.xAxis,
+          } ,
+          yAxis: [
+            {
+              type: 'value'
+            }
+          ],
+          series :[
+            {
+              data: vm.myCharts21.series[0].data,
+              name: this.$t('m.form.total'),
+              smooth: true,
+              type: "line",
+            },
+            {
+              data: vm.myCharts21.series[1].data,
+              name: this.$t('m.form.recharge'),
+              smooth: true,
+              type: "line",
+            },
+            {
+              data: vm.myCharts21.series[2].data,
+              name: this.$t('m.form.amount'),
+              smooth: true,
+              type: "line",
+            },
+          ],
+        });
+        window.onresize = myChart1.resize;
+      },
+      drawLine4() {
+        var vm=this;
+        // 基于准备好的dom，初始化echarts实例
+        var myChart4;
+        myChart4 = this.$echarts.init(document.querySelector(".fiterRight #myChartsss24"));
+        var colors = ['#5793f3', '#d14a61', '#6be6c1'];
+        myChart4.clear();
+        myChart4.setOption({
+          color:colors,
+          title : {
+            text: this.$t('m.form.deptoperatorsale'),
+          },
+          tooltip : {
+            trigger: 'axis'
+          },
+          legend:{
+            data:[this.$t('m.form.total'),this.$t('m.form.recharge'),this.$t('m.form.amount')]
+          },
+          toolbox: {
+            show : true,
+            feature : {
+              mark : {show: true},
+              dataView : {show: true, readOnly: false},
+              magicType : {show: true, type: ['line', 'bar']},
+              restore : {show: true},
+              saveAsImage : {show: true}
+            }
+          },
+          calculable : true,
+          xAxis :{
+            type:'category',
+            data:vm.myCharts24.xAxis,
+          } ,
+          yAxis: [
+            {
+              type: 'value'
+            }
+          ],
+          series :[
+            {
+              data: vm.myCharts24.series[0].data,
+              name: this.$t('m.form.total'),
+              smooth: true,
+              type: "bar",
+            },
+            {
+              data: vm.myCharts24.series[1].data,
+              name: this.$t('m.form.recharge'),
+              smooth: true,
+              type: "bar",
+            },
+            {
+              data: vm.myCharts24.series[2].data,
+              name: this.$t('m.form.amount'),
+              smooth: true,
+              type: "bar",
+            },
+          ],
+        });
+        window.onresize = myChart4.resize;
+      },
+      // gaindept(array){
+      //   console.log(array)
+      //   this.deptlist.push({
+      //     value:array.id,
+      //     label:array.name,
+      //   });
+        // array.childDepts.forEach((val,index)=>{
+        //   this.deptlist.push({
+        //     value:val.id,
+        //     label:val.name,
+        //   });
+        //   if(val.childDepts&&val.childDepts.length!=0){
+        //     this.gaindept(val)
+        //   }else{
+        //     return
+        //   }
+        // })
+      // }
+    },
+    created(){
+      this.user=JSON.parse(localStorage.getItem('user'));
+      this.timec=new Date().toLocaleString();
+      //获取操作员
+      this.$http({
+        url:'sys/user/listAllOperator.do',
+        body:{
+
+        },
+        credentials:true,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      }).then((response) => {
+        this.operatorlist=response.body.operators;
+      });
+      this.$http({
+        url:'sys/dept/findDeptHasTrade.do',
+        body: {},
+        credentials:true,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      }).then((response) => {
+        this.depthasdata=response.body.list;
+        // this.gaindept(JSON.parse(localStorage.getItem('userdata')));
+        // if(this.deptlist.length ==2){
+        //   for (var i = 0;i<this.deptlist.length;i++) {
+        //     for (var j =1;j<this.deptlist.length;j++) {
+        //       if(this.deptlist[i].value == this.deptlist[j].value){
+        //         this.deptlist.splice(j,1)
+        //       }
+        //     }
+        //   }
+        // }else{
+        //   for (var i = 0;i<this.deptlist.length;i++) {
+        //     for (var j = 1; j < this.deptlist.length-1; j++) {
+        //       if (this.deptlist[i].value === this.deptlist[j].value) {
+        //         this.deptlist.splice(j, 1);
+        //       }
+        //     }
+        //   }
+        // }
+        this.depthasdata.forEach((val)=> {
+            this.deptdata.push({
+              value:val.id,
+              label:val.name
+            })
+        })
+
+      });
+    },
+
+  }
+</script>
+<style>
+  .move-left-report{
+    width: 241px;
+    position: fixed;
+    top:70px;
+    left: 0;
+    bottom: 0;
+    z-index: 3;
+    overflow-y: auto;
+    background: #EEEEEE;
+    padding-top: 8px;
+    border-right: 1px solid #d7dde4;
+  }
+  .fiterRight{
+    position: relative;
+    top: 84px;
+    margin-bottom: 85px;
+    margin-left: 260px;
+    margin-right: 30px;
+  }
+  .h-title-report{
+    padding:0 24px;
+    margin-bottom:15px;
+  }
+  .h-title-report h3{
+    line-height: 50px;
+    color:#888;
+  }
+  .h-title-report p{
+    line-height: 30px;
+    color:#888;
+  }
+  #myChartsss{
+    /*width:800px;*/
+    height:650px;
+    border-radius:8px;
+    box-sizing: border-box;
+    padding:15px;
+  }
+  #myChartsss1{
+    height:650px;
+    border-radius:8px;
+    box-sizing: border-box;
+    padding:15px;
+  }
+  #myChartsss21{
+    height:650px;
+    border-radius:8px;
+    box-sizing: border-box;
+    padding:15px;
+  }
+  #myChartsss24{
+    height:650px;
+    border-radius:8px;
+    box-sizing: border-box;
+    padding:15px;
+  }
+  .box1{
+    height:380px;
+  }
+  .fiterRight .footer{
+    left:120px;
+    right:0
+  }
+</style>

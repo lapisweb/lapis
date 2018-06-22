@@ -2,7 +2,9 @@ import Vue from 'vue'
 import iView from 'iview'
 import Router from 'vue-router'
 import Open from '@/views/open-accounts'
-import Meter from '@/views/meter'
+import Meter from '@/views/meter/meter'
+import Meterimport from '@/views/meter/meterimport'
+import Meterquery from '@/views/meter/meterquery'
 import Purchase from '@/views/purchase'
 import Login from '@/views/login'
 import Cancel from '@/views/cancel'
@@ -49,7 +51,19 @@ const router = new Router({
         { path: 'open', component: Open, name: 'open' ,meta: {
             title: '开户'
           }},
-        { path: 'meter', component: Meter, name: 'meter' ,
+        { path: 'meter', component: Meter, name: '' ,
+          children:[
+            {
+              path: '',
+              component: Meterimport,
+              name: 'meterimport' ,
+            },
+            {
+              path: 'meterquery',
+              component: Meterquery,
+              name: 'meterquery' ,
+            },
+          ],
           meta: {
             title: '表入库'
           }},
@@ -85,10 +99,10 @@ const router = new Router({
         //   meta: {
         //     title: '首页入口'
         //   }},
-        { path: 'print', component:Print, name: 'print' ,
-          meta: {
-            title: '设置打印机'
-          }},
+        // { path: 'print', component:Print, name: 'print' ,
+        //   meta: {
+        //     title: '设置打印机'
+        //   }},
         { path: 'password', component:Password, name: 'password' ,
           meta: {
             title: '修改密码'
