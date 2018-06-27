@@ -3,118 +3,118 @@
     <Alert v-if="install" closable show-icon style="position:absolute;z-index:10000;width:50%;top:100px;left:50%;margin-left:-25%;text-align: center">
       {{ $t("m.common.install1")}} <a href="http://laisontechsoft.xicp.net:7778/file/CLodop_Setup_for_Win32NT_3.029.exe">{{ $t("m.common.install2")}}</a> {{ $t("m.common.install3")}}
     </Alert>
-      <div class="layout-ceiling">
-        <div class="layout-logo">
-          <a href="/#/index">
-            <img src="../assets/img/logo.png" alt="">
-            <img src="../assets/img/logo1.png" alt="">
-          </a>
-        </div>
-        <div class="layout-ceiling-main">
-          <div style="float:left">
-            <Menu mode="horizontal" :theme="theme1" active-name="1">
-              <Submenu :name=item.orderNum v-for="item in nav" :key="item.orderNum">
-                <template slot="title">
-                  <Icon :type=item.icon></Icon>
-                  <span>
-                    {{item.name}}
-                  </span>
-                </template>
-                <router-link :to=nav2.url v-for="nav2 in item.childMenus" :key="nav2.orderNum">
-                  <MenuItem :name=nav2.orderNum>{{nav2.name}}</MenuItem>
-                </router-link>
-              </Submenu>
-            </Menu>
-          </div>
-          <div class="layout-right">
-            <div class="bigscreen">
-              <Dropdown trigger="custom" :visible="visible">
-                <a href="javascript:;" @click.stop="handleOpen">
-                  <Badge :count="count" class-name="demo-badge-alone">
-                    <Icon type="android-notifications" color="white" size="16" style="margin-top: -5px;"></Icon>
-                  </Badge>
-                </a>
-                <DropdownMenu slot="list" style="width:240px;">
-                  <h3 style="padding:0 10px;border-bottom: 1px solid #ccc; font-size: 12px;line-height: 28px;">共有 <span style="color: #2d8cf0">{{count}}</span> 条未读消息</h3>
-                  <div class="alalist">
-                    <ul v-if="count==0">
-                      <li>
-                        <p class="nop">暂无未读信息</p>
-                      </li>
-                    </ul>
-                    <ul v-for="item in alarminfo" v-else>
-                      <li>
-                        <p>{{item.alarmContent1}}</p>
-                        <p class="secondp"><span style="float: left">类型 {{item.alarmType}}</span> <span style="float: right">{{item.alarmDate}}</span></p>
-                      </li>
-                    </ul>
-                  </div>
-                  <div style="text-align:center;padding:0 5px;width:100%;line-height: 30px;border-top:1px solid #ccc">
-                    <a href="javascript:;" @click="more">查看更多</a>
-                  </div>
-                </DropdownMenu>
-              </Dropdown>
-              <Dropdown @on-click="itemclick"  placement="bottom-end">
-                <a href="javascript:void(0)">
-                  <Icon type="android-person" color="white" size="16"></Icon>
-                  <Icon type="chevron-down" color="white" size="10"></Icon>
-                </a>
-                <DropdownMenu slot="list">
-                  <DropdownItem name="print">
-                    <Icon type="person-add" size="14"></Icon>&nbsp;&nbsp;
-                    <span>{{$t('m.header.print')}}</span>
-                  </DropdownItem>
-                  <DropdownItem name="changepsd">
-                    <Icon type="android-unlock" size="14"></Icon>&nbsp;&nbsp;
-                    <span>{{$t('m.header.changepassword')}}</span>
-                  </DropdownItem>
-                  <DropdownItem name="logout">
-                    <Icon type="log-out" size="14"></Icon>&nbsp;&nbsp;
-                    <span>{{$t('m.header.logout')}}</span>
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-              <Dropdown  placement="bottom-end">
-                <a href="javascript:void(0)">
-                  <Icon type="android-globe" color="white" size="16"></Icon>
-                </a>
-                <DropdownMenu slot="list">
-                  <DropdownItem>
-                    <p @click="language('zh_CN')">
-                      <span class="iconfont icon-fuhao-zhongwen"></span>
-                      <span>中文</span>
-                    </p>
-                  </DropdownItem>
-                  <DropdownItem>
-                    <p @click="language('en_US')">
-                      <span class="iconfont icon-fuhao-yingwen"></span>
-                      <span>English</span>
-                    </p>
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-            </div>
-          </div>
-        </div>
-        <Modal
-          v-model="modal1"
-          title="打印机设置"
-          @on-ok="selectedprinter"
-          >
-          <p style="line-height: 26px;">选择发票打印机</p>
-          <Select v-model="invoice" style="width:300px">
-            <Option v-for="item in invoicelist" :value="item.value" :key="item.value">{{ item.name }}</Option>
-          </Select>
-          <p style="line-height: 26px;margin-top: 10px;">选择小票打印机</p>
-          <Select v-model="receipt" style="width:300px">
-            <Option v-for="item in invoicelist" :value="item.value" :key="item.value">{{ item.name }}</Option>
-          </Select>
-          <RadioGroup v-model="size" type="button">
-            <Radio label="58mm"></Radio>
-            <Radio label="80mm"></Radio>
-          </RadioGroup>
-        </Modal>
+    <div class="layout-ceiling">
+      <div class="layout-logo">
+        <a href="/#/index">
+          <img src="../assets/img/logo.png" alt="">
+          <img src="../assets/img/logo1.png" alt="">
+        </a>
       </div>
+      <div class="layout-ceiling-main">
+        <div style="float:left">
+          <Menu mode="horizontal" :theme="theme1" active-name="1" :default-active="$route.path">
+            <Submenu :name=item.orderNum v-for="item in nav" :key="item.orderNum">
+              <template slot="title">
+                <Icon :type=item.icon></Icon>
+                <span>
+                  {{item.name}}
+                </span>
+              </template>
+              <router-link :to=nav2.url v-for="nav2 in item.childMenus" :key="nav2.orderNum">
+                <MenuItem :routes='permission_routers' :name=nav2.orderNum>{{nav2.name}}</MenuItem>
+              </router-link>
+            </Submenu>
+          </Menu>
+        </div>
+        <div class="layout-right">
+          <div class="bigscreen">
+            <Dropdown trigger="custom" :visible="visible">
+              <a href="javascript:;" @click.stop="handleOpen">
+                <Badge :count="count" class-name="demo-badge-alone">
+                  <Icon type="android-notifications" color="white" size="16" style="margin-top: -5px;"></Icon>
+                </Badge>
+              </a>
+              <DropdownMenu slot="list" style="width:240px;">
+                <h3 style="padding:0 10px;border-bottom: 1px solid #ccc; font-size: 12px;line-height: 28px;">共有 <span style="color: #2d8cf0">{{count}}</span> 条未读消息</h3>
+                <div class="alalist">
+                  <ul v-if="count==0">
+                    <li>
+                      <p class="nop">暂无未读信息</p>
+                    </li>
+                  </ul>
+                  <ul v-for="item in alarminfo" v-else>
+                    <li>
+                      <p>{{item.alarmContent1}}</p>
+                      <p class="secondp"><span style="float: left">类型 {{item.alarmType}}</span> <span style="float: right">{{item.alarmDate}}</span></p>
+                    </li>
+                  </ul>
+                </div>
+                <div style="text-align:center;padding:0 5px;width:100%;line-height: 30px;border-top:1px solid #ccc">
+                  <a href="javascript:;" @click="more">查看更多</a>
+                </div>
+              </DropdownMenu>
+            </Dropdown>
+            <Dropdown @on-click="itemclick"  placement="bottom-end">
+              <a href="javascript:void(0)">
+                <Icon type="android-person" color="white" size="16"></Icon>
+                <Icon type="chevron-down" color="white" size="10"></Icon>
+              </a>
+              <DropdownMenu slot="list">
+                <DropdownItem name="print">
+                  <Icon type="person-add" size="14"></Icon>&nbsp;&nbsp;
+                  <span>{{$t('m.header.print')}}</span>
+                </DropdownItem>
+                <DropdownItem name="changepsd">
+                  <Icon type="android-unlock" size="14"></Icon>&nbsp;&nbsp;
+                  <span>{{$t('m.header.changepassword')}}</span>
+                </DropdownItem>
+                <DropdownItem name="logout">
+                  <Icon type="log-out" size="14"></Icon>&nbsp;&nbsp;
+                  <span>{{$t('m.header.logout')}}</span>
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+            <Dropdown  placement="bottom-end">
+              <a href="javascript:void(0)">
+                <Icon type="android-globe" color="white" size="16"></Icon>
+              </a>
+              <DropdownMenu slot="list">
+                <DropdownItem>
+                  <p @click="language('zh_CN')">
+                    <span class="iconfont icon-fuhao-zhongwen"></span>
+                    <span>中文</span>
+                  </p>
+                </DropdownItem>
+                <DropdownItem>
+                  <p @click="language('en_US')">
+                    <span class="iconfont icon-fuhao-yingwen"></span>
+                    <span>English</span>
+                  </p>
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </div>
+        </div>
+      </div>
+      <Modal
+        v-model="modal1"
+        title="打印机设置"
+        @on-ok="selectedprinter"
+        >
+        <p style="line-height: 26px;">选择发票打印机</p>
+        <Select v-model="invoice" style="width:300px">
+          <Option v-for="item in invoicelist" :value="item.value" :key="item.value">{{ item.name }}</Option>
+        </Select>
+        <p style="line-height: 26px;margin-top: 10px;">选择小票打印机</p>
+        <Select v-model="receipt" style="width:300px">
+          <Option v-for="item in invoicelist" :value="item.value" :key="item.value">{{ item.name }}</Option>
+        </Select>
+        <RadioGroup v-model="size" type="button">
+          <Radio label="58mm"></Radio>
+          <Radio label="80mm"></Radio>
+        </RadioGroup>
+      </Modal>
+    </div>
   </div>
 </template>
 

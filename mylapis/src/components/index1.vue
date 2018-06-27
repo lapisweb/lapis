@@ -12,7 +12,7 @@
         </div>
         <div class="layout-ceiling-main">
           <div style="float:left">
-            <Menu mode="horizontal" :theme="theme1" active-name="1">
+            <Menu mode="horizontal" :theme="theme1" @on-select="currname" ref="contactMenu" :active-name="initialActiveMenu">
               <Submenu :name=item.orderNum v-for="item in nav" :key="item.orderNum">
                 <template slot="title">
                   <Icon :type=item.icon></Icon>
@@ -124,6 +124,7 @@
     name: 'app',
     data () {
       return {
+        initialActiveMenu:'',
         modal1:false,
         index:"/index",
         nav:[],
@@ -143,6 +144,9 @@
       }
     },
     methods:{
+      currname(name){
+          this.initialActiveMenu=name;
+      },
       itemclick(el){
         if(el=='print'){
           this.modal1=true
@@ -251,6 +255,10 @@
             });
             if(response.body.menu.childMenus){
               this.nav=response.body.menu.childMenus;
+              this.$nextTick(() => {
+                this.$refs.contactMenu.updateOpened();
+                this.$refs.contactMenu.updateActiveName()
+              })
             }
           }
         });
@@ -284,6 +292,15 @@
           val.value=index;
         });
         this.invoicelist=LODOP.Printers.list;
+      },
+      getactivemenu(url){
+        this.nav.forEach( (val,index)=> {
+          val.childMenus.forEach((val1,idnex1)=>{
+            if(url==val1.url){
+              this.initialActiveMenu=val1.orderNum;
+            }
+          })
+        });
       }
     },
     created(){
@@ -299,6 +316,11 @@
       this.getsystem();
       this.getmenu();
       this.getalarm();
+    },
+    watch:{
+      '$route.path':function (url) {
+          this.getactivemenu(url)
+      }
     }
   }
 </script>
@@ -376,7 +398,7 @@
     height:70px;
     line-height: 70px;
   }
-  .ivu-menu-horizontal.ivu-menu-light:after{
+  .layout-ceiling-main .ivu-menu-horizontal.ivu-menu-light:after{
     background: #fff;
   }
   .layout-right .bigscreen > a span{

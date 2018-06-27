@@ -447,4 +447,7 @@
     color:#fff;
     font-size: 20px;
   }
+  .ivu-carousel-dots{
+    z-index: 5;
+  }
 </style>

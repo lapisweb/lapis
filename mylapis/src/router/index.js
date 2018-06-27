@@ -15,7 +15,13 @@ import Alarm from '@/views/alarm'
 import Manage from '@/views/management'
 import Index from '@/views/index'
 import Debt from '@/views/debt'
-import Statistic from '@/views/statistics'
+import Statistic1 from '@/views/statistics'
+import Statistic from '@/views/statistics/statistics'
+import Opemonth from '@/views/statistics/historicalsale/opemonth'
+import Departday from '@/views/statistics/stationsales/departday'
+import Departmonth from '@/views/statistics/stationsales/departmonth'
+import Departhistory from '@/views/statistics/stationsales/Departhistory'
+import Departoper from '@/views/statistics/stationsales/Departoper'
 import Password from '@/views/password'
 import Upload from '@/views/upload'
 import Print from '@/views/print'
@@ -92,9 +98,40 @@ const router = new Router({
           meta: {
             title: '债务管理'
           }},
-        { path: 'statistic', component:Statistic, name: 'statistic',meta: {
+        { path: 'statistic1', component:Statistic1, name: 'statistic',meta: {
             title: '统计报表'
           }},
+        { path: 'statistic', component:Statistic,redirect:'statistic/opemonth', meta: {
+            title: '统计报表'
+          },
+          children:[
+            {
+              path: 'opemonth',
+              component:Opemonth,
+              name: 'opemonth' ,
+            },
+            {
+              path: 'departday',
+              component: Departday,
+              name: 'departday' ,
+            },
+            {
+              path: 'departmonth',
+              component:Departmonth,
+              name: 'departmonth' ,
+            },
+            {
+              path: 'departhistory',
+              component: Departhistory,
+              name: 'departhistory' ,
+            },
+            {
+              path: 'departoper',
+              component:Departoper,
+              name: 'departoper' ,
+            },
+          ],
+        },
         // { path: 'upload', component:Upload, name: 'upload',
         //   meta: {
         //     title: '首页入口'

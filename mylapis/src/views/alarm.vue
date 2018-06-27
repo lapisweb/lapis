@@ -368,7 +368,7 @@
   .fiterRighta{
     position: relative;
     top: 84px;
-    margin-left: 260px;
+    margin-left: 280px;
     margin-right: 20px;
     background: #fff;
   }

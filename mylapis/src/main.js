@@ -4,7 +4,7 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import VueI18n from 'vue-i18n'
-import Vuex from 'vuex'
+import store from './store';
 import echarts from 'echarts'
 // import 'babel-polyfill'
 
@@ -26,7 +26,6 @@ Vue.prototype.$echarts = echarts;
 Vue.use(VueI18n);
 Vue.use(VueResource);
 Vue.use(iView);
-Vue.use(Vuex);
 
 Vue.http.options.root="http://www.laison.com:8080/";
 // Vue.http.options.root="/api/";
@@ -54,17 +53,6 @@ Vue.component('my-customer',customer);
 //阻止启动生产消息
 Vue.config.productionTip = false;
 
-//vuex
-const store = new Vuex.Store({
-  state: {
-    print:{}
-  },
-  mutations: {
-    getPrint(data){
-      console.log(data)
-    }
-  }
-});
 
 //阻止向后台发送为空的信息
 function deleteEmptyProp(json){

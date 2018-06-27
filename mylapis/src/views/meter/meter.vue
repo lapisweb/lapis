@@ -44,9 +44,6 @@
         this.activeName = gameName;
       },
     },
-    created(){
-      console.log(this.$route.path,"3333")
-    }
   }
 </script>
 
