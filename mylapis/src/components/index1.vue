@@ -1,8 +1,5 @@
 <template>
   <div>
-    <Alert v-if="install" closable show-icon style="position:absolute;z-index:10000;width:50%;top:100px;left:50%;margin-left:-25%;text-align: center">
-      {{ $t("m.common.install1")}} <a href="http://laisontechsoft.xicp.net:7778/file/CLodop_Setup_for_Win32NT_3.029.exe">{{ $t("m.common.install2")}}</a> {{ $t("m.common.install3")}}
-    </Alert>
       <div class="layout-ceiling">
         <div class="layout-logo">
           <a href="/#/index">
@@ -96,24 +93,6 @@
             </div>
           </div>
         </div>
-        <Modal
-          v-model="modal1"
-          title="打印机设置"
-          @on-ok="selectedprinter"
-          >
-          <p style="line-height: 26px;">选择发票打印机</p>
-          <Select v-model="invoice" style="width:300px">
-            <Option v-for="item in invoicelist" :value="item.value" :key="item.value">{{ item.name }}</Option>
-          </Select>
-          <p style="line-height: 26px;margin-top: 10px;">选择小票打印机</p>
-          <Select v-model="receipt" style="width:300px">
-            <Option v-for="item in invoicelist" :value="item.value" :key="item.value">{{ item.name }}</Option>
-          </Select>
-          <RadioGroup v-model="size" type="button">
-            <Radio label="58mm"></Radio>
-            <Radio label="80mm"></Radio>
-          </RadioGroup>
-        </Modal>
       </div>
   </div>
 </template>
@@ -149,9 +128,9 @@
       },
       itemclick(el){
         if(el=='print'){
-          this.modal1=true
+          this.$router.push("/index/print")
         }else if(el=='changepsd'){
-          this.$router.push("password")
+          this.$router.push("/index/password")
         }else if(el=='logout'){
           this.logout()
         }
@@ -374,7 +353,7 @@
     z-index: 10;
     width:100%;
     background: #fff;
-    box-shadow: 0 1px 4px 0px #ccc;
+    box-shadow: 0 2px 3px 0px rgba(100, 100, 100, 0.1);
   }
   .layout-ceiling-main{
     margin-left: 180px;

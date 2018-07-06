@@ -325,7 +325,6 @@
               'Content-Type': 'application/json'
             },
           }).then((response) => {
-            console.log(response.body)
             if(response.body.code==0){
               this.$Message.success(this.$t('m.maintain.success'));
               this.query(0)

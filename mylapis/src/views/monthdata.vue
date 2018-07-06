@@ -121,6 +121,7 @@
             'Content-Type': 'application/json'
           },
         }).then((response) => {
+          console.log(response.body);
           response.body.pageInfo.list.forEach(function (val,index) {
             let end=val.freezeDate.lastIndexOf("-");
             val.freezeDate=val.freezeDate.substring(0,end)

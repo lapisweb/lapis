@@ -13,8 +13,10 @@
           <FormItem  prop="conpass">
             <Input type="password" style="width:340px;margin-top: 20px;" :placeholder="$t('m.password.confirmpass')" size="large" v-model.trim="passValidate.conpass"></Input>
           </FormItem>
-          <Button type="primary" long shape="circle" style="margin-top: 25px;" size="large" @click="editpsw('passValidate')">{{$t('m.common.confirm')}}</Button>
-          <Button type="error" long shape="circle" style="margin-top: 10px;" size="large" @click="cancelpsw">{{$t('m.common.cancel')}}</Button>
+          <div style="float: left">
+            <Button type="primary"  @click="editpsw('passValidate')">{{$t('m.common.confirm')}}</Button>
+            <Button @click="cancelpsw">{{$t('m.common.cancel')}}</Button>
+          </div>
         </Form>
       </div>
     </div>
@@ -104,7 +106,7 @@
   .h-middle{
     width: 100%;
     position:absolute;
-    top:106px;
+    top:60px;
     left:0;
     bottom:0;
     background-image:url(/static/img/bg_big.png);

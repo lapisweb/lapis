@@ -166,7 +166,6 @@
                 color='blue';
                 text=this.$t('m.maintain.case3')
               }
-
               return h('Tag', {
                 props: {
                   type: 'dot',
@@ -224,7 +223,6 @@
             'Content-Type': 'application/json'
           },
         }).then((response) => {
-          console.log(response.body.pageInfo.list,"3333");
           this.repairtotal=parseInt(response.body.pageInfo.total);
           response.body.pageInfo.list.forEach(function (val,index) {
             val.customerName=val.customer.customerName;

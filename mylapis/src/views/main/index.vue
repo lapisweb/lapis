@@ -5,12 +5,12 @@
         <Carousel autoplay :autoplay-speed=3000 v-model="value1" loop>
           <CarouselItem>
             <div class="demo-carousel">
-              <img src="../assets/img/h-bigbg.jpg" alt="" style="width:100%">
+              <img src="../../assets/img/h-bigbg.jpg" alt="" style="width:100%">
             </div>
           </CarouselItem>
           <CarouselItem>
             <div class="demo-carousel">
-              <img src="../assets/img/4.jpg" alt="" style="width:100%">
+              <img src="../../assets/img/4.jpg" alt="" style="width:100%">
             </div>
           </CarouselItem>
         </Carousel>
@@ -25,7 +25,7 @@
           <a href="javascript:;">
             <div class="basic basic-one">
               <p class="tiao">今日开户数</p>
-              <img src="../assets/img/h-kaihu.png" alt="" class="left-icon">
+              <img src="../../assets/img/h-kaihu.png" alt="" class="left-icon">
               <div class="right-word">
                 <h3>{{customertotal}}</h3>
               </div>
@@ -37,7 +37,7 @@
           <a href="javascript:;">
             <div class="basic basic-two">
               <p class="tiao">今日购买量</p>
-              <img src="../assets/img/hgoumai.png" alt="" class="left-icon">
+              <img src="../../assets/img/hgoumai.png" alt="" class="left-icon">
               <div class="right-word">
                 <h3>658</h3>
               </div>
@@ -49,7 +49,7 @@
           <a href="javascript:;">
             <div class="basic basic-three">
               <p class="tiao">今日入库表量</p>
-              <img src="../assets/img/hbiaoji.png" alt="" class="left-icon">
+              <img src="../../assets/img/hbiaoji.png" alt="" class="left-icon">
               <div class="right-word">
                 <h3>{{metertotal}}</h3>
               </div>
@@ -61,7 +61,7 @@
           <a href="javascript:;">
             <div class="basic basic-four">
               <p class="tiao">今日销售额</p>
-              <img src="../assets/img/hbaobiao.png" alt="" class="left-icon">
+              <img src="../../assets/img/hbaobiao.png" alt="" class="left-icon">
               <div class="right-word">
                 <h3>$192,45</h3>
               </div>

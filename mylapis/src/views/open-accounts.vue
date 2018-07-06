@@ -1,9 +1,10 @@
 <template>
   <div>
     <Alert v-if="install" closable show-icon style="position:absolute;z-index:10000;width:50%;top:100px;left:50%;margin-left:-25%;text-align: center">
-      {{ $t("m.common.install1")}} <a href="http://192.168.0.174/file/CLodop_Setup_for_Win32NT_3.029.exe">{{ $t("m.common.install2")}}</a> {{ $t("m.common.install3")}}
+      {{ $t("m.common.install1")}} <a href="http://laisontechsoft.xicp.net:29202/file/CLodop_Setup_for_Win32NT_3.029.exe">{{ $t("m.common.install2")}}</a> {{ $t("m.common.install3")}}
     </Alert>
     <div class="h-content">
+      <my-bread></my-bread>
       <div class="steps">
         <Steps :current="current">
           <Step :title="$t('m.open.title1')" :content="$t('m.open.content1')"></Step>

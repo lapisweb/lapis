@@ -331,7 +331,7 @@
     }
   }
 </script>
-<style>
+<style scoped>
   .move-left{
     width: 240px;
     position: fixed;
@@ -349,7 +349,7 @@
     margin:0 auto;
   }
   .move-left > ul > li p{
-    color:#888;
+    color:#666;
     line-height:35px;
   }
   .move-left > ul > li:first-child{
@@ -358,7 +358,7 @@
   }
   .move-left > ul > li:first-child h3{
     line-height: 62px;
-    color:#888;
+    color:#666;
   }
   .move-left > ul > li:last-child{
     border-top:1px solid #ccc;

@@ -341,7 +341,7 @@
     margin:0 auto;
   }
   .move-left > ul > li p{
-    color:#888;
+    color:#666;
     line-height:32px;
   }
   .move-left > ul > li:first-child{
@@ -350,7 +350,7 @@
   }
   .move-left > ul > li:first-child h3{
     line-height: 36px;
-    color:#888;
+    color:#666;
   }
   .move-left > ul > li:last-child{
     border-top:1px solid #ccc;

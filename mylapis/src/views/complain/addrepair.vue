@@ -34,8 +34,8 @@
     </div>
     <h3 class="title">{{$t('m.maintain.faultinfo')}}</h3>
     <p style="line-height: 24px;">{{$t('m.maintain.faultcode')}}</p>
-    <Select clearable v-model="breakdownid" style="width:200px">
-      <Option v-for="item in breakdown" :value="item.value" :key="item.value">{{ item.label }}</Option>
+    <Select clearable v-model="breakdownid" style="width:260px">
+      <Option v-for="item in breakdown" :value="item.complaintTypeId" :key="item.complaintTypeId">{{ item.description }}</Option>
     </Select>
     <p style="line-height: 24px;">{{$t('m.maintain.faultinfo')}}</p>
     <Input clearable v-model="value6" type="textarea" :rows="3" placeholder="Enter something..."></Input>
@@ -46,7 +46,7 @@
     </RadioGroup>
     <div class="h-submit">
       <Button type="primary" @click="queding">{{$t('m.common.submit')}}</Button>
-      <Button type="ghost" style="margin-left: 8px">{{$t('m.common.cancel')}}</Button>
+      <Button type="ghost" @click="cancel">{{$t('m.common.cancel')}}</Button>
     </div>
     <my-footer1></my-footer1>
   </div>
@@ -146,36 +146,7 @@
         //表中信息
         customerdata: [],
         animal: this.$t('m.maintain.yes'),
-        breakdown: [
-          {
-            value: '0',
-            label: this.$t('m.maintain.fault1')
-          },
-          {
-            value: '1',
-            label: this.$t('m.maintain.fault2')
-          },
-          {
-            value: '2',
-            label: this.$t('m.maintain.fault3')
-          },
-          {
-            value: '3',
-            label: this.$t('m.maintain.fault4')
-          },
-          {
-            value: '4',
-            label: this.$t('m.maintain.fault5')
-          },
-          {
-            value: '5',
-            label: this.$t('m.maintain.fault6')
-          },
-          {
-            value: '6',
-            label: this.$t('m.maintain.fault7')
-          }
-        ],
+        breakdown: [],
       }
     },
     methods: {
@@ -290,6 +261,7 @@
         })
       },
       changePage(page){
+        this.loading=true;
         this.customerdata=[];
         this.$http({
           url:'biz/customer/findByPage.do',
@@ -393,6 +365,7 @@
               )
             }
           });
+          this.loading=false;
         })
       },
       selected(e){
@@ -416,9 +389,9 @@
       },
       queding(){
         let state;
-        if(this.state==$t('m.maintain.yes')){
+        if(this.state==this.$t('m.maintain.yes')){
           state=0
-        } else if(this.state==$t('m.maintain.no')){
+        } else if(this.state==this.$t('m.maintain.no')){
           state=3
         }
         this.$http({
@@ -435,7 +408,6 @@
             'Content-Type': 'application/json'
           },
         }).then((response) => {
-          console.log(response.body)
           if(response.body.errors){
             this.$Message.success(response.body.errors);
           }else{
@@ -443,9 +415,41 @@
             this.$router.push('/index/repair');
           }
         });
-
+      },
+      cancel(){
+        this.$router.push('/index/repair');
       }
     },
+    created(){
+      this.$http({
+        url:'biz/complaint/getTypes.do',
+        body:{
+
+        },
+        credentials:true,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      }).then((response) => {
+        this.breakdown=response.body.types;
+      });
+    }
   }
 </script>
+<style>
+  .purmessage{
+    margin:10px 0;
+  }
+  .purmessage > li{
+    line-height: 30px;
+  }
+  .purmessage > li:last-child{
+    margin-top: 10px;
+  }
+  .purmessage > li span{
+    padding-right:25px;
+    font-size: 13px;
+  }
+</style>
 

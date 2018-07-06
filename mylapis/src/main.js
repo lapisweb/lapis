@@ -18,6 +18,7 @@ import ggheader1 from './components/index1.vue';
 import footer from './components/footer.vue';
 import footer1 from './components/footer1.vue';
 import customer from './components/customer.vue';
+import bread from './components/breadcrumb';
 import ien from './common/lang/en';
 import izh from './common/lang/zh';
 
@@ -49,6 +50,7 @@ Vue.component('my-header1',ggheader1);
 Vue.component('my-footer',footer);
 Vue.component('my-footer1',footer1);
 Vue.component('my-customer',customer);
+Vue.component('my-bread',bread);
 
 //阻止启动生产消息
 Vue.config.productionTip = false;

@@ -1,10 +1,11 @@
 <template>
   <div>
     <Alert v-if="install" closable show-icon style="position:absolute;z-index:10000;width:50%;top:100px;left:50%;margin-left:-25%;text-align: center">
-      {{ $t("m.common.install1")}} <a href="http://192.168.0.174/file/CLodop_Setup_for_Win32NT_3.029.exe">{{ $t("m.common.install2")}}</a> {{ $t("m.common.install3")}}
+      {{ $t("m.common.install1")}} <a href="http://laisontechsoft.xicp.net:29202/file/CLodop_Setup_for_Win32NT_3.029.exe">{{ $t("m.common.install2")}}</a> {{ $t("m.common.install3")}}
     </Alert>
-    <div class="h-content" style="margin:10px 100px 100px;">
-      <div>
+    <div class="h-content">
+      <my-bread></my-bread>
+      <div style="margin:10px 100px 100px;">
         <Input clearable v-model.trim="name" :placeholder="$t('m.customerinfo.label1')" style="width: 180px"></Input>
         <Input clearable v-model.trim="idcard" :placeholder="$t('m.customerinfo.label2')" style="width: 180px"></Input>
         <Input clearable  v-model.trim="tel" :placeholder="$t('m.customerinfo.label3')" style="width: 180px"></Input>
@@ -53,7 +54,7 @@
           </div>
         </div>
         <div style="margin:10px 0">
-          <p style="line-height:30px;color:#888;">{{$t('m.purchase.purchase')}}($)/(m³)</p>
+          <p style="line-height:30px;">{{$t('m.purchase.purchase')}}($)/(m³)</p>
           <InputNumber v-model="pregoumai" style="width:220px" :max="100000" :min="0.1"></InputNumber>
           <RadioGroup v-model="paytype" style="margin-left: 15px;" type="button">
             <Radio :label="$t('m.purchase.amount')" ></Radio>
@@ -1138,14 +1139,6 @@
     background: #EEEEEE;
     padding-top: 8px;
     border-right: 1px solid #d7dde4;
-  }
-  .move-left-in{
-    padding:0 20px;
-  }
-  .move-left-in h3{
-    color:#888;
-    line-height:35px;
-    border-bottom: 1px solid #ccc;
   }
   .fiterRight{
     position: relative;

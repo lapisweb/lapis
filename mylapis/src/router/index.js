@@ -8,14 +8,11 @@ import Meterquery from '@/views/meter/meterquery'
 import Purchase from '@/views/purchase'
 import Login from '@/views/login'
 import Cancel from '@/views/cancel'
-import Subtotal from '@/views/subtotal'
 import Trade from '@/views/trading'
-import OperatLog from '@/views/operationlog'
 import Alarm from '@/views/alarm'
 import Manage from '@/views/management'
-import Index from '@/views/index'
+import Index from '@/views/main/index'
 import Debt from '@/views/debt'
-import Statistic1 from '@/views/statistics'
 import Statistic from '@/views/statistics/statistics'
 import Opemonth from '@/views/statistics/historicalsale/opemonth'
 import Departday from '@/views/statistics/stationsales/departday'
@@ -23,7 +20,7 @@ import Departmonth from '@/views/statistics/stationsales/departmonth'
 import Departhistory from '@/views/statistics/stationsales/Departhistory'
 import Departoper from '@/views/statistics/stationsales/Departoper'
 import Password from '@/views/password'
-import Upload from '@/views/upload'
+// import Upload from '@/views/upload'
 import Print from '@/views/print'
 import Layout from '@/views/layout'
 import CheckList from '@/views/check'
@@ -51,12 +48,16 @@ const router = new Router({
       component:Layout,
       children: [
         { path: '', component:Index, name: 'index' },
-        { path: 'purchase', component:Purchase, name: 'purchase' ,meta: {
+        { path: 'purchase', component:Purchase, name: 'purchase' ,
+          meta: {
             title: '购买'
-          }},
-        { path: 'open', component: Open, name: 'open' ,meta: {
+          }
+        },
+        { path: 'open', component: Open, name: 'open' ,
+          meta: {
             title: '开户'
-          }},
+          }
+        },
         { path: 'meter', component: Meter, name: '' ,
           children:[
             {
@@ -76,16 +77,9 @@ const router = new Router({
         { path: 'cancel', component:Cancel, name: 'cancel' ,meta: {
             title: '退购'
           }},
-        // { path: 'subtotal', component:Subtotal, name: 'subtotal' ,
-        //   meta: {
-        //     title: '首页入口'
-        //   }},
         { path: 'trade', component:Trade, name: 'trade' ,meta: {
             title: '交易记录'
           }},
-        // { path:'operationlog', component:OperatLog, name: 'operation',meta: {
-        //     title: '首页入口'
-        //   }},
         { path: 'alarm', component:Alarm, name: 'alarm',
           meta: {
             title: '告警记录'
@@ -97,9 +91,6 @@ const router = new Router({
         { path: 'debt', component:Debt, name: 'debt' ,
           meta: {
             title: '债务管理'
-          }},
-        { path: 'statistic1', component:Statistic1, name: 'statistic',meta: {
-            title: '统计报表'
           }},
         { path: 'statistic', component:Statistic,redirect:'statistic/opemonth', meta: {
             title: '统计报表'
@@ -132,14 +123,10 @@ const router = new Router({
             },
           ],
         },
-        // { path: 'upload', component:Upload, name: 'upload',
-        //   meta: {
-        //     title: '首页入口'
-        //   }},
-        // { path: 'print', component:Print, name: 'print' ,
-        //   meta: {
-        //     title: '设置打印机'
-        //   }},
+        { path: 'print', component:Print, name: 'print' ,
+          meta: {
+            title: '设置打印机'
+          }},
         { path: 'password', component:Password, name: 'password' ,
           meta: {
             title: '修改密码'
@@ -161,10 +148,6 @@ const router = new Router({
           meta: {
             title: '分配任务'
           }},
-        // { path: 'walkby/addtask1', component:Addtask1, name: 'addtask1' ,
-        //   meta: {
-        //     title: '添加任务'
-        //   }},
         { path: 'walkby/edittask', component:Edittask, name: 'edittask' ,
           meta: {
             title: '修改任务'
@@ -185,19 +168,11 @@ const router = new Router({
           meta: {
             title: '月冻结数据'
           }},
-        {
-          path: 'aa',
-          component:AA,
-        },
-        {
-          path: 'invoiceopen',
-          component:OpenInvoice,
-        },
       ]
     },
     {
       path: '/',
-      redirect:'/login',
+      redirect:'/index',
     },
 
     {
@@ -213,6 +188,7 @@ const router = new Router({
 router.beforeEach((to, from, next) => {
   /* 路由发生变化修改页面title */
   iView.LoadingBar.start();
+
   if (to.meta.title) {
     document.title = to.meta.title
   }

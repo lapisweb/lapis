@@ -121,7 +121,7 @@
 
   }
 </script>
-<style>
+<style scoped>
   .move-left-report{
     width: 241px;
     position: fixed;
@@ -140,11 +140,11 @@
   }
   .h-title-report h3{
     line-height: 50px;
-    color:#888;
+    color:#666;
   }
   .h-title-report p{
     line-height: 30px;
-    color:#888;
+    color:#666;
   }
   .ivu-menu-vertical .ivu-menu-item, .ivu-menu-vertical .ivu-menu-submenu-title{
     color:#333

@@ -2,7 +2,8 @@
     <div class="h-content">
       <div style="margin:10px 60px;">
         <div class="h-title">
-          <p>{{$t('m.walkby.edittask')}}</p>
+          <Button icon="chevron-left" @click="$router.push('/index/walkby')" size="small" style="float: left;margin-top: 6px;margin-left: 5px;">返回</Button>
+          <p style="text-align: center">{{$t('m.walkby.edittask')}}</p>
         </div>
         <div class="task-left">
           <div style="padding: 5px 15px;">
