@@ -1,40 +1,43 @@
 import Vue from 'vue'
 import iView from 'iview'
 import Router from 'vue-router'
-import Open from '@/views/open-accounts'
-import Meter from '@/views/meter/meter'
-import Meterimport from '@/views/meter/meterimport'
-import Meterquery from '@/views/meter/meterquery'
-import Purchase from '@/views/purchase'
-import Login from '@/views/login'
-import Cancel from '@/views/cancel'
-import Trade from '@/views/trading'
-import Alarm from '@/views/alarm'
-import Manage from '@/views/management'
+
+import Open from '@/views/business/open-accounts'
+import Cancel from '@/views/business/cancel'
+import CheckList from '@/views/business/check'
+import Purchase from '@/views/business/purchase'
+import Repair from '@/views/business/complain/repair'
+import addRepair from '@/views/business/complain/addrepair'
+import Maintain from '@/views/business/complain/maintain'
+
+import Meter from '@/views/meter_management/meter/meter'
+import Meterimport from '@/views/meter_management/meter/meterimport'
+import Meterquery from '@/views/meter_management/meter/meterquery'
+import Realtime from '@/views/meter_management/realtime'
+import Walkby from '@/views/meter_management/walkby/walkby'
+import Addtask from '@/views/meter_management/walkby/addtask'
+import Distributetask from '@/views/meter_management/walkby/distributetask'
+import Edittask from '@/views/meter_management/walkby/edittask'
+import Showinfo from '@/views/meter_management/walkby/showinfo'
+
+import Login from '@/views/main/login'
 import Index from '@/views/main/index'
-import Debt from '@/views/debt'
-import Statistic from '@/views/statistics/statistics'
-import Opemonth from '@/views/statistics/historicalsale/opemonth'
-import Departday from '@/views/statistics/stationsales/departday'
-import Departmonth from '@/views/statistics/stationsales/departmonth'
-import Departhistory from '@/views/statistics/stationsales/Departhistory'
-import Departoper from '@/views/statistics/stationsales/Departoper'
-import Password from '@/views/password'
-// import Upload from '@/views/upload'
-import Print from '@/views/print'
-import Layout from '@/views/layout'
-import CheckList from '@/views/check'
-import Realtime from '@/views/realtime'
-import Walkby from '@/views/walkby/walkby'
-import Addtask from '@/views/walkby/addtask'
-import Distributetask from '@/views/walkby/distributetask'
-import Edittask from '@/views/walkby/Edittask'
-import Repair from '@/views/complain/repair'
-import Monthdata from '@/views/monthdata'
-import addRepair from '@/views/complain/addrepair'
-import Maintain from '@/views/complain/maintain'
-import OpenInvoice from '@/views/invoice-open'
-import AA from '@/views/purchase2'
+import Password from '@/views/main/password'
+import Print from '@/views/main/print'
+import Layout from '@/views/main/layout'
+
+import Manage from '@/views/customer/management'
+import Debt from '@/views/customer/debt'
+
+import Trade from '@/views/statistic/trading'
+import Alarm from '@/views/statistic/alarm'
+import Statistic from '@/views/statistic/report/statistics'
+import Opemonth from '@/views/statistic/report/historicalsale/opemonth'
+import Departday from '@/views/statistic/report/stationsales/departday'
+import Departmonth from '@/views/statistic/report/stationsales/departmonth'
+import Departhistory from '@/views/statistic/report/stationsales/Departhistory'
+import Departoper from '@/views/statistic/report/stationsales/Departoper'
+import Monthdata from '@/views/statistic/monthdata'
 
 
 Vue.use(Router);
@@ -92,7 +95,7 @@ const router = new Router({
           meta: {
             title: '债务管理'
           }},
-        { path: 'statistic', component:Statistic,redirect:'statistic/opemonth', meta: {
+        { path: 'statistic', component:Statistic, meta: {
             title: '统计报表'
           },
           children:[
@@ -152,6 +155,10 @@ const router = new Router({
           meta: {
             title: '修改任务'
           }},
+        { path: 'walkby/showinfo', component:Showinfo, name: 'showinfo' ,
+          meta: {
+            title: '查看任务详情'
+          }},
         { path: 'repair', component:Repair, name: 'repair' ,
           meta: {
             title: '投诉与维修'
@@ -186,12 +193,20 @@ const router = new Router({
   ]
 });
 router.beforeEach((to, from, next) => {
+  //登录之后不能再去到登录页
+  if(window.localStorage.getItem('user')){
+    if(to.path=="/login"){
+      next({
+        path:'/index'
+      });
+    }
+  }
   /* 路由发生变化修改页面title */
-  iView.LoadingBar.start();
-
   if (to.meta.title) {
     document.title = to.meta.title
   }
+
+  iView.LoadingBar.start();
   next()
 });
 router.afterEach(route => {

@@ -18,13 +18,13 @@
       <div class="bigBox">
         <Row :gutter="16">
         <Col span="24">
-        <h3><Icon type="android-send"></Icon> 今日统计 </h3>
+        <h3><Icon type="android-send"></Icon> {{$t('m.main.skyequiKey')}} </h3>
         </Col>
         <Col span="6">
           <!--<a href="/#/index/open">-->
           <a href="javascript:;">
             <div class="basic basic-one">
-              <p class="tiao">今日开户数</p>
+              <p class="tiao">{{$t('m.main.user')}}</p>
               <img src="../../assets/img/h-kaihu.png" alt="" class="left-icon">
               <div class="right-word">
                 <h3>{{customertotal}}</h3>
@@ -36,7 +36,7 @@
           <!--<a href="/#/index/purchase">-->
           <a href="javascript:;">
             <div class="basic basic-two">
-              <p class="tiao">今日购买量</p>
+              <p class="tiao">{{$t('m.main.sale')}}</p>
               <img src="../../assets/img/hgoumai.png" alt="" class="left-icon">
               <div class="right-word">
                 <h3>658</h3>
@@ -48,7 +48,7 @@
           <!--<a href="/#/index/meter">-->
           <a href="javascript:;">
             <div class="basic basic-three">
-              <p class="tiao">今日入库表量</p>
+              <p class="tiao">{{$t('m.main.meter')}}</p>
               <img src="../../assets/img/hbiaoji.png" alt="" class="left-icon">
               <div class="right-word">
                 <h3>{{metertotal}}</h3>
@@ -60,7 +60,7 @@
           <!--<a href="/#/index/statistic">-->
           <a href="javascript:;">
             <div class="basic basic-four">
-              <p class="tiao">今日销售额</p>
+              <p class="tiao">{{$t('m.main.daysale')}}</p>
               <img src="../../assets/img/hbaobiao.png" alt="" class="left-icon">
               <div class="right-word">
                 <h3>$192,45</h3>

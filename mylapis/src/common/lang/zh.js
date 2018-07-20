@@ -36,16 +36,12 @@ export default {
       copyright: '杭州莱宸科技 版权所有',
     },
     main: {
-      skyequiKey: '快捷导航',//标题类型
+      skyequiKey: '今日统计',//标题类型
       analysis: '丰富的报表',//标题类型
-      open: '开户',
-      user: '用户',
-      buysts: '购买(sts)',
-      sale: '购买量',
-      meterimport: '表计入库',
-      meter: '入库表量',
-      statisticalform: '统计报表',
-      daysale: '日销售',
+      user: '日开户数',
+      sale: '日购买量',
+      meter: '日入库表量',
+      daysale: '日销售额',
       customerinfo: '客户信息',
     },
     customerinfo: {
@@ -311,6 +307,16 @@ export default {
       sel3:'选择抄表员',
       ftime:'冻结时间',
       fdata:'冻结数据',
+      look:"查看抄表结果",
+      selected:"已选中",
+      info:'抄表结果',
+      info1:'抄表时间',
+      info2:'任务名',
+      info3:'状态',
+      info4:'任务时间',
+      info5:'表计总数',
+      info6:'成功数量',
+      info7:'失败数量',
     },
     alarm:{
       filter:'筛选条件',

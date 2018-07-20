@@ -146,6 +146,7 @@
         }).then((response) => {
           if(response.body.logout=='ok'){
             localStorage.removeItem('userdata');
+            localStorage.removeItem('user');
             this.$router.push('/login');
           }
         })
@@ -215,11 +216,12 @@
         this.$http({
           url:'getMyBusinessMenu.do',
           credentials:true,
+
           method: 'POST',
         }).then((response) => {
           if(response.body.menu==null){
-            this.$Message.warning({content:'没有权限，请重新登录',duration: 5});
-            this.logout();
+            // this.$Message.warning({content:'没有权限，请重新登录',duration: 5});
+            // this.logout();
           }else{
             response.body.menu.childMenus.forEach((val,index)=> {
               if(val.childMenus){
