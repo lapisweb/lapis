@@ -72,7 +72,6 @@
           <p style="line-height: 25px;">{{$t('m.customerinfo.label1')}} <span>{{currentcustomer.name}}</span>
           <p style="line-height: 25px;">{{$t('m.customerinfo.label2')}} <span>{{currentcustomer.idcard}}</span></p>
           <p style="line-height: 25px;">{{$t('m.customerinfo.label3')}} <span>{{currentcustomer.tel}}</span></p>
-          <!--<p style="line-height: 25px;">退款金额 <span> </span></p>-->
           <p style="line-height: 25px;">{{$t('m.cancel.remarks')}}</p>
           <textarea name="" id="" cols="70" rows="3"></textarea>
         </Modal>
@@ -451,6 +450,7 @@
           },
 
         }).then((response) => {
+          console.log(response.body)
           if(response.body.msg){
             this.$Message.success(response.body.msg);
           }else{
@@ -518,6 +518,7 @@
         });
       },
       overtasks(){
+        console.log(111);
         this.$http({
           url:'biz/trade/endTaskUnDoRefund.do',
           body:{
@@ -533,6 +534,7 @@
             'Content-Type': 'application/json'
           },
         }).then((response) => {
+          console.log(response.body)
           if(response.body.msg){
             this.$Message.success(response.body.msg);
           }else{

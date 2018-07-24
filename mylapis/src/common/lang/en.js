@@ -337,5 +337,10 @@ export default{
         title:"Handling alarm information",
         deal:"Deal with"
       },
+    print:{
+      setting:'Setting printer',
+      invoice:'Invoice printer',
+      receipt:'Ticket printer',
+    }
   }
 }

@@ -108,7 +108,7 @@
           }
         })
         var myChart1;
-        myChart1 = this.$echarts.init(document.querySelector(".fiterRight #myChartsss21"));
+        myChart1 = this.$echarts.init(document.querySelector("#myChartsss21"));
         myChart1.clear();
         var colors = ['#5793f3', '#d14a61', '#6be6c1'];
 

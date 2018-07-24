@@ -131,7 +131,7 @@
                   h('Poptip',{
                     props: {
                       confirm:true,
-                      title:'确定删除此信息吗?',
+                      title:this.$t('m.common.sure'),
                     },
                     on: {
                       'on-ok': () => {
@@ -177,7 +177,7 @@
                   h('Poptip',{
                     props: {
                       confirm:true,
-                      title:'确定删除此信息吗?',
+                      title:this.$t('m.common.sure'),
                     },
                     on: {
                       'on-ok': () => {

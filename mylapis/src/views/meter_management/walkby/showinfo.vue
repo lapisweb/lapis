@@ -92,7 +92,7 @@
           },
           {
             title: this.$t("m.walkby.info5"),
-            key: 'meterall',
+            key: 'totalMeterCount',
           },
           {
             title: this.$t("m.walkby.info6"),
@@ -140,7 +140,6 @@
           response.body.pageInfo.list.forEach(function (val,index) {
             let end=val.taskDate.lastIndexOf("-");
             val.taskDate=val.taskDate.substring(0,end);
-            val.meterall=val.readingFailedCount+val.readingSuccessCount;
           });
           this.readdata=response.body.pageInfo.list;
           this.loading=false;

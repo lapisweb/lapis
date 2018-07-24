@@ -7,13 +7,13 @@
       <Card>
         <p slot="title">
           <Icon type="printer"></Icon>
-          设置打印机
+          {{$t('m.print.setting')}}
         </p>
-        <p style="line-height: 26px;">发票打印机</p>
+        <p style="line-height: 26px;">{{$t('m.print.invoice')}}</p>
         <Select v-model="invoice" style="width:300px">
           <Option v-for="item in invoicelist" :value="item.value" :key="item.value">{{ item.name }}</Option>
         </Select>
-        <p style="line-height: 26px;margin-top: 10px;">小票打印机</p>
+        <p style="line-height: 26px;margin-top: 10px;">{{$t('m.print.receipt')}}</p>
         <Select v-model="receipt" style="width:300px">
           <Option v-for="item in invoicelist" :value="item.value" :key="item.value">{{ item.name }}</Option>
         </Select>
@@ -22,8 +22,8 @@
           <Radio label="80mm"></Radio>
         </RadioGroup>
         <div style="margin-top: 15px">
-          <Button type="primary" @click="selectedprinter()">确定</Button>
-          <Button>取消</Button>
+          <Button type="primary" @click="selectedprinter()">{{$t('m.common.confirm')}}</Button>
+          <Button>{{$t('m.common.cancel')}}</Button>
         </div>
       </Card>
     </div>

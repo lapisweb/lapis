@@ -27,7 +27,7 @@
               <p class="tiao">{{$t('m.main.user')}}</p>
               <img src="../../assets/img/h-kaihu.png" alt="" class="left-icon">
               <div class="right-word">
-                <h3>{{customertotal}}</h3>
+                <h3>{{todaydata.openAccountCount}}</h3>
               </div>
             </div>
           </a>
@@ -39,7 +39,7 @@
               <p class="tiao">{{$t('m.main.sale')}}</p>
               <img src="../../assets/img/hgoumai.png" alt="" class="left-icon">
               <div class="right-word">
-                <h3>658</h3>
+                <h3>{{todaydata.volume}}m³</h3>
               </div>
             </div>
           </a>
@@ -51,7 +51,7 @@
               <p class="tiao">{{$t('m.main.meter')}}</p>
               <img src="../../assets/img/hbiaoji.png" alt="" class="left-icon">
               <div class="right-word">
-                <h3>{{metertotal}}</h3>
+                <h3>{{todaydata.meterStockCount}}</h3>
               </div>
             </div>
           </a>
@@ -63,7 +63,7 @@
               <p class="tiao">{{$t('m.main.daysale')}}</p>
               <img src="../../assets/img/hbaobiao.png" alt="" class="left-icon">
               <div class="right-word">
-                <h3>$192,45</h3>
+                <h3>${{todaydata.amount}}</h3>
               </div>
             </div>
           </a>
@@ -135,13 +135,29 @@
         data8: [],
         customertotal:0,
         metertotal:0,
+        todaydata:{},
       }
     },
     mounted(){
       this.drawLine();
     },
     methods: {
-      rowClassName (row, index) {
+      //获取今日数据
+      gettodaydata(){
+        this.$http({
+          url: 'biz/index/getData.do',
+          body: {},
+          credentials: true,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+
+        }).then((response) => {
+          this.todaydata=response.body;
+        })
+      },
+      rowClassName(row, index) {
         if (index === 1) {
           return 'demo-table-info-row';
         } else if (index === 3) {
@@ -149,14 +165,14 @@
         }
         return '';
       },
-      drawLine(){
+      drawLine() {
         // 基于准备好的dom，初始化echarts实例
         let myChart1 = this.$echarts.init(document.getElementById('main1-1'));
         let myChart2 = this.$echarts.init(document.getElementById('main1-2'));
         let myChart3 = this.$echarts.init(document.getElementById('main1-3'));
         let colors = ['#3BC5CF', '#00ACEE', '#675bba'];
-        let colorss=['#3BC5CF','#00ACEE','#87daf9','#F7B547','#F88A6F'];
-        let data = [["2000-06-05",116],["2000-06-06",129],["2000-06-07",135],["2000-06-08",86],["2000-06-09",73],["2000-06-10",85],["2000-06-11",73],["2000-06-12",68],["2000-06-13",92],["2000-06-14",130],["2000-06-15",245],["2000-06-16",139],["2000-06-17",115],["2000-06-18",111],["2000-06-19",309],["2000-06-20",206],["2000-06-21",137],["2000-06-22",128],["2000-06-23",85],["2000-06-24",94],["2000-06-25",71],["2000-06-26",106],["2000-06-27",84],["2000-06-28",93],["2000-06-29",85],["2000-06-30",73],["2000-07-01",83],["2000-07-02",125],["2000-07-03",107],["2000-07-04",82],["2000-07-05",44],["2000-07-06",72],["2000-07-07",106],["2000-07-08",107],["2000-07-09",66],["2000-07-10",91],["2000-07-11",92],["2000-07-12",113],["2000-07-13",107],["2000-07-14",131],["2000-07-15",111],["2000-07-16",64],["2000-07-17",69],["2000-07-18",88],["2000-07-19",77],["2000-07-20",83],["2000-07-21",111],["2000-07-22",57],["2000-07-23",55],["2000-07-24",60]];
+        let colorss = ['#3BC5CF', '#00ACEE', '#87daf9', '#F7B547', '#F88A6F'];
+        let data = [["2000-06-05", 116], ["2000-06-06", 129], ["2000-06-07", 135], ["2000-06-08", 86], ["2000-06-09", 73], ["2000-06-10", 85], ["2000-06-11", 73], ["2000-06-12", 68], ["2000-06-13", 92], ["2000-06-14", 130], ["2000-06-15", 245], ["2000-06-16", 139], ["2000-06-17", 115], ["2000-06-18", 111], ["2000-06-19", 309], ["2000-06-20", 206], ["2000-06-21", 137], ["2000-06-22", 128], ["2000-06-23", 85], ["2000-06-24", 94], ["2000-06-25", 71], ["2000-06-26", 106], ["2000-06-27", 84], ["2000-06-28", 93], ["2000-06-29", 85], ["2000-06-30", 73], ["2000-07-01", 83], ["2000-07-02", 125], ["2000-07-03", 107], ["2000-07-04", 82], ["2000-07-05", 44], ["2000-07-06", 72], ["2000-07-07", 106], ["2000-07-08", 107], ["2000-07-09", 66], ["2000-07-10", 91], ["2000-07-11", 92], ["2000-07-12", 113], ["2000-07-13", 107], ["2000-07-14", 131], ["2000-07-15", 111], ["2000-07-16", 64], ["2000-07-17", 69], ["2000-07-18", 88], ["2000-07-19", 77], ["2000-07-20", 83], ["2000-07-21", 111], ["2000-07-22", 57], ["2000-07-23", 55], ["2000-07-24", 60]];
         var dateList = data.map(function (item) {
           return item[0];
         });
@@ -172,31 +188,31 @@
           //   subtext: 'virtual data',
           //   left: 'center'
           // },
-          tooltip : {
+          tooltip: {
             trigger: 'item',
             formatter: "{a} <br/>{b} : {c} ({d}%)"
           },
           legend: {
-            top:20,
+            top: 20,
             left: 'center',
-            data: ['Cairo', 'Johannesburg','Cape Town','Nairobi','Algiers']
+            data: ['Cairo', 'Johannesburg', 'Cape Town', 'Nairobi', 'Algiers']
           },
-          series : [
+          series: [
             {
               type: 'pie',
-              radius : '65%',
+              radius: '65%',
               center: ['50%', '50%'],
               selectedMode: 'single',
-              data:[
+              data: [
                 {
-                  value:1548,
+                  value: 1548,
                   name: 'Cairo',
 
                 },
-                {value:535, name: 'Johannesburg'},
-                {value:510, name: 'Cape Town'},
-                {value:634, name: 'Nairobi'},
-                {value:735, name: 'Algiers'}
+                {value: 535, name: 'Johannesburg'},
+                {value: 510, name: 'Cape Town'},
+                {value: 634, name: 'Nairobi'},
+                {value: 735, name: 'Algiers'}
               ],
               itemStyle: {
                 emphasis: {
@@ -255,7 +271,7 @@
 
           xAxis: [{
             data: dateList
-          }, ],
+          },],
           yAxis: [{
             splitLine: {show: false}
           }],
@@ -265,11 +281,11 @@
             data: valueList
           }]
         });
-        window.onresize = myChart1.resize,myChart2.resize,myChart3.resize;
+        window.onresize = myChart1.resize, myChart2.resize, myChart3.resize;
       },
       changePage(page) {
         this.$http({
-          url:'biz/customer/findByPage.do',
+          url: 'biz/customer/findByPage.do',
           body: {
             "conditions": {
               orderByClause: "open_date desc",
@@ -284,42 +300,35 @@
           },
 
         }).then((response) => {
-          this.data8=response.body.pageInfo.list;
+          this.data8 = response.body.pageInfo.list;
         })
-      }
-    },
-    created(){
-      this.$http({
-        url:'biz/customer/findByPage.do',
-        body:{
-          "conditions": {
-            startTime:'2018-06-22',
-            orderByClause :"open_date desc",
-          },
-          "limit": 5,
-          "page": 1
-        },
-        credentials:true,
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-
-      }).then((response) => {
-        this.customertotal=parseInt(response.body.pageInfo.total);
-          this.data8=response.body.pageInfo.list;
-      });
+      },
+      getcustomer() {
         this.$http({
-          url:'biz/meterStock/findByPage.do',
-          body: {conditions: {},"limit": 10, "page": 1},
-          credentials:true,
+          url: 'biz/customer/findByPage.do',
+          body: {
+            "conditions": {
+              // startTime: '2018-06-22',
+              orderByClause: "open_date desc",
+            },
+            "limit": 5,
+            "page": 1
+          },
+          credentials: true,
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
+
         }).then((response) => {
-          this.metertotal=parseInt(response.body.pageInfo.total);
-        })
+          this.customertotal = parseInt(response.body.pageInfo.total);
+          this.data8 = response.body.pageInfo.list;
+        });
+      },
+    },
+    created(){
+      this.gettodaydata();
+      this.getcustomer()
     }
   }
 </script>

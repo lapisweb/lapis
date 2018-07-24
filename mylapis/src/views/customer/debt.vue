@@ -29,14 +29,14 @@
       </div>
       <Modal
         v-model="modaladd"
-        title="Custom width"
+        :title="$t('m.debt.add')"
         @on-ok="adddebt"
         width="300">
         <p style="line-height: 25px;">{{$t('m.debt.addamount')}}($)</p><InputNumber style="width: 200px;" v-model="addamount"></InputNumber>
       </Modal>
       <Modal
         v-model="modalreduce"
-        title="Custom width"
+        :title="$t('m.debt.reduce')"
         @on-ok="reducedebt"
         width="300">
         <p style="line-height: 25px;">{{$t('m.debt.reducemethod')}}</p>
@@ -50,7 +50,7 @@
       </Modal>
       <Modal
         v-model="modalrepay"
-        title="Custom width"
+        :title="$t('m.debt.repay')"
         @on-ok="repaydebt"
         width="300">
         <p style="line-height: 25px;">{{$t('m.debt.repayamount')}}($)</p><InputNumber style="width: 200px;" v-model="repayamount"></InputNumber>

@@ -761,7 +761,6 @@
             'Content-Type': 'application/json'
           },
         }).then((response) => {
-          console.log(response.body);
           if (response.body.code == 502) {
             const content = '<p>' + this.$t('m.purchase.tip1') + '</p><p>' + this.$t('m.purchase.tip2') + ' ' + response.body.minAmount + '</p><p>' + this.$t('m.purchase.tip4') + ' ' + response.body.minVolume + ' m³</p>';
             this.$Modal.error({
@@ -816,28 +815,15 @@
               }
             }
           } else {
-            console.log('普通打印')
-            // if (response.body.list[21]) {
-            //   if (response.body.list[21].state == 1) {
-            //     try
-            //     {
-            //       this.mypurprint()
-            //     }
-            //     catch(err)
-            //     {
-            //       this.install=true;
-            //     }
-            //   } else if (response.body.list[21].state == 0) {
-            //     try
-            //     {
-            //       this.mypurprint()
-            //     }
-            //     catch(err)
-            //     {
-            //       this.install=true;
-            //     }
-            //   }
-            // }
+            try
+            {
+              console.log('普通打印');
+              this.fipagprintinvoice()
+            }
+            catch(err)
+            {
+              this.install=true;
+            }
           }
         });
       },

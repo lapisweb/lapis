@@ -85,7 +85,7 @@
         var vm=this;
         // 基于准备好的dom，初始化echarts实例
         var myChart4;
-        myChart4 = this.$echarts.init(document.querySelector(".fiterRight #myChartsss24"));
+        myChart4 = this.$echarts.init(document.querySelector("#myChartsss24"));
         var colors = ['#5793f3', '#d14a61', '#6be6c1'];
         myChart4.setOption({
           color:colors,

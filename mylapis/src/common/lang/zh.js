@@ -356,6 +356,11 @@ export default {
       title17:'维修任务',
       title18:'月冻结数据',
       title19:'登录',
+    },
+    print:{
+      setting:'设置打印机',
+      invoice:'发票打印机',
+      receipt:'小票打印机',
     }
   }
 }

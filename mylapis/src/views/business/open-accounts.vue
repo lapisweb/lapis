@@ -25,8 +25,7 @@
       </div>
       <Form ref="formValidateopen" :model="formValidateopen" :rules="openruleValidate" label-position="top">
         <div class="center" v-if="current==0">
-          <p>{{ $t("m.open.selectcustomertype") }}</p>
-          <FormItem prop="customertypecode">
+          <FormItem prop="customertypecode" :label="$t('m.open.selectcustomertype')">
             <Select clearable v-model="formValidateopen.customertypecode" style="width:240px" size="large">
               <Option v-for="item in customerType" :value="item.customerTypeCode" :key="item.customerTypeCode">{{item.customerTypeName}}</Option>
             </Select>
@@ -312,7 +311,7 @@
         </div>
       </Form>
       <div v-if="opensuccess">
-        <Modal v-model="opensuccess" width="360" :closable="false">
+        <Modal v-model="opensuccess" width="360" :closable="false" :mask-closable="false">
           <p slot="header" style="color:#19BE6B;text-align:center">
             <Icon type="checkmark-circled"></Icon>
             <span>{{ $t("m.open.open") }}</span>
@@ -827,7 +826,6 @@
                     'Content-Type': 'application/json'
                   },
                 }).then((response) => {
-                  console.log(response.body);
                   this.invoicedata=response.body.tradeRecord;
                   this.incusdata=response.body.customerInfo;
                   if(response.body.msg){
@@ -1089,7 +1087,15 @@
               }
             }
           } else {
-            console.log('普通打印')
+            try
+            {
+              console.log('普通打印');
+              this.openprint()
+            }
+            catch(err)
+            {
+              this.install=true;
+            }
           }
         });
       },
@@ -1240,7 +1246,7 @@
           }
         </style>
         `;
-        var strFormHtml=strBodyStyle+"<body>"+document.getElementById("print.vue").innerHTML+"</body>";
+        var strFormHtml=strBodyStyle+"<body>"+document.getElementById("print").innerHTML+"</body>";
           console.log("开始打印！！");
           LODOP.SET_LICENSES("杭州莱宸科技有限公司","EFED48C79DE17EC067709F911F9D586B","杭州萊宸科技有限公司","7DD751CF10DF2807E53FB9377847906F");
           LODOP.SET_LICENSES("THIRD LICENSE","","Hangzhou Laison Technology Co. Ltd. ,","B7CA5D05E72C78847BE2534C5D93A1CE");
