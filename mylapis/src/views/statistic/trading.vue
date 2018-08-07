@@ -105,7 +105,7 @@
         tradetypedata: [
           {
             value: 0,
-            label: this.$t('m.main.open')
+            label: this.$t('m.open.open')
           },
           {
             value: 1,
@@ -194,7 +194,7 @@
             key: 'tradeDate'
           },
           {
-            title: this.$t('m.deal.title1'),
+            title: this.$t('m.deal.tradingtype'),
             key: 'tradeType'
           },
           {
@@ -213,6 +213,36 @@
             title: this.$t('m.customerinfo.lastrealvolum'),
             key: 'purchaseVolume'
           },
+          {
+            title: "print",
+            key: 'print',
+            render: (h, params) => {
+              if(params.row.tradeType==0||params.row.tradeType==1){
+                return h('div', [
+                  h('Button', {
+                    props: {
+                      type: 'success',
+                      size: 'small'
+                    },
+                    style: {
+                      marginRight: '5px'
+                    },
+                    on: {
+                      click: () => {
+                        this.print(params.index,params.row)
+                      }
+                    }
+                  }, [h('Icon',{
+                    props:{
+                      color:'#fff',
+                      type:'android-print',
+                      size:16,
+                    }
+                  })],),
+                ]);
+              }
+            }
+          }
         ]
       }
     },
@@ -308,7 +338,15 @@
         // this.$refs.table.exportCsv({
         //   filename: 'The trade data'
         // });
+      },
+      print(index,row){
+        if(row.tradeType==0){
+          console.log("开户")
+        }else if(row.tradeType==1){
+          console.log("购买")
+        }
       }
+
     },
     created(){
       //获取操作员

@@ -222,6 +222,7 @@
 
 <script>
   export default {
+    name: 'management',
     data(){
       return{
         //数据定义
@@ -321,7 +322,7 @@
           {
             title: this.$t('m.customerinfo.label9'),
             key: 'status',
-            width:160,
+            width:200,
             render: (h, params) => {
               const row = params.row;
               let color = row.status;
@@ -1149,7 +1150,7 @@
     }
   }
 </script>
-<style>
+<style scoped>
     .h-change{
       position: relative;
       top:81px;

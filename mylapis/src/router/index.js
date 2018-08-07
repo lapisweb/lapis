@@ -28,6 +28,7 @@ import Layout from '@/views/main/layout'
 
 import Manage from '@/views/customer/management'
 import Debt from '@/views/customer/debt'
+import Customer from '@/views/customer/customer'
 
 import Trade from '@/views/statistic/trading'
 import Alarm from '@/views/statistic/alarm'
@@ -53,12 +54,12 @@ const router = new Router({
         { path: '', component:Index, name: 'index' },
         { path: 'purchase', component:Purchase, name: 'purchase' ,
           meta: {
-            title: '购买'
+            title: 'Purchase(STS)'
           }
         },
         { path: 'open', component: Open, name: 'open' ,
           meta: {
-            title: '开户'
+            title: 'Registration'
           }
         },
         { path: 'meter', component: Meter, name: '' ,
@@ -67,21 +68,25 @@ const router = new Router({
               path: '',
               component: Meterimport,
               name: 'meterimport' ,
+              meta: {
+                title: 'Meter Import'
+              }
             },
             {
               path: 'meterquery',
               component: Meterquery,
               name: 'meterquery' ,
+              meta: {
+                title: 'Meter Query'
+              }
             },
           ],
-          meta: {
-            title: '表入库'
-          }},
+          },
         { path: 'cancel', component:Cancel, name: 'cancel' ,meta: {
-            title: '退购'
+            title: 'Refund at site'
           }},
         { path: 'trade', component:Trade, name: 'trade' ,meta: {
-            title: '交易记录'
+            title: 'Trade Record'
           }},
         { path: 'alarm', component:Alarm, name: 'alarm',
           meta: {
@@ -89,14 +94,18 @@ const router = new Router({
           }},
         { path: 'management', component:Manage, name: 'management' ,
           meta: {
-            title: '修改客户信息'
+            title: 'Edit Customer Info.'
           }},
         { path: 'debt', component:Debt, name: 'debt' ,
           meta: {
-            title: '债务管理'
+            title: 'Debt Management'
+          }},
+        { path: 'customer', component:Customer, name: 'customer' ,
+          meta: {
+            title: 'Customer Management'
           }},
         { path: 'statistic', component:Statistic, meta: {
-            title: '统计报表'
+            title: 'Statistics'
           },
           children:[
             {
@@ -128,36 +137,36 @@ const router = new Router({
         },
         { path: 'print', component:Print, name: 'print' ,
           meta: {
-            title: '设置打印机'
+            title: 'Setting printer'
           }},
         { path: 'password', component:Password, name: 'password' ,
           meta: {
-            title: '修改密码'
+            title: 'Change PSW'
           }},
         { path: 'check', component:CheckList, name: 'check' ,
           meta: {
-            title: '审核退购任务'
+            title: 'Refund Task Verify'
           }},
         { path: 'realtime', component:Realtime, name: 'realtime' },
         { path: 'walkby', component:Walkby, name: 'walkby' ,
           meta: {
-            title: 'walkby任务管理'
+            title: 'Walkby Task'
           }},
         { path: 'walkby/addtask', component:Addtask, name: 'addtask' ,
           meta: {
-            title: '添加任务'
+            title: 'Add Task'
           }},
         { path: 'walkby/distributetask', component:Distributetask, name: 'distributetask' ,
           meta: {
-            title: '分配任务'
+            title: 'Task distribution'
           }},
         { path: 'walkby/edittask', component:Edittask, name: 'edittask' ,
           meta: {
-            title: '修改任务'
+            title: 'Edit Task'
           }},
         { path: 'walkby/showinfo', component:Showinfo, name: 'showinfo' ,
           meta: {
-            title: '查看任务详情'
+            title: 'Reading Result'
           }},
         { path: 'repair', component:Repair, name: 'repair' ,
           meta: {
@@ -173,7 +182,7 @@ const router = new Router({
           }},
         { path: 'monthdata', component:Monthdata, name: 'monthdata' ,
           meta: {
-            title: '月冻结数据'
+            title: 'Month Free Data'
           }},
       ]
     },
@@ -187,14 +196,22 @@ const router = new Router({
       name: 'login',
       component:Login,
       meta: {
-        title: '登录'
+        title: 'Login'
       }
     },
   ]
 });
 router.beforeEach((to, from, next) => {
   //登录之后不能再去到登录页
-  if(window.localStorage.getItem('user')){
+  if(window.sessionStorage.getItem('resource')){
+    var navList = JSON.parse(window.sessionStorage.getItem('resource'));
+    for (var i = 0; i < navList.length; i++) {
+      for (var j = 0; j < navList[i].childMenus.length; j++) {
+        if (to.path == navList[i].childMenus[j].url) {
+          window.sessionStorage.initialActiveMenu = navList[i].childMenus[j].orderNum;
+        }
+      }
+    }
     if(to.path=="/login"){
       next({
         path:'/index'

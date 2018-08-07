@@ -1,7 +1,10 @@
 <template>
   <div>
-    <Alert v-if="install" closable show-icon style="position:absolute;z-index:10000;width:50%;top:100px;left:50%;margin-left:-25%;text-align: center">
-      {{ $t("m.common.install1")}} <a href="http://laisontechsoft.xicp.net:29202/file/CLodop_Setup_for_Win32NT_3.029.exe">{{ $t("m.common.install2")}}</a> {{ $t("m.common.install3")}}
+    <Alert type="warning" v-if="install" closable show-icon style="position:absolute;z-index:10000;width:50%;top:100px;left:50%;margin-left:-25%;">
+      A warning prompt
+      <template slot="desc">
+        {{ $t("m.common.install1")}} <a href="http://laisontechsoft.xicp.net:29202/file/CLodop_Setup_for_Win32NT_3.029.exe">{{ $t("m.common.install2")}}</a> {{ $t("m.common.install3")}}
+      </template>
     </Alert>
     <div class="h-content">
       <div class="breadcrumb">
@@ -94,26 +97,26 @@
       </div>
     </div>
     <my-footer1></my-footer1>
-    <section class="purinvoice" id="purprint" v-show="print">
+    <section class="purinvoice" id="purprint" v-show="print" v-if="smallmessage">
       <div class="incontents">
-        <h3>购买发票</h3>
-        <p>发票编号: <span>2017111501</span></p>
-        <p>创建日期: <span>2017/11/15</span> </p>
+        <h3>Purchase Invoice</h3>
+        <p>RECEIPT NO.: <span>2017111501</span></p>
+        <p>Date: <span>2017/11/15</span> </p>
         <ul class="left-invoice">
           <li class="titles">
-            <p>客户信息</p>
+            <p>customer information</p>
           </li>
           <li>
             <span>Name:</span> <span>姓名</span>
           </li>
           <li>
-            <span>电话:</span><span>电话</span>
+            <span>Tel.:</span><span>身份证</span>
           </li>
           <li>
-            <span>身份证:</span><span>身份证</span>
+            <span>Id No.:</span><span>身份证</span>
           </li>
           <li>
-            <span>Description</span> <span> </span>
+            <span>Meter No.:</span> <span> </span>
           </li>
           <li>
             <span>Charge volume:</span><span>ssss</span>
@@ -147,7 +150,7 @@
           </li>
         </ul>
         <div class="total">
-          <p>操作员: <span>11</span></p>
+          <p>operator: <span>11</span></p>
         </div>
       </div>
     </section>
@@ -200,7 +203,7 @@
               <span>Numero de factura:</span> <span>{{invoicepurdata.invoiceNumber}}</span>
             </li>
             <li>
-              <span>Data de Emissao:</span> <span>{{currentTime}}}</span>
+              <span>Data de Emissao:</span> <span>{{currentTime}}</span>
             </li>
           </ul>
         </div>
@@ -248,7 +251,82 @@
         </div>
       </div>
     </section>
+    <section>
+      <div class="incontent" id="commonprint" v-show="fiprint" v-if="smallmessage">
+        <div style="overflow: hidden">
+          <div style="height:60px;float: left">
+            <p>Purchase Invoice</p>
+          </div>
+          <div class="invoicehead">
+            <p>Receipt No.: <span>{{invoicepurdata.invoiceNumber}}</span></p>
+            <p>Date: <span>{{currentTime}}</span> </p>
+          </div>
+        </div>
 
+        <div class="list">
+          <ul class="left-invoice">
+            <li>
+              <span>Name:</span> <span>{{invoicecusdata.customerName}}</span>
+            </li>
+            <li>
+              <span>Meter No.:</span> <span>{{invoicecusdata.meter.meterNumber}}</span>
+            </li>
+            <li>
+              <span>Tel:</span> <span>{{invoicecusdata.telephone}}</span>
+            </li>
+          </ul>
+          <ul class="left-invoice">
+            <li>
+              <span>CustomerType:</span> <span>{{invoicecusdata.customerType.customerTypeName}}</span>
+            </li>
+            <li>
+              <span>Address:</span> <span>{{invoicecusdata.physicalAddress}}</span>
+            </li>
+          </ul>
+        </div>
+        <div class="list">
+          <table class="invoicetable" cellspacing="0" cellpadding="0">
+            <tr>
+              <th v-for="item in fipaginvoicelist1">{{item.title}}</th>
+            </tr>
+            <tr v-for="item in fipaginvoicedata1">
+              <td>{{item.itemName}}</td>
+              <td>{{item.deductionAmount}}</td>
+              <td>{{item.additionalFeeType }}</td>
+            </tr>
+          </table>
+        </div>
+        <div class="list">
+          <ul class="summary">
+            <li>
+              <span>purchase Volume:</span> <span>{{invoicepurdata.purchaseVolume}}m³</span>
+            </li>
+            <li>
+              <span>Purchase Amount:</span> <span>{{invoicepurdata.purchaseAmount| random}}</span>
+            </li>
+            <li>
+              <span>Additional Fee:</span> <span>{{invoicepurdata.pureFeeAmount}}</span>
+            </li>
+            <li>
+              <span>Vat:</span> <span>{{invoicepurdata.standaloneVatAmount | random}}</span>
+            </li>
+            <li>
+              <span>Payment Amount</span> <span>{{invoicepurdata.paymentAmount}}</span>
+            </li>
+          </ul>
+        </div>
+        <div class="list">
+          <p style="text-align: center">Token</p>
+          <div style="width:100%;height:1px;background: #ccc;margin-top: 6px;"></div>
+          <div v-for="item in tokendata" style="text-align: center">
+            <p style="line-height: 35px;font-size: 18px;">{{ item | tokenjiange}}</p>
+          </div>
+        </div>
+        <div class="list">
+          <p>Operator: <span>{{invoicepurdata.loginName}}</span></p>
+        </div>
+      </div>
+    </section>
     <div class="main" id="smallfipag" v-show="fiprint" v-if="smallmessage">
       <div class="header">
         <p class="dotted"></p>
@@ -382,7 +460,7 @@
           {
             title: this.$t('m.customerinfo.label9'),
             key: 'status',
-            width:160,
+            width:200,
             render: (h, params) => {
               const row = params.row;
               let color = row.status;
@@ -432,6 +510,20 @@
           {
             title: 'Preco Total(mt)',
             key: 'deductionAmount'
+          },
+        ],
+        fipaginvoicelist1:[
+          {
+            title: 'Additional Fee Name',
+            key: 'itemName'
+          },
+          {
+            title: 'Deduction amount',
+            key: 'deductionAmount'
+          },
+          {
+            title: 'Deduction Type',
+            key: 'additionalFeeType'
           },
         ],
         fipaginvoicedata:[],
@@ -580,7 +672,6 @@
           headers: {
             'Content-Type': 'application/json'
           },
-
         }).then((response) => {
           response.body.pageInfo.list.forEach((val, index) => {
             if (val.debt && val.additionalFees) {
@@ -668,6 +759,7 @@
         })
       },
       confirm() {
+        this.$Spin.show();
         let purchaseType;
         if (this.paytype == this.$t('m.purchase.amount')) {
           purchaseType = '1';
@@ -688,36 +780,39 @@
             'Content-Type': 'application/json'
           },
         }).then((response) => {
-          this.fipaginvoicedata1=[];
-          this.fipaginvoicedata2=[];
-          this.invmessage=true;
-          this.smallmessage=true;
-          this.invoicecusdata = response.body.customer;
-          this.invoicepurdata = response.body.tradeRecord;
-          this.invoicepurdata.feeRecords.forEach((val,index)=> {
-            if(val.additionalFeeType!=2&&val.additionalFeeType!=1){
-              this.fipaginvoicedata1.push(val);
-              val.additionalFeeDeductionRate='';
-              val.additionalFeeDeductionAmount='';
-            }else{
-              this.fipaginvoicedata2.push(val);
-            }
-          });
-          this.fipaginvoicedata=this.invoicepurdata.feeRecords;
-
-
-          this.tokendata = response.body.tradeRecord.token.replace(/(\d{4})/g, '$1 ').replace(/\s*$/, '').split(",");
-          if (response.body.code == 0) {
-            this.token = true;
-            this.$Modal.success({
-              title: 'Purchase',
-              content: '<p>'+this.$t('m.common.tips')+'</p><p>' + this.$t('m.purchase.tip5') + '</p>',
-              onOk: () => {
-                this.printpur();
-              },
+          this.$Spin.hide();
+          if(response.body.code==500){
+            this.$Message.error(response.body.errors);
+          }else{
+            this.fipaginvoicedata1=[];
+            this.fipaginvoicedata2=[];
+            this.invmessage=true;
+            this.smallmessage=true;
+            this.invoicecusdata = response.body.customer;
+            this.invoicepurdata = response.body.tradeRecord;
+            this.invoicepurdata.feeRecords.forEach((val,index)=> {
+              if(val.additionalFeeType!=2&&val.additionalFeeType!=1){
+                this.fipaginvoicedata1.push(val);
+                val.additionalFeeDeductionRate='';
+                val.additionalFeeDeductionAmount='';
+              }else{
+                this.fipaginvoicedata2.push(val);
+              }
             });
-            this.pregoumai = 0;
-            this.traderecord = response.body.tradeRecord;
+            this.fipaginvoicedata=this.invoicepurdata.feeRecords;
+            this.tokendata = response.body.tradeRecord.token.replace(/(\d{4})/g, '$1 ').replace(/\s*$/, '').split(",");
+            if (response.body.code == 0) {
+              this.token = true;
+              this.$Modal.success({
+                title: 'Purchase',
+                content: '<p>'+this.$t('m.common.tips')+'</p><p>' + this.$t('m.purchase.tip5') + '</p>',
+                onOk: () => {
+                  this.printpur();
+                },
+              });
+              this.pregoumai = 0;
+              this.traderecord = response.body.tradeRecord;
+            }
           }
         });
       },
@@ -818,7 +913,7 @@
             try
             {
               console.log('普通打印');
-              this.fipagprintinvoice()
+              this.commonprintinvoice()
             }
             catch(err)
             {
@@ -909,7 +1004,8 @@
         var height=document.querySelector("#openprint").offsetHeight;
         var width=document.querySelector("#openprint").offsetWidth;
         if (LODOP.webskt && LODOP.webskt.readyState == 1) {
-          console.log("开始打印！！");
+          LODOP.SET_LICENSES("杭州莱宸科技有限公司","EFED48C79DE17EC067709F911F9D586B","杭州莱宸科技有限公司","7DD751CF10DF2807E53FB9377847906F");
+          LODOP.SET_LICENSES("THIRD LICENSE","","Hangzhou Laison Technology Co. Ltd. ,","B7CA5D05E72C78847BE2534C5D93A1CE");
           LODOP.PRINT_INIT("购买");
 
           LODOP.SET_PRINT_PAGESIZE(1,0,0,"A4");
@@ -917,6 +1013,95 @@
           let index=localStorage.getItem('invoice');
           LODOP.SET_PRINTER_INDEXA(index);
           LODOP.PREVIEW();//预览
+          // LODOP.PRINT();//预览
+        }
+      },
+      commonprintinvoice() {
+        var strBodyStyle=`
+        <style>
+          *{
+           font-family:Arial, sans-serif;
+           list-style: none;
+           font-size:14px;
+           margin:0;
+           padding:0
+          }
+          .list{
+            width:96%;
+            border:1px solid #ccc;
+            padding: 10px;
+            margin-top: 5px;
+            overflow: hidden;
+          }
+          .topinvoicehead{
+            overflow: hidden;
+          }
+          .invoicehead{
+            float: right;
+            margin-top: 20px;
+          }
+          .incontent h3{
+            line-height: 50px;
+          }
+          .invoicecontent p{
+            height:24px;
+            line-height: 24px;
+          }
+          .left-invoice{
+            margin-top: 10px;
+            width:45%;
+            float:left;
+          }
+          .left-invoice li{
+            list-style: none;
+            height:40px;
+          }
+          .left-invoice li span{
+            line-height: 18px;
+          }
+          .left-invoice li span:first-child{
+            display: block;
+            color:#999;
+          }
+          .invoicetable{
+            margin:5px 0;
+            text-align:left;
+            width:100%;
+            line-height: 24px;
+          }
+          .invoicetable th{
+            line-height: 24px;
+            text-align:left;
+          }
+          .invoicetable td{
+            line-height: 24px;
+          }
+          .summary li span{
+            line-height: 24px;
+          }
+          .summary li span:nth-child(2){
+            display: inline-block;
+            width: 210px;
+            float: right;
+          }
+           .total{
+           margin-top: 10px;
+            float: right;
+          }
+        </style>
+        `;
+        var strFormHtml=strBodyStyle+document.getElementById("commonprint").innerHTML;
+        if (LODOP.webskt && LODOP.webskt.readyState == 1) {
+          LODOP.SET_LICENSES("杭州莱宸科技有限公司","EFED48C79DE17EC067709F911F9D586B","杭州莱宸科技有限公司","7DD751CF10DF2807E53FB9377847906F");
+          LODOP.SET_LICENSES("THIRD LICENSE","","Hangzhou Laison Technology Co. Ltd. ,","B7CA5D05E72C78847BE2534C5D93A1CE");
+          LODOP.PRINT_INIT("购买");
+
+          LODOP.SET_PRINT_PAGESIZE(1,0,0,"A4");
+          LODOP.ADD_PRINT_HTM(20, 20, 740, '100%',strFormHtml);
+          let index=localStorage.getItem('invoice');
+          LODOP.SET_PRINTER_INDEXA(index);
+          LODOP.PREVIEW();//预览
+          // LODOP.PRINT();//预览
         }
       },
       fipagprint() {

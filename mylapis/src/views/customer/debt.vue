@@ -124,6 +124,7 @@
           {
             title: this.$t('m.customerinfo.label7'),
             key: 'meterno',
+            width:130,
           },
           {
             title: this.$t('m.customerinfo.label5'),
@@ -132,7 +133,7 @@
           {
             title: this.$t('m.customerinfo.label9'),
             key: 'status',
-            width:160,
+            width:190,
             render: (h, params) => {
               const row = params.row;
               let color = row.status;

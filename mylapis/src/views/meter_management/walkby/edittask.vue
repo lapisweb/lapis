@@ -204,11 +204,12 @@
       MapInitialize() {
         var vm=this;
         //构建经纬度点
-        var latlng = new google.maps.LatLng(30.2635975183, 120.1073916361);
+        // var latlng = new google.maps.LatLng(30.2635975183, 120.1073916361);
+        var uluru = {lat: -18.1876065525, lng:34.4531250000 };
         var myOptions =
           {
-            zoom: 15,
-            center: latlng,
+            zoom: 8,
+            center: uluru,
             // mapTypeId: google.maps.MapTypeId.HYBRID,
             //关闭 API 的默认用户界面设置
             // disableDefaultUI: true,

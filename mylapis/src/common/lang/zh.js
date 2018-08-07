@@ -107,6 +107,7 @@ export default {
       title5: '债务',
       content1: '选择客户类型',
       content2: '用户基本信息',
+      content6: '选择STS加密密钥',
       label4: '行政区',
       content3: '添加表号',
       content4: '添加附加费',

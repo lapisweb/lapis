@@ -4,14 +4,20 @@
       <ul>
         <li>
             <p style="line-height: 25px;">{{$t('m.open.content1')}}：</p>
-            <Select style="width:200px" v-model="customertypecode">
+            <Select style="width:240px" v-model="customertypecode">
               <Option v-for="item in customerType" :value="item.customerTypeCode" :key="item.customerTypeCode">{{item.customerTypeName}}</Option>
             </Select>
         </li>
         <li>
+          <p style="line-height: 25px;">{{$t('m.open.content6')}}：</p>
+          <Select style="width:240px" v-model="stskeyval">
+            <Option v-for="item in stskey" :value="item.stsKeyId" :key="item.stsKeyId">{{item.description | fenge}}</Option>
+          </Select>
+        </li>
+        <li>
           <p style="line-height: 25px;">{{$t('m.meter.single')}}</p>
           <div>
-            <Input :disabled="qiehuan1" style="width:200px;" v-model.trim="meterno" ></Input>
+            <Input :disabled="qiehuan1" style="width:240px;" v-model.trim="meterno" ></Input>
           </div>
         </li>
         <li class="changeiview">
@@ -21,9 +27,9 @@
             <Icon type="android-close" slot="close"></Icon>
           </i-Switch>
           <div>
-            <Input :disabled="qiehuan2" style="width:200px;" :placeholder="$t('m.meter.smeter')" v-model.trim="startmeterno"></Input>
+            <Input :disabled="qiehuan2" style="width:240px;" :placeholder="$t('m.meter.smeter')" v-model.trim="startmeterno"></Input>
             <Icon type="android-remove"></Icon>
-            <Input :disabled="qiehuan2" style="width:200px;" :placeholder="$t('m.meter.emeter')" v-model.trim="endmeterno"></Input>
+            <Input :disabled="qiehuan2" style="width:240px;" :placeholder="$t('m.meter.emeter')" v-model.trim="endmeterno"></Input>
           </div>
         </li>
         <li>
@@ -48,6 +54,8 @@
         batchswitch:false,
         qiehuan2:true,
         qiehuan1:false,
+        stskey:[],
+        stskeyval:'',
 
         //用户类型
         customerType:[],
@@ -110,7 +118,24 @@
         meterdata: [],
       }
     },
+    filters:{fenge:function (val) {
+      if(val.indexOf("Company=")!=-1){
+        let start=(val.indexOf("Company=")+8);
+        function find(str,cha,num){
+          var x=str.indexOf(cha);
+          for(var i=0;i<num;i++){
+            x=str.indexOf(cha,x+1);
+          }
+          return x;
+        };
+        let end=(find(val,";",2));
+        return val.substring(start,end);
+      }else{
+        return val;
+      }
+      }},
     methods: {
+
       //开启批量导入
       batch(status){
         if(status==true){
@@ -126,7 +151,7 @@
         if(this.qiehuan1==false){
           this.$http({
             url:'biz/meterStock/addBatch.do',
-            body: {customerTypeCode:this.customertypecode,startMeterNumber:this.meterno,stsKeyId:1,tidBaseTime:'2014'},
+            body: {customerTypeCode:this.customertypecode,startMeterNumber:this.meterno,stsKeyId:this.stskeyval,tidBaseTime:'2014'},
             credentials:true,
             method: 'POST',
             headers: {
@@ -140,6 +165,7 @@
                 onOk: () => {
                   this.meterno='';
                   this.customertypecode='';
+                  this.stskeyval='';
                 },
               });
             }else{
@@ -152,7 +178,7 @@
         }else{
           this.$http({
             url:'biz/meterStock/addBatch.do',
-            body: {customerTypeCode:this.customertypecode,startMeterNumber:this.startmeterno,stsKeyId:1,endMeterNumber:this.endmeterno,tidBaseTime:'2014'},
+            body: {customerTypeCode:this.customertypecode,startMeterNumber:this.startmeterno,stsKeyId:this.stskeyval,endMeterNumber:this.endmeterno,tidBaseTime:'2014'},
             credentials:true,
             method: 'POST',
             headers: {
@@ -179,20 +205,40 @@
           })
         }
       },
+      findcustomertype(){
+        this.$http({
+          url:'sys/customerType/findAll.do',
+          body:{'conditions':{
+            nostate:0
+          }},
+          credentials:true,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        }).then((response) => {
+          this.customerType=response.body.list;
+        })
+      },
+      findstskey(){
+        this.$http({
+          url:'StsKey/findAll.do',
+          body:{'conditions':{}},
+          credentials:true,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        }).then((response) => {
+          this.stskey=response.body.list;
+
+        })
+      },
     },
 
     created() {
-      this.$http({
-        url:'sys/customerType/findAll.do',
-        body:{'conditions':{}},
-        credentials:true,
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-      }).then((response) => {
-        this.customerType=response.body.list;
-      })
+        this.findcustomertype();
+        this.findstskey()
     }
   }
 </script>
@@ -218,7 +264,7 @@
   .changeiview .swichsmeter{
     position: absolute;
     left:80px;
-    /*top:204px;*/
-    top:138px;
+    top:204px;
+    /*top:138px;*/
   }
 </style>

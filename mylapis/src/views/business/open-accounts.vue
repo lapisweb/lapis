@@ -1,7 +1,10 @@
 <template>
   <div>
-    <Alert v-if="install" closable show-icon style="position:absolute;z-index:10000;width:50%;top:100px;left:50%;margin-left:-25%;text-align: center">
-      {{ $t("m.common.install1")}} <a href="http://laisontechsoft.xicp.net:29202/file/CLodop_Setup_for_Win32NT_3.029.exe">{{ $t("m.common.install2")}}</a> {{ $t("m.common.install3")}}
+    <Alert type="warning" v-if="install" closable show-icon style="position:absolute;z-index:10000;width:50%;top:100px;left:50%;margin-left:-25%;">
+      A warning prompt
+      <template slot="desc">
+        {{ $t("m.common.install1")}} <a href="http://laisontechsoft.xicp.net:29202/file/CLodop_Setup_for_Win32NT_3.029.exe">{{ $t("m.common.install2")}}</a> {{ $t("m.common.install3")}}
+      </template>
     </Alert>
     <div class="h-content">
       <div class="breadcrumb">
@@ -358,14 +361,14 @@
       </div>
       <p class="dotted"></p>
     </div>
-    <div class="incontent" id="print" v-if="kaihufapiao">
+    <div class="incontent" id="print" v-if="kaihufapiao" v-show="false">
       <div style="height:65px;position: absolute;left:0;top:30px;">
         <img style="height: 100%;" src="../../assets/img/fipag.jpg" alt="">
       </div>
       <div class="topinvoicehead">
         <div class="invoicehead">
           <h3>Open Account</h3>
-          <p>RECEIPT NO.: <span>{{invoicedata.invoiceNumber}}</span></p>
+          <p>Receipt No.: <span>{{invoicedata.invoiceNumber}}</span></p>
           <p>Date: <span>{{invoicedata.tradeDate}}</span> </p>
         </div>
       </div>
@@ -375,21 +378,21 @@
             <span>name :</span> <span>{{invoicedata.customerName}}</span>
           </li>
           <li>
-            <span>CustomerType:</span><span>{{incusdata.customerType.customerTypeName}}</span>
+            <span>CustomerType:</span> <span>{{incusdata.customerType.customerTypeName}}</span>
           </li>
           <li>
-            <span>Id No. :</span><span>{{invoicedata.identityCode}}</span>
+            <span>Id No. :</span> <span>{{invoicedata.identityCode}}</span>
           </li>
         </ul>
         <ul class="left-invoice">
           <li>
-            <span>Meter No.:</span> <span>{{invoicedata.tradeDate}}</span>
+            <span>Meter No.:</span> <span>{{incusdata.meter.meterNumber}}</span>
           </li>
           <li>
             <span>Vending station:</span> <span>{{invoicedata.name}}</span>
           </li>
           <li>
-            <span>Address</span><span>{{invoicedata.physicalAddress}}</span>
+            <span>Address</span> <span>{{invoicedata.physicalAddress}}</span>
           </li>
         </ul>
       </div>
@@ -398,14 +401,62 @@
           <th v-for="item in invoicelist">{{item.title}}</th>
         </tr>
         <tr>
-          <td>开户</td>
+          <td>Registration</td>
           <td>${{invoicedata.paymentAmount}}</td>
         </tr>
       </table>
       <div class="total">
-        <p>操作员: <span>{{invoicedata.loginName}}</span></p>
+        <p>operator: <span>{{invoicedata.loginName}}</span></p>
       </div>
     </div>
+    <div class="incontent" id="commonprint" v-if="kaihufapiao" v-show="false">
+      <div style="height:65px;position: absolute;left:0;top:10px;">
+        <h3>Open Account</h3>
+      </div>
+      <div class="topinvoicehead">
+        <div class="invoicehead">
+          <p>Receipt No.: <span>{{invoicedata.invoiceNumber}}</span></p>
+          <p>Date: <span>{{invoicedata.tradeDate}}</span> </p>
+        </div>
+      </div>
+      <div class="list">
+        <ul class="left-invoice">
+          <li>
+            <span>name :</span> <span>{{invoicedata.customerName}}</span>
+          </li>
+          <li>
+            <span>CustomerType:</span> <span>{{incusdata.customerType.customerTypeName}}</span>
+          </li>
+          <li>
+            <span>Id No. :</span> <span>{{invoicedata.identityCode}}</span>
+          </li>
+        </ul>
+        <ul class="left-invoice">
+          <li>
+            <span>Meter No.:</span> <span>{{incusdata.meter.meterNumber}}</span>
+          </li>
+          <li>
+            <span>Vending station:</span> <span>{{invoicedata.name}}</span>
+          </li>
+          <li>
+            <span>Address</span> <span>{{invoicedata.physicalAddress}}</span>
+          </li>
+        </ul>
+      </div>
+      <table class="invoicetable" cellspacing="0" cellpadding="0">
+        <tr>
+          <th v-for="item in invoicelist">{{item.title}}</th>
+        </tr>
+        <tr>
+          <td>Registration</td>
+          <td>${{invoicedata.paymentAmount}}</td>
+        </tr>
+      </table>
+      <div class="total">
+        <p>operator: <span>{{invoicedata.loginName}}</span></p>
+      </div>
+    </div>
+
   </div>
 </template>
 <script>
@@ -517,8 +568,6 @@
         incusdata:{},
         //客户类型
         customerType: [],
-        //站点信息
-        stationdata:[],
         //附加费方案表格表头定义
         addifeetable: [
           {
@@ -1090,7 +1139,7 @@
             try
             {
               console.log('普通打印');
-              this.openprint()
+              this.commonprint()
             }
             catch(err)
             {
@@ -1258,6 +1307,77 @@
           LODOP.PREVIEW();//预览
           // LODOP.PRINT();// 直接打印
       },
+      commonprint() {
+        var strBodyStyle=`
+        <style>
+        *{
+            font-family: Arial, sans-serif;
+        }
+         .incontent{
+            width:96%;
+            margin:0 auto;
+          }
+          .incontent .list{
+            width:100%;
+          }
+          .topinvoicehead{
+            overflow: hidden;
+            border-bottom:1px solid #ccc;
+          }
+          .invoicehead{
+            float: right;
+          }
+          .incontent h3{
+            text-align: center;
+            line-height: 50px;
+            /*border-bottom:1px solid #ccc;*/
+          }
+          .invoicecontent p{
+            height:24px;
+            line-height: 24px;
+          }
+          .left-invoice{
+            list-style: none;
+            margin-top: 10px;
+            width:40%;
+            float:left;
+          }
+          .left-invoice li{
+            list-style: none;
+            height:50px;
+          }
+          .left-invoice li span:first-child{
+            display: block;
+            color:#888;
+          }
+          .invoicetable{
+            margin:15px 0;
+            padding:0 30px;
+            width:100%;
+            line-height: 30px;
+            border-top:1px solid #ccc;
+            border-bottom:1px solid #ccc;
+          }
+          .invoicetable th{
+             text-align: left;
+          }
+          .total{
+            float: right;
+          }
+        </style>
+        `;
+        var strFormHtml=strBodyStyle+"<body>"+document.getElementById("commonprint").innerHTML+"</body>";
+        console.log("开始打印！！");
+        LODOP.SET_LICENSES("杭州莱宸科技有限公司","EFED48C79DE17EC067709F911F9D586B","杭州萊宸科技有限公司","7DD751CF10DF2807E53FB9377847906F");
+        LODOP.SET_LICENSES("THIRD LICENSE","","Hangzhou Laison Technology Co. Ltd. ,","B7CA5D05E72C78847BE2534C5D93A1CE");
+        LODOP.PRINT_INIT("");
+        LODOP.SET_PRINT_PAGESIZE(1,0,0,"A4");
+        LODOP.ADD_PRINT_HTM(20, 20, 720,'100%',strFormHtml);
+        let index=localStorage.getItem('invoice');
+        LODOP.SET_PRINTER_INDEXA(index);
+        LODOP.PREVIEW();//预览
+        // LODOP.PRINT();// 直接打印
+      },
     },
     mounted(){
       if (this.current == 0) {
@@ -1295,7 +1415,9 @@
       //查客户类型
       this.$http({
         url:'sys/customerType/findAll.do',
-        body: {conditions: {}},
+        body: {conditions: {
+            nostate:0
+          }},
         credentials:true,
         method: 'POST',
         headers: {
@@ -1304,35 +1426,6 @@
       }).then((response) => {
         this.customerType=response.body.list;
       });
-      //查站点
-      this.$http({
-        url:'sys/company/findCompany.do',
-        body: {},
-        credentials:true,
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-      }).then((response) => {
-        let gongsi=response.body.companys;
-        for(let i=0;i<gongsi.length;i++){
-          let zhandian=gongsi[i].stations;
-          this.stationdata.push(
-            {
-              value:gongsi[i].companyCode,
-              label:gongsi[i].companyName,
-              children: []
-            },
-          );
-          for(let j=0;j<zhandian.length;j++){
-            this.stationdata[i].children.push({
-              value:zhandian[j].stationCode,
-              label:zhandian[j].stationName,
-              children: []
-            });
-          }
-        }
-      })
       //获取行政区域
       this.$http({
         url:'sys/region/findRegion.do',

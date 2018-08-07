@@ -24,7 +24,7 @@
         </div>
       </div>
       <div class="task-left2" style="position: relative">
-        <p style="position: absolute;z-index:1;top:8px;right:5px;">已选中 {{total}}</p>
+        <p style="position: absolute;z-index:1;top:8px;right:5px;">{{$t('m.walkby.selected')}} {{total}}</p>
         <Table height="700" size="small" :columns="metercolumns" :data="lacations" :highlight-row="true" @on-selection-change="metersel"></Table>
       </div>
       <div class="taskRight">
@@ -234,10 +234,11 @@
           });
             var vm=this;
             //构建经纬度点
-            var uluru = {lat: 30.26, lng:120.19};
+            // var uluru = {lat: 30.26, lng:120.19};
+            var uluru = {lat: -18.1876065525, lng:34.4531250000};
             var myOptions =
               {
-                zoom: 12,
+                zoom: 8,
                 center: uluru,
                 // mapTypeId: google.maps.MapTypeId.HYBRID,
                 //关闭 API 的默认用户界面设置

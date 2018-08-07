@@ -176,7 +176,7 @@
           {
             title: this.$t('m.customerinfo.label9'),
             key: 'status',
-            width:160,
+            width:200,
             render: (h, params) => {
               const row = params.row;
               let color = row.status;
@@ -450,8 +450,8 @@
           },
 
         }).then((response) => {
-          console.log(response.body)
           if(response.body.msg){
+            this.getstatus();
             this.$Message.success(response.body.msg);
           }else{
             this.$Message.error(response.body.errors);
@@ -465,6 +465,10 @@
         this.disabled=false;
         this.message=true;
         this.currentcustomer=e;
+        this.getstatus();
+      },
+      //请求状态
+      getstatus(){
         this.$http({
           url:'biz/trade/findCanRefundTrade.do',
           body:{
@@ -504,9 +508,11 @@
                 }
                 if((response.body.refundTask.taskState==0&&response.body.refundTask.auditing==1)||(response.body.refundTask.taskState==-1)){
                   this.reapplyback=true;
+                  this.applyback=true;
                 }
                 if(response.body.refundTask.taskState==0){
                   this.over=true;
+                  this.applyback=true;
                 }
               }else{
                 this.applyback=false;
@@ -514,11 +520,14 @@
             });
           }else{
             this.applyback=true;
+            this.execute=true;
+            this.over=false;
+            this.reapplyback=false;
+            this.checking=false;
           }
         });
       },
       overtasks(){
-        console.log(111);
         this.$http({
           url:'biz/trade/endTaskUnDoRefund.do',
           body:{
@@ -534,11 +543,10 @@
             'Content-Type': 'application/json'
           },
         }).then((response) => {
-          console.log(response.body)
-          if(response.body.msg){
-            this.$Message.success(response.body.msg);
+          if(response.body.refundTask){
+            this.$Message.success('task termination');
           }else{
-            this.$Message.error(response.body.errors);
+            this.$Message.error('Mission impossible');
           }
         })
       },
@@ -559,12 +567,15 @@
 
         }).then((response) => {
           if(response.body.msg){
+            this.getstatus();
             this.$Message.success(response.body.msg);
+            this.execute=true;
+            this.checking=false;
+            this.over=false;
+            this.reapplyback=false;
           }else{
             this.$Message.error(response.body.errors);
           }
-          this.execute=true;
-          this.checking=false;
         })
       },
       reapply(){

@@ -321,8 +321,11 @@
           },
 
         }).then((response) => {
-          this.customertotal = parseInt(response.body.pageInfo.total);
-          this.data8 = response.body.pageInfo.list;
+          if(response.body.pageInfo){
+            this.customertotal = parseInt(response.body.pageInfo.total);
+            this.data8 = response.body.pageInfo.list;
+          }
+
         });
       },
     },

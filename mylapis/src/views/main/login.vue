@@ -105,7 +105,20 @@
                 if(response.body.code==0){
                   window.localStorage.setItem('userdata',JSON.stringify(response.body.user.dept));
                   window.localStorage.setItem('user',JSON.stringify(response.body.user.loginName));
-                  this.$router.push('/index');
+                  if(window.sessionStorage.initialActiveMenu&&window.sessionStorage.resource){
+                    let num=parseInt(window.sessionStorage.initialActiveMenu);
+                    let menu=JSON.parse(window.sessionStorage.resource);
+                    menu.forEach((val,index)=> {
+                        val.childMenus.forEach((val1,index1)=> {
+                          if(val1.orderNum==num){
+                            this.$router.push(val1.url)
+                          }
+                        })
+                    });
+                  }else{
+                    this.$router.push('/index');
+                  }
+
                 }
               }
             })

@@ -56,12 +56,12 @@
                   <span>时间：{{row.alarmDate}}</span></p>
                 <Button v-if="row.state!=1" type="primary" style="position:absolute;top:16px;right:20px;" @click="dispose(row.alarmId)"><Icon type="wrench"></Icon></Button>
               </li>
-              <li style="margin: 10px 0;overflow: hidden;">
-                <div style="float: right;">
-                  <Page :total="alarmtotal" :current="1" @on-change="changePage" :show-total="true" :show-elevator="true"></Page>
-                </div>
-              </li>
             </ul>
+            <li style="margin: 10px 0;overflow: hidden;">
+              <div style="float: right;">
+                <Page :total="alarmtotal" :current="1" @on-change="changePage" :show-total="true" :show-elevator="true"></Page>
+              </div>
+            </li>
           </TabPane>
           <TabPane label="未处理警告" name="name2">标签二的内容</TabPane>
         </Tabs>

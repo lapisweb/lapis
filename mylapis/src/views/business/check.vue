@@ -15,10 +15,18 @@
         <p class="datas">{{$t('m.check.unaudited')}}</p>
         <Table highlight-row :columns="customercol" :data="customerdata" @on-selection-change="selectedcol"></Table>
         <div style="margin-top: 10px;">
-          <Select style="width:200px;" @on-change="selected">
-            <Option v-for="item in checking" :value="item.value" :key="item.value">{{ item.label }}</Option>
-          </Select>
-          <Button @click="ok">{{$t('m.common.submit')}}</Button>
+          <RadioGroup v-model="resulttui" type="button" @on-change="radiochange">
+            <Radio label=1>
+              <span>{{$t('m.check.allow')}}</span>
+            </Radio>
+            <Radio label=0>
+              <span>{{$t('m.check.refuse')}}</span>
+            </Radio>
+          </RadioGroup>
+          <div style="margin-top: 10px;">
+            <Button @click="ok" type="primary">{{$t('m.common.submit')}}</Button>
+          </div>
+
         </div>
       </div>
 
@@ -30,21 +38,12 @@
   export default {
     data () {
       return {
+        resulttui:null,
         model1:'',
         currselected:0,
         taskid:[],
         restask:[],
         selectrow:[],
-        checking: [
-          {
-            value: 1,
-            label: this.$t('m.check.allow')
-          },
-          {
-            value: 0,
-            label: this.$t('m.check.refuse')
-          },
-        ],
         customercol:[
           {
             type: 'selection'
@@ -68,10 +67,9 @@
     methods: {
       selectedcol(selectrow){
         this.selectrow=selectrow
-
       },
-      selected(aa){
-        this.currselected=aa;
+      radiochange(data){
+        this.currselected=data;
         if(this.currselected==1){
           this.currselected=true;
         }else if(this.currselected==0){
@@ -95,44 +93,44 @@
             'Content-Type': 'application/json'
           },
         }).then((response) => {
-          console.log(response.body)
           if(response.body.msg){
             this.$Message.success(response.body.msg);
             this.restask=[];
+            this.getlist();
           }else{
             this.$Message.error(response.body.errors);
             this.restask=[];
           }
         })
+      },
+      getlist(){
+        this.$http({
+          url:'biz/trade/findUnauditRefundApply.do',
+          body:{
+            "conditions": {
+            },
+            "limit":10,
+            "page": 1
+          },
+          credentials:true,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        }).then((response) => {
+          console.log(response.body.pageInfo.list);
+          response.body.pageInfo.list.forEach((val,index)=> {
+            val.customerNumber=val.customerInfo.customerNumber;
+            val.customerName=val.customerInfo.customerName;
+            val.identityCode=val.customerInfo.identityCode;
+            val.telephone=val.customerInfo.telephone
+          });
+          this.customerdata=response.body.pageInfo.list;
+        })
       }
     },
     created(){
-      this.$http({
-        url:'biz/trade/findUnauditRefundApply.do',
-        body:{
-          "conditions": {
-          },
-          "limit":10,
-          "page": 1
-        },
-        credentials:true,
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-      }).then((response) => {
-        response.body.pageInfo.list.forEach((val,index)=> {
-          this.customerdata.push(
-            {
-              customerNumber:val.customerInfo.customerNumber,
-              customerName:val.customerInfo.customerName,
-              identityCode:val.customerInfo.identityCode,
-              telephone:val.customerInfo.telephone,
-              taskId:val.taskId,
-            }
-          )
-        });
-      })
+        this.getlist();
     },
   }
 </script>

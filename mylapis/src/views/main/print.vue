@@ -1,7 +1,10 @@
 <template>
   <div class="h-content">
-    <Alert v-if="install" closable show-icon style="position:absolute;z-index:10000;width:50%;top:100px;left:50%;margin-left:-25%;text-align: center">
-      {{ $t("m.common.install1")}} <a href="http://laisontechsoft.xicp.net:29202/file/CLodop_Setup_for_Win32NT_3.029.exe">{{ $t("m.common.install2")}}</a> {{ $t("m.common.install3")}}
+    <Alert type="warning" v-if="install" closable show-icon style="position:absolute;z-index:10000;width:50%;top:100px;left:50%;margin-left:-25%;">
+      A warning prompt
+      <template slot="desc">
+        {{ $t("m.common.install1")}} <a href="http://laisontechsoft.xicp.net:29202/file/CLodop_Setup_for_Win32NT_3.029.exe">{{ $t("m.common.install2")}}</a> {{ $t("m.common.install3")}}
+      </template>
     </Alert>
     <div style="padding:10px">
       <Card>

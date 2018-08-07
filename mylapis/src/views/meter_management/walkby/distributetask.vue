@@ -9,7 +9,7 @@
           <Icon type="social-buffer-outline"></Icon> Walkby
         </BreadcrumbItem>
         <BreadcrumbItem>
-          <Icon type="social-buffer-outline"></Icon> 任务分布
+          <Icon type="social-buffer-outline"></Icon> {{$t('m.walkby.Taskdistribution')}}
         </BreadcrumbItem>
       </Breadcrumb>
     </div>
@@ -104,10 +104,11 @@
           });
             var vm=this;
             //构建经纬度点
-            var uluru = {lat: 30.26, lng:120.19};
+        // var uluru = {lat: 30.26, lng:120.19};
+            var uluru = {lat: -18.1876065525, lng:34.4531250000 };
             var myOptions =
               {
-                zoom: 12,
+                zoom: 8,
                 center: uluru,
                 // mapTypeId: google.maps.MapTypeId.HYBRID,
                 //关闭 API 的默认用户界面设置

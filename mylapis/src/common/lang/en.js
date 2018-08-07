@@ -111,6 +111,7 @@ export default{
       content3:'Add Meter No.',
       content4:'Add Additional Fee',
       content5:'Add Debt',
+      content6: 'Select STS Key',
       selectcustomertype:'Please select Customer Type:',
       meterno:'Please input Meter No.:',
       additionfeescheme:'Additional Fee',

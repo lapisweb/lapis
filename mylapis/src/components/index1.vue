@@ -202,13 +202,15 @@
             'Content-Type': 'application/json'
           },
         }).then((response) => {
-          response.body.list.forEach((val,index)=> {
-            if(val.name=='enableDebt'){
-              if(val.state===0){
-                this.enableDebt=0;
+          if(response.body.list){
+            response.body.list.forEach((val,index)=> {
+              if(val.name=='enableDebt'){
+                if(val.state===0){
+                  this.enableDebt=0;
+                }
               }
-            }
-          })
+            })
+          }
         });
       },
       //获取菜单
@@ -236,6 +238,9 @@
             });
             if(response.body.menu.childMenus){
               this.nav=response.body.menu.childMenus;
+              // this.getactivemenu();
+              window.sessionStorage.setItem("resource",JSON.stringify(response.body.menu.childMenus));
+              // this.nav = JSON.parse(window.sessionStorage.getItem("resource"));
               this.$nextTick(() => {
                 this.$refs.contactMenu.updateOpened();
                 this.$refs.contactMenu.updateActiveName()
@@ -257,14 +262,17 @@
           },
           method: 'POST',
         }).then((response) => {
-          response.body.pageInfo.list.forEach(function (val,index) {
-            val.alarmContent=JSON.parse(val.alarmContent);
-            val.alarmContent.forEach(function (val1,index1) {
-              val.alarmContent1='walkby抄表任务\n'+val1.taskName+'还未执行';
+          if(response.body.pageInfo){
+            response.body.pageInfo.list.forEach(function (val,index) {
+              val.alarmContent=JSON.parse(val.alarmContent);
+              val.alarmContent.forEach(function (val1,index1) {
+                val.alarmContent1='walkby抄表任务\n'+val1.taskName+'还未执行';
+              });
             });
-          });
-          this.alarminfo=response.body.pageInfo.list;
-          this.count=response.body.pageInfo.total;
+            this.alarminfo=response.body.pageInfo.list;
+            this.count=response.body.pageInfo.total;
+          }
+
         });
       },
       //获取打印机
@@ -274,14 +282,9 @@
         });
         this.invoicelist=LODOP.Printers.list;
       },
-      getactivemenu(url){
-        this.nav.forEach( (val,index)=> {
-          val.childMenus.forEach((val1,idnex1)=>{
-            if(url==val1.url){
-              this.initialActiveMenu=val1.orderNum;
-            }
-          })
-        });
+      //获取选中菜单
+      getactivemenu(){
+        this.initialActiveMenu=Number(window.sessionStorage.getItem('initialActiveMenu'));
       }
     },
     created(){
@@ -297,10 +300,11 @@
       this.getsystem();
       this.getmenu();
       this.getalarm();
+      this.getactivemenu()
     },
     watch:{
-      '$route.path':function (url) {
-          this.getactivemenu(url)
+      '$route.path':function () {
+          this.getactivemenu()
       }
     }
   }
@@ -352,7 +356,7 @@
     height:70px;
     position:fixed;
     top:0;
-    z-index: 10;
+    z-index: 12;
     width:100%;
     background: #fff;
     box-shadow: 0 2px 3px 0px rgba(100, 100, 100, 0.1);
